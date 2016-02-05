@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Twofold
+namespace Twofold.Api
 {
     public class Template
     {

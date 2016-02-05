@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 
-namespace Twofold
+namespace Twofold.Api
 {
     public interface IMessageHandler
     {

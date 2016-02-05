@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Twofold
+namespace Twofold.Extensions
 {
     public static class StringExtensions
     {

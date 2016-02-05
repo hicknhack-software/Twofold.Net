@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
 using Twofold.Api;
+using Twofold.Extensions;
 
 namespace Twofold
 {

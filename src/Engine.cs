@@ -3,6 +3,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using Twofold.Api;
 
 namespace Twofold
 {

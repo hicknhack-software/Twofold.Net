@@ -1,4 +1,4 @@
-﻿namespace Twofold
+﻿namespace Twofold.Api
 {
     public class Target
     { }
