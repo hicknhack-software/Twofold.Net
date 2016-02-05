@@ -1,7 +1,7 @@
 ﻿using System;
 using Twofold.Api;
 
-namespace Twofold.Parsing
+namespace Twofold.Parsing.Rules
 {
     public abstract class AbstractParserRule : IParserRule
     {

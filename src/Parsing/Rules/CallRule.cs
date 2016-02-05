@@ -1,11 +1,11 @@
 ﻿using System;
 using Twofold.Api;
 
-namespace Twofold.Parsing
+namespace Twofold.Parsing.Rules
 {
-    public class CommandRule : AbstractParserRule
+    public class CallRule : AbstractParserRule
     {
-        public CommandRule(IMessageHandler messageHandler)
+        public CallRule(IMessageHandler messageHandler)
             : base(messageHandler)
         { }
 

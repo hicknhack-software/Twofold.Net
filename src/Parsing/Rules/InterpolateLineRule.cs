@@ -1,11 +1,11 @@
 ﻿using System;
 using Twofold.Api;
 
-namespace Twofold.Parsing
+namespace Twofold.Parsing.Rules
 {
-    public class PassThroughRule : AbstractParserRule
+    public class InterpolateLineRule : AbstractParserRule
     {
-        public PassThroughRule(IMessageHandler messageHandler)
+        public InterpolateLineRule(IMessageHandler messageHandler)
             : base(messageHandler)
         { }
 
