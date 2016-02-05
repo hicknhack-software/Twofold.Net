@@ -35,6 +35,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Api\ICodeGenerator.cs" />
     <Compile Include="Api\IParserRule.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Api\IMessageHandler.cs" />
@@ -52,7 +53,7 @@
     <Compile Include="Api\Target.cs" />
     <Compile Include="TemplateCompiler.cs" />
     <Compile Include="Parsing\TemplateParser.cs" />
-    <Compile Include="CSharpGenerator.cs" />
+    <Compile Include="TwofoldCSharpGenerator.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

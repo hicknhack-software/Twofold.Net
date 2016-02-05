@@ -5,11 +5,11 @@ namespace Twofold.Parsing
 {
     public class InterpolationRule : AbstractParserRule
     {
-        public InterpolationRule(IMessageHandler messageHandler, CSharpGenerator csharpGenerator)
-            : base(messageHandler, csharpGenerator)
+        public InterpolationRule(IMessageHandler messageHandler)
+            : base(messageHandler)
         { }
 
-        public override void Parse(string value, int beginIndex, int nonSpaceBeginIndex, int endIndex)
+        public override void Parse(string value, int beginIndex, int nonSpaceBeginIndex, int endIndex, ICodeGenerator codeGenerator)
         {
             throw new NotImplementedException();
         }

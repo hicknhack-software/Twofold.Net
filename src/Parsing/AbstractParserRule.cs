@@ -6,25 +6,17 @@ namespace Twofold.Parsing
     public abstract class AbstractParserRule : IParserRule
     {
         readonly IMessageHandler messageHandler;
-        readonly CSharpGenerator csharpGenerator;
 
         public IMessageHandler MessageHandler
         {
             get { return messageHandler; }
         }
 
-        public CSharpGenerator CSharpGenerator
-        {
-            get { return csharpGenerator; }
-        }
-
-        public AbstractParserRule(IMessageHandler messageHandler, CSharpGenerator csharpGenerator)
+        public AbstractParserRule(IMessageHandler messageHandler)
         {
             this.messageHandler = messageHandler;
-            this.csharpGenerator = csharpGenerator;
-
         }
 
-        public abstract void Parse(string value, int beginIndex, int nonSpaceBeginIndex, int endIndex);
+        public abstract void Parse(string value, int beginIndex, int nonSpaceBeginIndex, int endIndex, ICodeGenerator codeGenerator);
     }
 }

@@ -15,29 +15,29 @@ namespace Twofold
         readonly IMessageHandler messageHandler;
         readonly StringCollection referencedAssemblies;
         readonly TemplateParser templateParser;
-        readonly CSharpGenerator csharpGenerator;
 
         public TemplateCompiler(ITextLoader textLoader, IMessageHandler messageHandler, StringCollection referencedAssemblies)
         {
             this.textLoader = textLoader;
             this.messageHandler = messageHandler;
             this.referencedAssemblies = referencedAssemblies;
-            this.csharpGenerator = new CSharpGenerator();
+
             this.templateParser = new TemplateParser(new Dictionary<char, IParserRule>
             {
-                {'\\', new InterpolationRule(messageHandler, csharpGenerator) },
-                {'|', new InterpolateLineRule(messageHandler, csharpGenerator) },
-                {'=', new CallRule(messageHandler, csharpGenerator) },
-                {'#', new CommandRule(messageHandler, csharpGenerator) },
-            }, new PassThroughRule(messageHandler, csharpGenerator));
+                {'\\', new InterpolationRule(messageHandler) },
+                {'|', new InterpolateLineRule(messageHandler) },
+                {'=', new CallRule(messageHandler) },
+                {'#', new CommandRule(messageHandler) },
+            }, new PassThroughRule(messageHandler));
         }
 
         public Template Compile(string templateName)
         {
-            // Load text
+            // Load template and convert to CSharp
             TextLoaderResult textLoaderResult = textLoader.Load(templateName);
-
-            // Line processing
+            var csharpGenerator = new TwofoldCSharpGenerator();
+            templateParser.Parse(textLoaderResult.Name, textLoaderResult.Text, csharpGenerator);
+            string generatedCode = csharpGenerator.GeneratedCode();
 
             // Prepare compiler
             var parameters = new CompilerParameters();
@@ -51,7 +51,7 @@ namespace Twofold
 
             // Compile
             var codeProvider = new CSharpCodeProvider();
-            CompilerResults compilerResults = codeProvider.CompileAssemblyFromSource(parameters, textLoaderResult.Text);
+            CompilerResults compilerResults = codeProvider.CompileAssemblyFromSource(parameters, generatedCode);
             if (compilerResults.Errors.Count > 0) {
                 foreach (CompilerError compilerError in compilerResults.Errors) {
                     TraceLevel traceLevel = compilerError.IsWarning ? TraceLevel.Warning : TraceLevel.Error;
