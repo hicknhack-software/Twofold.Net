@@ -1,9 +1,11 @@
 ﻿using Microsoft.CSharp;
 using System.CodeDom.Compiler;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
 using Twofold.Api;
+using Twofold.Parsing;
 
 namespace Twofold
 {
@@ -12,12 +14,22 @@ namespace Twofold
         readonly ITextLoader textLoader;
         readonly IMessageHandler messageHandler;
         readonly StringCollection referencedAssemblies;
+        readonly TemplateParser templateParser;
+        readonly CSharpGenerator csharpGenerator;
 
         public TemplateCompiler(ITextLoader textLoader, IMessageHandler messageHandler, StringCollection referencedAssemblies)
         {
             this.textLoader = textLoader;
             this.messageHandler = messageHandler;
             this.referencedAssemblies = referencedAssemblies;
+            this.csharpGenerator = new CSharpGenerator();
+            this.templateParser = new TemplateParser(new Dictionary<char, IParserRule>
+            {
+                {'\\', new InterpolationRule(messageHandler, csharpGenerator) },
+                {'|', new InterpolateLineRule(messageHandler, csharpGenerator) },
+                {'=', new CallRule(messageHandler, csharpGenerator) },
+                {'#', new CommandRule(messageHandler, csharpGenerator) },
+            }, new PassThroughRule(messageHandler, csharpGenerator));
         }
 
         public Template Compile(string templateName)
