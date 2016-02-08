@@ -5,8 +5,13 @@ namespace Twofold.Parsing.Rules
 {
     public class CallRule : IParserRule
     {
-        public void Parse(string value, int beginIndex, int nonSpaceBeginIndex, int endIndex, ICodeGenerator codeGenerator, IMessageHandler messageHandler)
+        public void Parse(FileLine line, ICodeGenerator codeGenerator, IMessageHandler messageHandler)
         {
+            //var beginIndex = line.BeginIndexNonSpace + 1; //skip matched character
+            //var end = line.Text.IndexOfNot(beginIndex, line.EndIndex, CharExtensions.IsSpace);
+            //if (end == -1) {
+            //    return;
+            //}
             throw new NotImplementedException();
         }
     }

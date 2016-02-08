@@ -5,6 +5,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Reflection;
 using Twofold.Api;
+using Twofold.Parsing;
 using Twofold.Parsing.Rules;
 
 namespace Twofold
@@ -27,7 +28,6 @@ namespace Twofold
                 {'\\', new InterpolationRule() },
                 {'|', new InterpolateLineRule() },
                 {'=', new CallRule() },
-                {'#', new CommandRule() },
             }, new PassThroughRule());
         }
 

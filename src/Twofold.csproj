@@ -37,11 +37,14 @@
   <ItemGroup>
     <Compile Include="Api\ICodeGenerator.cs" />
     <Compile Include="Api\IParserRule.cs" />
+    <Compile Include="Api\SourceMapping\TextFilePosition.cs" />
+    <Compile Include="Api\SourceMapping\TextPosition.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Api\IMessageHandler.cs" />
     <Compile Include="Api\ITextLoader.cs" />
+    <Compile Include="Api\FileLine.cs" />
+    <Compile Include="Extensions\CharExtensions.cs" />
     <Compile Include="Parsing\Rules\CallRule.cs" />
-    <Compile Include="Parsing\Rules\CommandRule.cs" />
     <Compile Include="Parsing\Rules\InterpolateLineRule.cs" />
     <Compile Include="Parsing\Rules\InterpolationRule.cs" />
     <Compile Include="Parsing\Rules\PassThroughRule.cs" />

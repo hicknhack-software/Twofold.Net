@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
-using System.Globalization;
 using Twofold.Api;
+using Twofold.Api.SourceMapping;
 using Twofold.Extensions;
 
-namespace Twofold
+namespace Twofold.Parsing
 {
     public class TemplateParser
     {
@@ -18,31 +18,34 @@ namespace Twofold
 
         public void Parse(string name, string twofoldText, ICodeGenerator codeGenerator, IMessageHandler messageHandler)
         {
-            int beginIndex = 0;
-            while (beginIndex != twofoldText.Length) {
-                int firstNonSpaceIndex = twofoldText.IndexOfNot(beginIndex, twofoldText.Length, c => char.GetUnicodeCategory(c) == UnicodeCategory.SpaceSeparator || c == '\t');
-                if (firstNonSpaceIndex == -1) {
-                    firstNonSpaceIndex = twofoldText.Length;
+            FileLine fileLine = new FileLine(twofoldText, 0, 0, 0, new TextFilePosition(name, new TextPosition(0, 0)));
+
+            while (fileLine.BeginIndex != twofoldText.Length) {
+                ++fileLine.Position.Line;
+
+                fileLine.BeginIndexNonSpace = twofoldText.IndexOfNot(fileLine.BeginIndex, twofoldText.Length, CharExtensions.IsSpace);
+                if (fileLine.BeginIndexNonSpace == -1) {
+                    fileLine.BeginIndexNonSpace = twofoldText.Length;
                 }
 
-                int endIndex = twofoldText.IndexOf(firstNonSpaceIndex, twofoldText.Length, c => c == '\n' || c == '\r');
-                if (endIndex == -1) {
-                    endIndex = twofoldText.Length;
+                fileLine.EndIndex = twofoldText.IndexOf(fileLine.BeginIndexNonSpace, twofoldText.Length, CharExtensions.IsNewline);
+                if (fileLine.EndIndex == -1) {
+                    fileLine.EndIndex = twofoldText.Length;
                 }
 
                 IParserRule parserRule;
-                if (parseRules.TryGetValue(twofoldText[endIndex], out parserRule)) {
-                    parserRule.Parse(twofoldText, beginIndex, firstNonSpaceIndex, endIndex, codeGenerator, messageHandler);
+                if (parseRules.TryGetValue(twofoldText[fileLine.EndIndex], out parserRule)) {
+                    parserRule.Parse(fileLine, codeGenerator, messageHandler);
                 }
 
-                if (endIndex == twofoldText.Length) {
+                if (fileLine.EndIndex == twofoldText.Length) {
                     break;
                 }
 
-                char complementaryNewLineChar = ((twofoldText[endIndex] == '\n') ? '\r' : '\n');
-                beginIndex = twofoldText.IndexOfNot(endIndex + 1, twofoldText.Length, c => c == complementaryNewLineChar);
-                if (beginIndex == -1) {
-                    beginIndex = twofoldText.Length;
+                char complementaryNewLineChar = ((twofoldText[fileLine.EndIndex] == '\n') ? '\r' : '\n');
+                fileLine.BeginIndex = twofoldText.IndexOfNot(fileLine.EndIndex + 1, twofoldText.Length, c => c == complementaryNewLineChar);
+                if (fileLine.BeginIndex == -1) {
+                    fileLine.BeginIndex = twofoldText.Length;
                 }
             }
         }
