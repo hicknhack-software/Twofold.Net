@@ -3,13 +3,9 @@ using Twofold.Api;
 
 namespace Twofold.Parsing.Rules
 {
-    public class InterpolationRule : AbstractParserRule
+    public class InterpolationRule : IParserRule
     {
-        public InterpolationRule(IMessageHandler messageHandler)
-            : base(messageHandler)
-        { }
-
-        public override void Parse(string value, int beginIndex, int nonSpaceBeginIndex, int endIndex, ICodeGenerator codeGenerator)
+        public void Parse(string value, int beginIndex, int nonSpaceBeginIndex, int endIndex, ICodeGenerator codeGenerator, IMessageHandler messageHandler)
         {
             throw new NotImplementedException();
         }

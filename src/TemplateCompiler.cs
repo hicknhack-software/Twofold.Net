@@ -24,11 +24,11 @@ namespace Twofold
 
             this.templateParser = new TemplateParser(new Dictionary<char, IParserRule>
             {
-                {'\\', new InterpolationRule(messageHandler) },
-                {'|', new InterpolateLineRule(messageHandler) },
-                {'=', new CallRule(messageHandler) },
-                {'#', new CommandRule(messageHandler) },
-            }, new PassThroughRule(messageHandler));
+                {'\\', new InterpolationRule() },
+                {'|', new InterpolateLineRule() },
+                {'=', new CallRule() },
+                {'#', new CommandRule() },
+            }, new PassThroughRule());
         }
 
         public Template Compile(string templateName)
@@ -36,7 +36,7 @@ namespace Twofold
             // Load template and convert to CSharp
             TextLoaderResult textLoaderResult = textLoader.Load(templateName);
             var csharpGenerator = new TwofoldCSharpGenerator();
-            templateParser.Parse(textLoaderResult.Name, textLoaderResult.Text, csharpGenerator);
+            templateParser.Parse(textLoaderResult.Name, textLoaderResult.Text, csharpGenerator, messageHandler);
             string generatedCode = csharpGenerator.GeneratedCode();
 
             // Prepare compiler

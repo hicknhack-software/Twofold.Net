@@ -16,7 +16,7 @@ namespace Twofold
             this.fallbackRule = fallbackRule;
         }
 
-        public void Parse(string name, string twofoldText, ICodeGenerator codeGenerator)
+        public void Parse(string name, string twofoldText, ICodeGenerator codeGenerator, IMessageHandler messageHandler)
         {
             int beginIndex = 0;
             while (beginIndex != twofoldText.Length) {
@@ -32,7 +32,7 @@ namespace Twofold
 
                 IParserRule parserRule;
                 if (parseRules.TryGetValue(twofoldText[endIndex], out parserRule)) {
-                    parserRule.Parse(twofoldText, beginIndex, firstNonSpaceIndex, endIndex, codeGenerator);
+                    parserRule.Parse(twofoldText, beginIndex, firstNonSpaceIndex, endIndex, codeGenerator, messageHandler);
                 }
 
                 if (endIndex == twofoldText.Length) {
