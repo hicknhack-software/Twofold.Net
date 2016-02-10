@@ -5,6 +5,6 @@ namespace Twofold.Api.Compilation.Parsing
 {
     public interface ITemplateParser
     {
-        List<AsbtractCodeFragment> Parse(string name, string text);
+        List<AsbtractCodeFragment> Parse(string sourceName, string text);
     }
 }

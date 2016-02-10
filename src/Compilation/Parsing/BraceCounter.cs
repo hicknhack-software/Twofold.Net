@@ -25,7 +25,7 @@ namespace Twofold.Compilation.Parsing
         /// <exception cref="ArgumentOutOfRangeException">beginIndex is greater than endIndex.</exception>
         /// <exception cref="ArgumentOutOfRangeException">endIndex is greater than string length.</exception>
         /// <exception cref="InvalidOperationException">beginIndex must be on a ' order \ character.</exception>
-        static int FindQuoteEnd(int beginIndex, int endIndex, string text)
+        public static int FindQuoteEnd(int beginIndex, int endIndex, string text)
         {
             if (beginIndex > endIndex) {
                 throw new ArgumentException("beginIndex must be less equal endIndex.");

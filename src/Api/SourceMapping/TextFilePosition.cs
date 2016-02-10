@@ -4,27 +4,27 @@ namespace Twofold.Api.SourceMapping
 {
     public class TextFilePosition : TextPosition, IEquatable<TextFilePosition>
     {
-        public readonly string Name;
+        public readonly string SourceName;
 
-        public TextFilePosition(string name)
+        public TextFilePosition(string sourceName)
         {
-            Name = name;
+            SourceName = sourceName;
         }
 
-        public TextFilePosition(string name, TextPosition textPosition)
+        public TextFilePosition(string sourceName, TextPosition textPosition)
             : base(textPosition.Line, textPosition.Column)
         {
-            Name = name;
+            SourceName = sourceName;
         }
 
         public override int GetHashCode()
         {
-            return Name.GetHashCode() ^ base.GetHashCode();
+            return SourceName.GetHashCode() ^ base.GetHashCode();
         }
 
         public override string ToString()
         {
-            return $"{Name} L:{Line}, C:{Column}";
+            return $"{SourceName} L:{Line}, C:{Column}";
         }
 
         #region IEquatable
@@ -42,7 +42,7 @@ namespace Twofold.Api.SourceMapping
                 return false;
             }
             return base.Equals((TextPosition)other)
-                && (string.Compare(Name, other.Name) == 0)
+                && (string.Compare(SourceName, other.SourceName) == 0)
                 ;
         }
         #endregion

@@ -12,24 +12,20 @@ namespace Twofold
     {
         readonly ITextLoader templateLoader;
         readonly IMessageHandler messageHandler;
-        readonly StringCollection referencedAssemblies;
+        readonly StringCollection referencedAssemblies = new StringCollection();
 
-        public Engine(ITextLoader templateLoader, IMessageHandler messageHandler)
-            : this(templateLoader, messageHandler, new StringCollection())
-        { }
-
-        public Engine(ITextLoader templateLoader, IMessageHandler messageHandler, StringCollection referencedAssemblies)
+        public Engine(ITextLoader templateLoader, IMessageHandler messageHandler, params string[] referencedAssemblies)
         {
             this.templateLoader = templateLoader;
             this.messageHandler = messageHandler;
-            this.referencedAssemblies = referencedAssemblies;
+            this.referencedAssemblies.AddRange(referencedAssemblies);
         }
 
         public Template Compile(string templateName)
         {
             Template template = null;
             try {
-                var templateCompiler = this.CreateTemplateCompiler();
+                var templateCompiler = new TemplateCompiler(templateLoader, messageHandler, referencedAssemblies);
                 template = templateCompiler.Compile(templateName);
             }
             catch (FileNotFoundException) {
@@ -44,15 +40,10 @@ namespace Twofold
             return template;
         }
 
-        public Target Run<T>(Template template, T input, params Assembly[] assemblies) where T : class
+        public Target Run<T>(Template template, T input) where T : class
         {
-            return new Target();
-        }
-
-        TemplateCompiler CreateTemplateCompiler(params Assembly[] assemblies)
-        {
-            var templateCompiler = new TemplateCompiler(templateLoader, messageHandler, referencedAssemblies);
-            return templateCompiler;
+            Assembly assembly = template.Assembly;
+            return null;
         }
     }
 }

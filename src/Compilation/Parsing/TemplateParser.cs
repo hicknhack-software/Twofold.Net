@@ -20,12 +20,12 @@ namespace Twofold.Compilation.Parsing
             this.messageHandler = messageHandler;
         }
 
-        public List<AsbtractCodeFragment> Parse(string name, string text)
+        public List<AsbtractCodeFragment> Parse(string sourceName, string text)
         {
             List<AsbtractCodeFragment> fragments = new List<AsbtractCodeFragment>();
-            FileLine fileLine = new FileLine(text, 0, 0, 0, new TextFilePosition(name, new TextPosition(0, 0)));
+            FileLine fileLine = new FileLine(text, 0, 0, 0, new TextFilePosition(sourceName, new TextPosition(0, 0)));
 
-            while (fileLine.BeginIndex != text.Length) {
+            while (fileLine.BeginIndex < text.Length) {
                 ++fileLine.Position.Line;
 
                 fileLine.BeginIndexNonSpace = text.IndexOfNot(fileLine.BeginIndex, text.Length, CharExtensions.IsSpace);
@@ -39,10 +39,14 @@ namespace Twofold.Compilation.Parsing
                 }
 
                 IParserRule parserRule;
+                List<AsbtractCodeFragment> ruleFragments;
                 if (parseRules.TryGetValue(text[fileLine.EndIndex], out parserRule)) {
-                    List<AsbtractCodeFragment> ruleFragments = parserRule.Parse(fileLine, messageHandler);
-                    fragments.AddRange(ruleFragments);
+                    ruleFragments = parserRule.Parse(fileLine, messageHandler);
                 }
+                else {
+                    ruleFragments = fallbackRule.Parse(fileLine, messageHandler);
+                }
+                fragments.AddRange(ruleFragments);
 
                 if (fileLine.EndIndex == text.Length) {
                     break;

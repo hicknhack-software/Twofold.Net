@@ -31,39 +31,59 @@ namespace Twofold.Compilation
                 {'\\', new InterpolationRule() },
                 {'|', new InterpolateLineRule() },
                 {'=', new CallRule() },
+                {'#', new PreprocessorRule() },
             };
             this.templateParser = new TemplateParser(parserRules, new PassThroughRule(), this.messageHandler);
         }
 
         public Template Compile(string templateName)
         {
-            // Load template and convert to CSharp
-            TextLoaderResult textLoaderResult = textLoader.Load(templateName);
+            var templateNames = new Queue<string>();
+            templateNames.Enqueue(templateName);
 
-            // Generate Twofold enhanced CSharp code
-            string twofoldCSharpCode = this.GenerateCode(textLoaderResult.Name, textLoaderResult.Text);
+            var generatedTwofoldSources = new List<string>();
+
+            string mainTemplateFilename = null;
+            bool mainTemplateFilenameSet = false;
+
+            while (templateNames.Count > 0) {
+                // Load template
+                TextLoaderResult textLoaderResult = textLoader.Load(templateName);
+                if (mainTemplateFilenameSet == false) {
+                    mainTemplateFilename = textLoaderResult.Name;
+                    mainTemplateFilenameSet = true;
+                }
+
+                // Generate Twofold enhanced CSharp code from template
+                List<string> includedFiles;
+                string twofoldCSharpCode = this.GenerateCode(textLoaderResult.Name, textLoaderResult.Text, out includedFiles);
+                generatedTwofoldSources.Add(twofoldCSharpCode);
+            }
 
             // Compile CSharp code
-            Assembly twofoldAssembly = this.CompileCode(textLoaderResult.Name, twofoldCSharpCode);
+            Assembly twofoldAssembly = this.CompileCode(generatedTwofoldSources);
 
             // Check Twofold CSharp assembly for entry points/types
-            bool testResult = this.CheckAssembly(textLoaderResult.Name, twofoldAssembly);
+            bool testResult = this.CheckAssembly(mainTemplateFilename, twofoldAssembly);
             if (testResult == false) {
                 return null;
             }
 
-            return new Template(twofoldAssembly);
+            return new Template(mainTemplateFilename, twofoldAssembly);
         }
 
-        string GenerateCode(string name, string text)
+        string GenerateCode(string sourceName, string text, out List<string> includedFiles)
         {
             TextWriter codeWriter = new StringWriter();
-            var csharpGenerator = new CSharpGenerator(templateParser, codeWriter);
-            csharpGenerator.Generate(name, text);
+            includedFiles = new List<string>();
+
+            var csharpGenerator = new CSharpGenerator(templateParser, codeWriter, includedFiles);
+            csharpGenerator.Generate(sourceName, text);
+
             return codeWriter.ToString();
         }
 
-        Assembly CompileCode(string name, string text)
+        Assembly CompileCode(List<string> sources)
         {
             // Prepare compiler
             var parameters = new CompilerParameters();
@@ -77,11 +97,11 @@ namespace Twofold.Compilation
 
             // Compile
             var codeProvider = new CSharpCodeProvider();
-            CompilerResults compilerResults = codeProvider.CompileAssemblyFromSource(parameters, text);
+            CompilerResults compilerResults = codeProvider.CompileAssemblyFromSource(parameters, sources.ToArray());
             if (compilerResults.Errors.Count > 0) {
                 foreach (CompilerError compilerError in compilerResults.Errors) {
                     TraceLevel traceLevel = compilerError.IsWarning ? TraceLevel.Warning : TraceLevel.Error;
-                    var errorPosition = new TextFilePosition(name, new TextPosition(compilerError.Line, compilerError.Column));
+                    var errorPosition = new TextFilePosition(compilerError.FileName, new TextPosition(compilerError.Line, compilerError.Column));
                     messageHandler.CSharpMessage(traceLevel, errorPosition, compilerError.ToString());
                 }
             }

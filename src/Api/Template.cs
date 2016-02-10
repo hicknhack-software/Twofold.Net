@@ -4,10 +4,12 @@ namespace Twofold.Api
 {
     public class Template
     {
-        public Assembly @Assembly { get; private set; }
+        public readonly Assembly @Assembly;
+        public readonly string Name;
 
-        public Template(Assembly assembly)
+        public Template(string name, Assembly assembly)
         {
+            Name = name;
             Assembly = assembly;
         }
     }

@@ -13,7 +13,7 @@ namespace Twofold.Compilation.Parsing
         {
             List<AsbtractCodeFragment> fragments = new List<AsbtractCodeFragment>();
 
-            var beginIndexIndent = line.BeginIndexNonSpace + 1; //skip matched character
+            var beginIndexIndent = (line.BeginIndexNonSpace + 1); //skip matched character
             var index = line.Text.IndexOfNot(beginIndexIndent, line.EndIndex, CharExtensions.IsSpace);
             if (index == -1) {
                 index = line.EndIndex;

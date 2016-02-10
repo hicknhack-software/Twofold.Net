@@ -13,13 +13,19 @@ namespace Twofold.Api.Compilation.Generation
             this.parser = parser;
         }
 
-        public void Generate(string name, string text)
+        public void Generate(string sourceName, string text)
         {
-            List<AsbtractCodeFragment> fragments = parser.Parse(name, text);
+            this.PreGeneration(sourceName, text);
+
+            List<AsbtractCodeFragment> fragments = parser.Parse(sourceName, text);
             foreach (var codeFragment in fragments) {
                 switch (codeFragment.Type) {
                     case CodeFragmentTypes.OriginExpression:
                         this.Generate((OriginExpression)codeFragment);
+                        break;
+
+                    case CodeFragmentTypes.OriginPragma:
+                        this.Generate((OriginPragma)codeFragment);
                         break;
 
                     case CodeFragmentTypes.OriginScript:
@@ -50,10 +56,16 @@ namespace Twofold.Api.Compilation.Generation
                         throw new NotSupportedException($"CodeFragmentType '{codeFragment.Type.ToString()} is not supported.'");
                 }
             }
+
+            this.PostGeneration(sourceName, text);
         }
+
+        protected abstract void PreGeneration(string sourceName, string text);
+        protected abstract void PostGeneration(string sourceName, string text);
 
         protected abstract void Generate(OriginText fragment);
         protected abstract void Generate(OriginExpression fragment);
+        protected abstract void Generate(OriginPragma fragment);
         protected abstract void Generate(OriginScript fragment);
 
         protected abstract void Generate(TargetNewLine fragment);

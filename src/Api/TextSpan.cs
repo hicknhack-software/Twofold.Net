@@ -23,6 +23,15 @@ namespace Twofold.Api
 
         public bool IsEmpty { get { return (BeginIndex == EndIndex); } }
 
+        public TextSpan(string text)
+        {
+            if (text == null) {
+                throw new ArgumentNullException("text");
+            }
+            BeginIndex = 0;
+            EndIndex = text.Length;
+        }
+
         public TextSpan(int beginIndex, int endIndex, string text)
         {
             if (beginIndex > endIndex) {

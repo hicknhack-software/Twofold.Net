@@ -39,6 +39,7 @@
     <Compile Include="Api\Compilation\Generation\AsbtractCodeFragment.cs" />
     <Compile Include="Api\Compilation\Generation\CodeFragmentTypes.cs" />
     <Compile Include="Api\Compilation\Generation\OriginExpression.cs" />
+    <Compile Include="Api\Compilation\Generation\OriginPragma.cs" />
     <Compile Include="Api\Compilation\Generation\OriginScript.cs" />
     <Compile Include="Api\Compilation\Generation\OriginText.cs" />
     <Compile Include="Api\Compilation\Generation\TargetIndentation.cs" />
@@ -50,6 +51,7 @@
     <Compile Include="Api\SourceMapping\TextFilePosition.cs" />
     <Compile Include="Api\SourceMapping\TextPosition.cs" />
     <Compile Include="Api\TextSpan.cs" />
+    <Compile Include="Compilation\Parsing\PreprocessorRule.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Api\IMessageHandler.cs" />
     <Compile Include="Api\ITextLoader.cs" />
@@ -70,6 +72,10 @@
     <Compile Include="Compilation\TemplateCompiler.cs" />
     <Compile Include="Compilation\Parsing\TemplateParser.cs" />
     <Compile Include="Compilation\Generation\CSharpGenerator.cs" />
+    <Compile Include="Twofold.2.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Twofold.1.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

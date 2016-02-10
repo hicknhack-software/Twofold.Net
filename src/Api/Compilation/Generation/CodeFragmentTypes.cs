@@ -3,6 +3,7 @@
     public enum CodeFragmentTypes
     {
         OriginExpression,
+        OriginPragma,
         OriginScript,
         OriginText,
         TargetNewLine,
