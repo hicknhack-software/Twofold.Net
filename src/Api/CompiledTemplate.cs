@@ -20,15 +20,17 @@ using System.Reflection;
 
 namespace Twofold.Api
 {
-    public class Template
+    public class CompiledTemplate
     {
         public readonly Assembly @Assembly;
         public readonly string SourceName;
+        public readonly string MainTypeName;
 
-        public Template(string sourceName, Assembly assembly)
+        public CompiledTemplate(string sourceName, Assembly assembly, string mainTypeName)
         {
             SourceName = sourceName;
             Assembly = assembly;
+            MainTypeName = mainTypeName;
         }
     }
 }

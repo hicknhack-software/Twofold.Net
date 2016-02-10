@@ -17,9 +17,9 @@
  * limitations under the License.
  */
 using Microsoft.CSharp;
+using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -35,10 +35,10 @@ namespace Twofold.Compilation
     {
         readonly ITextLoader textLoader;
         readonly IMessageHandler messageHandler;
-        readonly StringCollection referencedAssemblies;
+        readonly List<string> referencedAssemblies;
         readonly TemplateParser templateParser;
 
-        public TemplateCompiler(ITextLoader textLoader, IMessageHandler messageHandler, StringCollection referencedAssemblies)
+        public TemplateCompiler(ITextLoader textLoader, IMessageHandler messageHandler, List<string> referencedAssemblies)
         {
             this.textLoader = textLoader;
             this.messageHandler = messageHandler;
@@ -54,7 +54,7 @@ namespace Twofold.Compilation
             this.templateParser = new TemplateParser(parserRules, new PassThroughRule(), this.messageHandler);
         }
 
-        public Template Compile(string templateName)
+        public CompiledTemplate Compile(string templateName)
         {
             var templateNames = new Queue<string>();
             templateNames.Enqueue(templateName);
@@ -82,15 +82,15 @@ namespace Twofold.Compilation
             }
 
             // Compile CSharp code
-            Assembly twofoldAssembly = this.CompileCode(generatedTwofoldSources);
+            Assembly assembly = this.CompileCode(generatedTwofoldSources);
 
             // Check Twofold CSharp assembly for entry points/types
-            bool testResult = this.CheckAssembly(mainTemplateFilename, twofoldAssembly);
-            if (testResult == false) {
+            string mainTypeName = this.DetectMainType(mainTemplateFilename, assembly);
+            if (string.IsNullOrEmpty(mainTypeName)) {
                 return null;
             }
 
-            return new Template(mainTemplateFilename, twofoldAssembly);
+            return new CompiledTemplate(mainTemplateFilename, assembly, mainTypeName);
         }
 
         string GenerateCode(string sourceName, string text, out List<string> includedFiles)
@@ -109,12 +109,9 @@ namespace Twofold.Compilation
             // Prepare compiler
             var parameters = new CompilerParameters();
             parameters.GenerateInMemory = true;
-            parameters.MainClass = "Twofold.Entry";
             parameters.ReferencedAssemblies.Add("System.dll");
             parameters.ReferencedAssemblies.Add("System.Core.dll");
-            foreach (string referencedAssembly in referencedAssemblies) {
-                parameters.ReferencedAssemblies.Add(referencedAssembly);
-            }
+            parameters.ReferencedAssemblies.AddRange(referencedAssemblies.ToArray());
 
             // Compile
             var codeProvider = new CSharpCodeProvider();
@@ -130,22 +127,26 @@ namespace Twofold.Compilation
             return compilerResults.CompiledAssembly;
         }
 
-        bool CheckAssembly(string name, Assembly assembly)
+        string DetectMainType(string sourceName, Assembly assembly)
         {
-            // Check for entry type and main method
-            var entryType = assembly.GetType("Twofold.Entry");
-            if (entryType == null) {
-                messageHandler.Message(TraceLevel.Error, $"Can't find Twofold entry class 'Twofold.Entry' in template '{name}'.");
-                return false;
+            Type mainType = null;
+            MethodInfo mainMethod = null;
+
+            Type[] exportedTypes = assembly.GetExportedTypes();
+            foreach (var exportedType in exportedTypes) {
+                mainMethod = exportedType.GetMethod(Constants.EntryMethodName, BindingFlags.Public | BindingFlags.Static);
+                if (mainMethod != null) {
+                    mainType = exportedType;
+                    break;
+                }
             }
 
-            var mainMethod = entryType.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
             if (mainMethod == null) {
-                messageHandler.Message(TraceLevel.Error, $"Can't find Twofold entry method 'Main' in template '{name}'.");
-                return false;
+                messageHandler.Message(TraceLevel.Error, $"Can't find static template entry method '{Constants.EntryMethodName}' in '{sourceName}'.");
+                return null;
             }
 
-            return true;
+            return mainType.AssemblyQualifiedName;
         }
     }
 }

@@ -52,6 +52,7 @@
     <Compile Include="Api\SourceMapping\TextPosition.cs" />
     <Compile Include="Api\TextSpan.cs" />
     <Compile Include="Compilation\Parsing\PreprocessorRule.cs" />
+    <Compile Include="Constants.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Api\IMessageHandler.cs" />
     <Compile Include="Api\ITextLoader.cs" />
@@ -66,7 +67,7 @@
     <Compile Include="Compilation\Generation\TextWriterController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Api\Template.cs" />
+    <Compile Include="Api\CompiledTemplate.cs" />
     <Compile Include="Api\TextLoaderResult.cs" />
     <Compile Include="Api\Target.cs" />
     <Compile Include="Compilation\TemplateCompiler.cs" />

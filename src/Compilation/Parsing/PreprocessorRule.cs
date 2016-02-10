@@ -67,6 +67,7 @@ namespace Twofold.Compilation.Parsing
                 }
                 index = (pragmaArgEndIndex + 1);
 
+                // Extract <Filename> from '"<Filename>"'
                 string pragmaArgument = line.Text.Substring(pragmaArgIndex + 1, (pragmaArgEndIndex - pragmaArgIndex - 1));
                 var textSpan = new TextSpan(line.BeginIndex, line.EndIndex, line.Text);
                 fragments.Add(new OriginPragma(pragmaName, pragmaArgument, line, textSpan));
