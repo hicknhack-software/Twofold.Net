@@ -16,9 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using Twofold.Api;
 using Twofold.Api.Compilation.Generation;
@@ -101,10 +99,6 @@ namespace Twofold.Compilation.Generation
         {
             var lineDirective = $"#line 1 \"{sourceName}\"";
             textWriterController.Append(new TextSpan(lineDirective), textWriter);
-        }
-
-        protected override void PostGeneration(string sourceName, string text)
-        {
         }
     }
 }

@@ -23,11 +23,11 @@ namespace Twofold.Api
     public class Template
     {
         public readonly Assembly @Assembly;
-        public readonly string Name;
+        public readonly string SourceName;
 
-        public Template(string name, Assembly assembly)
+        public Template(string sourceName, Assembly assembly)
         {
-            Name = name;
+            SourceName = sourceName;
             Assembly = assembly;
         }
     }

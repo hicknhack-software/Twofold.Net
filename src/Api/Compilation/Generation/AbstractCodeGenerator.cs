@@ -78,8 +78,8 @@ namespace Twofold.Api.Compilation.Generation
             this.PostGeneration(sourceName, text);
         }
 
-        protected abstract void PreGeneration(string sourceName, string text);
-        protected abstract void PostGeneration(string sourceName, string text);
+        protected virtual void PreGeneration(string sourceName, string text) { }
+        protected virtual void PostGeneration(string sourceName, string text) { }
 
         protected abstract void Generate(OriginText fragment);
         protected abstract void Generate(OriginExpression fragment);

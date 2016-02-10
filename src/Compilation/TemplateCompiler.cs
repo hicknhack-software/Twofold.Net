@@ -76,6 +76,9 @@ namespace Twofold.Compilation
                 List<string> includedFiles;
                 string twofoldCSharpCode = this.GenerateCode(textLoaderResult.Name, textLoaderResult.Text, out includedFiles);
                 generatedTwofoldSources.Add(twofoldCSharpCode);
+                foreach (var includedFile in includedFiles) {
+                    templateNames.Enqueue(includedFile);
+                }
             }
 
             // Compile CSharp code
