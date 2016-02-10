@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Twofold.Api;
+using Twofold.Compilation;
 
 namespace Twofold
 {
@@ -26,7 +27,7 @@ namespace Twofold
 
         public Template Compile(string templateName)
         {
-            Template template = new Template();
+            Template template = null;
             try {
                 var templateCompiler = this.CreateTemplateCompiler();
                 template = templateCompiler.Compile(templateName);
