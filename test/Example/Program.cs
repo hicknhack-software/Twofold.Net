@@ -16,7 +16,9 @@ namespace Example
             Engine engine = new Engine(app, app);
 
             CompiledTemplate compiledTemplate = engine.Compile("ExampleMain");
-            Target target = engine.Run(compiledTemplate, "HicknHack Software GmbH");
+            if (compiledTemplate != null) {
+                Target target = engine.Run(compiledTemplate, "HicknHack Software GmbH");
+            }
 
             Console.ReadKey();
         }

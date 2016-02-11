@@ -24,7 +24,7 @@ using Twofold.Compilation.Parsing;
 
 namespace Twofold.Compilation.Generation
 {
-    public class CSharpGenerator : AbstractCodeGenerator
+    public sealed class CSharpGenerator : AbstractCodeGenerator
     {
         readonly TextWriterController textWriterController;
         readonly TextWriter textWriter;

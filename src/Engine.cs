@@ -51,12 +51,6 @@ namespace Twofold
                 var templateCompiler = new TemplateCompiler(templateLoader, messageHandler, referencedAssemblies);
                 compiledTemplate = templateCompiler.Compile(templateName);
             }
-            catch (FileNotFoundException) {
-                messageHandler.Message(TraceLevel.Error, $"Template '{templateName}' not found.");
-            }
-            catch (IOException) {
-                messageHandler.Message(TraceLevel.Error, $"IO error while reading template '{templateName}'.");
-            }
             catch (Exception ex) {
                 messageHandler.Message(TraceLevel.Error, ex.ToString());
             }
@@ -70,8 +64,13 @@ namespace Twofold
         /// <param name="compiledTemplate">The compiled Twofold template.</param>
         /// <param name="input">The parameter which is given to the template main method.</param>
         /// <returns>The generated target text or null if an error occured.</returns>
+        /// <exception cref="ArgumentNullException">If compiledTemplate is null.</exception>
         public Target Run<T>(CompiledTemplate compiledTemplate, T input) where T : class
         {
+            if (compiledTemplate == null) {
+                throw new ArgumentNullException("compiledTemplate");
+            }
+
             Assembly assembly = compiledTemplate.Assembly;
             Type mainType = assembly.GetType(compiledTemplate.MainTypeName);
             if (mainType == null) {

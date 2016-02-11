@@ -18,10 +18,10 @@
  */
 namespace Twofold.Api
 {
-    public struct Template
+    public class Template
     {
-        public string SourceName { get; private set; }
-        public string Text { get; private set; }
+        public readonly string SourceName;
+        public readonly string Text;
 
         public Template(string sourceName, string text)
         {
