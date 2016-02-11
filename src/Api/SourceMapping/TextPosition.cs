@@ -27,12 +27,12 @@ namespace Twofold.Api.SourceMapping
 
         public bool IsValid
         {
-            get { return Line != 0 && Column != 0; }
+            get { return (line != 0) && (column != 0); }
         }
         public int Line
         {
             get { return line; }
-            set
+            private set
             {
                 if (value < 1) {
                     throw new ArgumentOutOfRangeException("Line", "Must be greater than zero.");
@@ -43,7 +43,7 @@ namespace Twofold.Api.SourceMapping
         public int Column
         {
             get { return column; }
-            set
+            private set
             {
                 if (value < 1) {
                     throw new ArgumentOutOfRangeException("Column", "Must be greater than zero.");
@@ -80,7 +80,7 @@ namespace Twofold.Api.SourceMapping
 
         public override string ToString()
         {
-            return $"L:{Line}, C:{Column}";
+            return $"L:{line}, C:{column}";
         }
 
         #region IEquatable
@@ -97,8 +97,8 @@ namespace Twofold.Api.SourceMapping
             if (other == null) {
                 return false;
             }
-            return Line == other.Line
-                && Column == other.Column
+            return line == other.line
+                && column == other.column
                 ;
         }
         #endregion

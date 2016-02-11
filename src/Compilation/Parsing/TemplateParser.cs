@@ -41,24 +41,21 @@ namespace Twofold.Compilation.Parsing
         public List<AsbtractCodeFragment> Parse(string sourceName, string text)
         {
             List<AsbtractCodeFragment> fragments = new List<AsbtractCodeFragment>();
-            FileLine fileLine = new FileLine(text, 0, 0, 0, new TextFilePosition(sourceName, new TextPosition(0, 0)));
 
-            while (fileLine.BeginIndex < text.Length) {
-                ++fileLine.Position.Line;
+            int index = 0;
+            int nonSpaceIndex = 0;
+            int endIndex = 0;
+            int line = 1;
+            while (index < text.Length) {
 
-                fileLine.BeginIndexNonSpace = text.IndexOfNot(fileLine.BeginIndex, text.Length, CharExtensions.IsSpace);
-                if (fileLine.BeginIndexNonSpace == -1) {
-                    fileLine.BeginIndexNonSpace = text.Length;
-                }
-
-                fileLine.EndIndex = text.IndexOf(fileLine.BeginIndexNonSpace, text.Length, CharExtensions.IsNewline);
-                if (fileLine.EndIndex == -1) {
-                    fileLine.EndIndex = text.Length;
-                }
+                nonSpaceIndex = text.IndexOfNot(index, text.Length, CharExtensions.IsSpace);
+                endIndex = text.IndexOf(nonSpaceIndex, text.Length, CharExtensions.IsNewline);
 
                 IParserRule parserRule;
                 List<AsbtractCodeFragment> ruleFragments;
-                if (parseRules.TryGetValue(text[fileLine.EndIndex], out parserRule)) {
+                var textFilePostion = new TextFilePosition(sourceName, new TextPosition(line, 1));
+                var fileLine = new FileLine(text, index, nonSpaceIndex, endIndex, textFilePostion);
+                if (parseRules.TryGetValue(text[nonSpaceIndex], out parserRule)) {
                     ruleFragments = parserRule.Parse(fileLine, messageHandler);
                 }
                 else {
@@ -66,15 +63,14 @@ namespace Twofold.Compilation.Parsing
                 }
                 fragments.AddRange(ruleFragments);
 
-                if (fileLine.EndIndex == text.Length) {
+                if (endIndex == text.Length) {
                     break;
                 }
 
-                char complementaryNewLineChar = ((text[fileLine.EndIndex] == '\n') ? '\r' : '\n');
-                fileLine.BeginIndex = text.IndexOfNot(fileLine.EndIndex + 1, text.Length, c => c == complementaryNewLineChar);
-                if (fileLine.BeginIndex == -1) {
-                    fileLine.BeginIndex = text.Length;
-                }
+                char complementaryNewLineChar = ((text[endIndex] == '\n') ? '\r' : '\n');
+                index = text.IndexOfNot(endIndex + 1, text.Length, c => c == complementaryNewLineChar);
+
+                ++line;
             }
             return fragments;
         }

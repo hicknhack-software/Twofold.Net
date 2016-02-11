@@ -39,11 +39,11 @@ namespace Twofold.Compilation.Parsing
         /// <summary>
         /// Finds index of closing quote. Search must begin on index of opening quote.
         /// </summary>
-        /// <returns>Index of end quote or -1 if nothing found.</returns>
+        /// <returns>Index of end quote or endIndex if nothing found.</returns>
         /// <exception cref="ArgumentOutOfRangeException">beginIndex is greater than endIndex.</exception>
         /// <exception cref="ArgumentOutOfRangeException">endIndex is greater than string length.</exception>
         /// <exception cref="InvalidOperationException">beginIndex must be on a ' order \ character.</exception>
-        public static int FindQuoteEnd(int beginIndex, int endIndex, string text)
+        public static int FindQuoteEnd(string text, int beginIndex, int endIndex)
         {
             if (beginIndex > endIndex) {
                 throw new ArgumentException("beginIndex must be less equal endIndex.");
@@ -59,7 +59,7 @@ namespace Twofold.Compilation.Parsing
             ++beginIndex;
             while (beginIndex < endIndex) {
                 var index = text.IndexOf(beginIndex, endIndex, (ch) => ch == quoteChar);
-                if (index == -1) { // Invalid, not found
+                if (index == endIndex) { // Invalid, not found
                     return index;
                 }
 
@@ -67,20 +67,20 @@ namespace Twofold.Compilation.Parsing
                     return index;
                 }
 
-                beginIndex = index + 1;
+                beginIndex = (index + 1);
             }
 
-            return -1;
+            return endIndex;
         }
 
         /// <summary>
         /// Finds index of closing brace. Search must begin on index of opening brace.
         /// </summary>
-        /// <returns>Index of closing brace or -1 if nothing found.</returns>
+        /// <returns>Index of closing brace or endIndex if nothing found.</returns>
         /// <exception cref="ArgumentOutOfRangeException">beginIndex is greater than endIndex.</exception>
         /// <exception cref="ArgumentOutOfRangeException">endIndex is greater than string length.</exception>
         /// <exception cref="InvalidOperationException">beginIndex must be on a { character.</exception>
-        public static int MatchBraces(int beginIndex, int endIndex, string text)
+        public static int MatchBraces(string text, int beginIndex, int endIndex)
         {
             if (beginIndex > endIndex) {
                 throw new ArgumentException("beginIndex must be less equal endIndex.");
@@ -97,8 +97,8 @@ namespace Twofold.Compilation.Parsing
             while (beginIndex < endIndex) {
 
                 var index = text.IndexOf(beginIndex, endIndex, BraceCounter.IsBraceOrQuote);
-                if (index == -1) { // Error, nothing found
-                    return -1;
+                if (index == endIndex) { // Error, nothing found
+                    return endIndex;
                 }
 
                 switch (text[index]) {
@@ -108,7 +108,7 @@ namespace Twofold.Compilation.Parsing
 
                     case '}':
                         if (depth == 0) { //Error, found closing brace before any opening
-                            return -1;
+                            return endIndex;
                         }
                         --depth;
                         if (depth == 0) {
@@ -117,16 +117,16 @@ namespace Twofold.Compilation.Parsing
                         break;
 
                     default:
-                        index = BraceCounter.FindQuoteEnd(index, endIndex, text);
-                        if (index == -1) { //Error, found no closing quote
-                            return index;
+                        index = BraceCounter.FindQuoteEnd(text, index, endIndex);
+                        if (index == endIndex) { //Error, found no closing quote
+                            return endIndex;
                         }
                         break;
                 }
-                beginIndex = index + 1;
+                beginIndex = (index + 1);
             }
 
-            return -1;
+            return endIndex;
         }
     }
 

@@ -16,6 +16,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using System;
 using System.IO;
 
 namespace Twofold.Extensions
@@ -24,8 +25,18 @@ namespace Twofold.Extensions
     {
         /// <exception cref="ArgumentOutOfRangeException">beginIndex is greater than endIndex.</exception>
         /// <exception cref="ArgumentOutOfRangeException">endIndex is greater than string length.</exception>
+        /// <exception cref="ArgumentNullException">text is null.</exception>
         public static void Write(this TextWriter textWriter, int beginIndex, int endIndex, string text)
         {
+            if (beginIndex > endIndex) {
+                throw new ArgumentOutOfRangeException("beginIndex", "Must be less equal than endIndex.");
+            }
+            if (text == null) {
+                throw new ArgumentNullException("text");
+            }
+            if (endIndex > text.Length) {
+                throw new ArgumentOutOfRangeException("endIndex", "endIndex must be less equal string length.");
+            }
             var writeText = text.Substring(beginIndex, endIndex - beginIndex);
             textWriter.Write(writeText);
         }

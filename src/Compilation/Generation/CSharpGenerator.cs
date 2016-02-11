@@ -99,6 +99,7 @@ namespace Twofold.Compilation.Generation
         {
             var lineDirective = $"#line 1 \"{sourceName}\"";
             textWriterController.Append(new TextSpan(lineDirective), textWriter);
+            textWriterController.AppendNewLine(textWriter);
         }
     }
 }

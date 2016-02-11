@@ -91,7 +91,7 @@ namespace Twofold.Compilation.Generation
                 }
 
                 var lineBreakIndex = textSpan.OriginalText.IndexOf(index, textSpan.EndIndex, ch => ch == '\n');
-                if (lineBreakIndex == -1) { // No line break found
+                if (lineBreakIndex == textSpan.EndIndex) { // No line break found
                     writer.Write(index, textSpan.EndIndex, textSpan.OriginalText);
                     index += (textSpan.EndIndex - index);
                 }
@@ -112,10 +112,10 @@ namespace Twofold.Compilation.Generation
         /// </summary>
         public void AppendNewLine(TextWriter writer)
         {
-            writer.WriteAsync(NewLine);
+            writer.Write(NewLine);
             ++Line;
             currentLineEmpty = true;
-            Column = 0;
+            Column = 1;
         }
     }
 }

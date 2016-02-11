@@ -16,17 +16,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 namespace Twofold.Api
 {
-    public struct TextLoaderResult
+    public interface ITemplateLoader
     {
-        public string Name { get; private set; }
-        public string Text { get; private set; }
-
-        public TextLoaderResult(string name, string text)
-        {
-            Name = name;
-            Text = text;
-        }
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="IOException"></exception>
+        Template Load(string name);
     }
+
 }

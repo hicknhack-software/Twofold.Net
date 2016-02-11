@@ -16,20 +16,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using System;
 using Twofold.Api.SourceMapping;
 
 namespace Twofold.Api
 {
-    public class FileLine
+    public struct FileLine
     {
-        public string Text { get; private set; }
-        public int BeginIndex { get; set; }
-        public int BeginIndexNonSpace { get; set; }
-        public int EndIndex { get; set; }
-        public TextFilePosition Position { get; set; }
+        public readonly string Text;
+        public readonly int BeginIndex;
+        public readonly int BeginIndexNonSpace;
+        public readonly int EndIndex;
+        public readonly TextFilePosition Position;
 
         public FileLine(string text, int beginIndex, int beginIndexNonSpace, int endIndex, TextFilePosition position)
         {
+            if (text == null) {
+                throw new ArgumentNullException("text");
+            }
+            if (beginIndex > beginIndexNonSpace) {
+                throw new ArgumentOutOfRangeException("beginIndex", "Must be less equal than beginIndexNonSpace.");
+            }
+            if (beginIndexNonSpace > endIndex) {
+                throw new ArgumentOutOfRangeException("beginIndexNonSpace", "Must be less equal than endIndex.");
+            }
+            if (endIndex > text.Length) {
+                throw new ArgumentOutOfRangeException("endIndex", "endIndex must be less equal string length.");
+            }
+
             Text = text;
             BeginIndex = beginIndex;
             BeginIndexNonSpace = beginIndexNonSpace;

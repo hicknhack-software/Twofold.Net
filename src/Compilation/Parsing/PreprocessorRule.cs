@@ -16,7 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
 using System.Collections.Generic;
 using Twofold.Api;
 using Twofold.Api.Compilation.Generation;
@@ -37,7 +36,7 @@ namespace Twofold.Compilation.Parsing
                 // Find 'pragma'
                 string preproDirective;
                 index = this.MatchNextToken(line.Text, index, line.EndIndex, out preproDirective);
-                if (index == -1) {
+                if (index == line.EndIndex) {
                     break;
                 }
                 if (string.Compare(preproDirective, "pragma") != 0) {
@@ -47,7 +46,7 @@ namespace Twofold.Compilation.Parsing
                 // Find 'include'
                 string pragmaName;
                 index = this.MatchNextToken(line.Text, index, line.EndIndex, out pragmaName);
-                if (index == -1) {
+                if (index == line.EndIndex) {
                     break;
                 }
                 if (string.Compare(pragmaName, "include") != 0) {
@@ -56,26 +55,26 @@ namespace Twofold.Compilation.Parsing
 
                 // Find '"<Filename>"'
                 var pragmaArgIndex = line.Text.IndexOf(index, line.EndIndex, ch => ch == '"');
-                if (pragmaArgIndex == -1) {
+                if (pragmaArgIndex == line.EndIndex) {
                     break;
                 }
-                index = (pragmaArgIndex + 1);
 
-                var pragmaArgEndIndex = BraceCounter.FindQuoteEnd(index, line.EndIndex, line.Text);
-                if (pragmaArgEndIndex == -1) {
+                var pragmaArgEndIndex = BraceCounter.FindQuoteEnd(line.Text, index, line.EndIndex);
+                if (pragmaArgEndIndex == line.EndIndex) {
                     break;
                 }
-                index = (pragmaArgEndIndex + 1);
 
                 // Extract <Filename> from '"<Filename>"'
                 string pragmaArgument = line.Text.Substring(pragmaArgIndex + 1, (pragmaArgEndIndex - pragmaArgIndex - 1));
-                var textSpan = new TextSpan(line.BeginIndex, line.EndIndex, line.Text);
+                var textSpan = new TextSpan(line.Text, line.BeginIndex, line.EndIndex);
                 fragments.Add(new OriginPragma(pragmaName, pragmaArgument, line, textSpan));
+
+                index = (pragmaArgEndIndex + 1);
 
                 break;
             }
 
-            fragments.Add(new OriginScript(line, new TextSpan(line.BeginIndex, line.EndIndex, line.Text)));
+            fragments.Add(new OriginScript(line, new TextSpan(line.Text, line.BeginIndex, line.EndIndex)));
             return fragments;
         }
 
@@ -85,15 +84,9 @@ namespace Twofold.Compilation.Parsing
 
             int index = beginIndex;
             var tokenIndex = text.IndexOfNot(index, endIndex, CharExtensions.IsSpace);
-            if (tokenIndex == -1) {
-                return -1;
-            }
             index = (tokenIndex + 1);
 
             var tokenEndIndex = text.IndexOf(index, endIndex, CharExtensions.IsSpace);
-            if (tokenIndex == -1) {
-                return -1;
-            }
             index = (tokenEndIndex + 1);
 
             token = text.Substring(tokenIndex, (tokenEndIndex - tokenIndex));

@@ -33,15 +33,12 @@ namespace Twofold.Compilation.Parsing
 
             var beginIndexIndent = (line.BeginIndexNonSpace + 1); //skip matched character
             var index = line.Text.IndexOfNot(beginIndexIndent, line.EndIndex, CharExtensions.IsSpace);
-            if (index == -1) {
-                index = line.EndIndex;
-            }
-            fragments.Add(new TargetIndentation(line, new TextSpan(beginIndexIndent, index, line.Text)));
+            fragments.Add(new TargetIndentation(line, new TextSpan(line.Text, beginIndexIndent, index)));
 
             var endIndex = index;
             while (index < line.EndIndex) {
                 index = line.Text.IndexOf(index, line.EndIndex, (ch) => ch == '#');
-                if (index == -1) { // reached line end
+                if (index == line.EndIndex) { // reached line end
                     break;
                 }
 
@@ -52,18 +49,18 @@ namespace Twofold.Compilation.Parsing
 
                 switch (line.Text[expressionBeginIndex]) {
                     case '#':
-                        fragments.Add(new OriginText(line, new TextSpan(expressionBeginIndex, expressionBeginIndex + 1, line.Text)));
+                        fragments.Add(new OriginText(line, new TextSpan(line.Text, expressionBeginIndex, expressionBeginIndex + 1)));
                         index = endIndex = expressionBeginIndex + 1;
                         continue;
 
                     case '{':
-                        var expressionEndIndex = BraceCounter.MatchBraces(expressionBeginIndex, line.EndIndex, line.Text);
-                        if (expressionEndIndex == -1) {
+                        var expressionEndIndex = BraceCounter.MatchBraces(line.Text, expressionBeginIndex, line.EndIndex);
+                        if (expressionEndIndex == line.EndIndex) {
                             endIndex = line.EndIndex;
                             messageHandler.TemplateMessage(TraceLevel.Error, line.Position, "Missing a closing '}'.");
                             break;
                         }
-                        fragments.Add(new OriginExpression(line, new TextSpan(expressionBeginIndex + 1, expressionEndIndex - 1, line.Text)));
+                        fragments.Add(new OriginExpression(line, new TextSpan(line.Text, expressionBeginIndex + 1, expressionEndIndex - 1)));
                         index = endIndex = expressionEndIndex + 1;
                         continue;
 
@@ -72,7 +69,7 @@ namespace Twofold.Compilation.Parsing
                         continue;
                 }
             }
-            fragments.Add(new OriginText(line, new TextSpan(endIndex, line.EndIndex, line.Text)));
+            fragments.Add(new OriginText(line, new TextSpan(line.Text, endIndex, line.EndIndex)));
             return fragments;
         }
     }

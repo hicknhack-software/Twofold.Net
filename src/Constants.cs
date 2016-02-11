@@ -21,6 +21,6 @@ namespace Twofold
 {
     public static class Constants
     {
-        public const string EntryMethodName = "Main";
+        public const string EntryMethodName = "TwofoldMain";
     }
 }

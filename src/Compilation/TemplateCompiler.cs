@@ -33,12 +33,12 @@ namespace Twofold.Compilation
 {
     public class TemplateCompiler
     {
-        readonly ITextLoader textLoader;
+        readonly ITemplateLoader textLoader;
         readonly IMessageHandler messageHandler;
         readonly List<string> referencedAssemblies;
         readonly TemplateParser templateParser;
 
-        public TemplateCompiler(ITextLoader textLoader, IMessageHandler messageHandler, List<string> referencedAssemblies)
+        public TemplateCompiler(ITemplateLoader textLoader, IMessageHandler messageHandler, List<string> referencedAssemblies)
         {
             this.textLoader = textLoader;
             this.messageHandler = messageHandler;
@@ -66,15 +66,16 @@ namespace Twofold.Compilation
 
             while (templateNames.Count > 0) {
                 // Load template
-                TextLoaderResult textLoaderResult = textLoader.Load(templateName);
+                string loadTemplateName = templateNames.Dequeue();
+                Template textLoaderResult = textLoader.Load(loadTemplateName);
                 if (mainTemplateFilenameSet == false) {
-                    mainTemplateFilename = textLoaderResult.Name;
+                    mainTemplateFilename = textLoaderResult.SourceName;
                     mainTemplateFilenameSet = true;
                 }
 
                 // Generate Twofold enhanced CSharp code from template
                 List<string> includedFiles;
-                string twofoldCSharpCode = this.GenerateCode(textLoaderResult.Name, textLoaderResult.Text, out includedFiles);
+                string twofoldCSharpCode = this.GenerateCode(textLoaderResult.SourceName, textLoaderResult.Text, out includedFiles);
                 generatedTwofoldSources.Add(twofoldCSharpCode);
                 foreach (var includedFile in includedFiles) {
                     templateNames.Enqueue(includedFile);
@@ -109,6 +110,9 @@ namespace Twofold.Compilation
             // Prepare compiler
             var parameters = new CompilerParameters();
             parameters.GenerateInMemory = true;
+            parameters.TreatWarningsAsErrors = true;
+            parameters.IncludeDebugInformation = false;
+            parameters.CompilerOptions = "/langversion:5 /nowarn:1633"; //1633 - Unknown pragma
             parameters.ReferencedAssemblies.Add("System.dll");
             parameters.ReferencedAssemblies.Add("System.Core.dll");
             parameters.ReferencedAssemblies.AddRange(referencedAssemblies.ToArray());
@@ -119,8 +123,12 @@ namespace Twofold.Compilation
             if (compilerResults.Errors.Count > 0) {
                 foreach (CompilerError compilerError in compilerResults.Errors) {
                     TraceLevel traceLevel = compilerError.IsWarning ? TraceLevel.Warning : TraceLevel.Error;
-                    var errorPosition = new TextFilePosition(compilerError.FileName, new TextPosition(compilerError.Line, compilerError.Column));
-                    messageHandler.CSharpMessage(traceLevel, errorPosition, compilerError.ToString());
+                    var textPosition = new TextPosition();
+                    if (compilerError.Line != 0 && compilerError.Column != 0) {
+                        textPosition = new TextPosition(compilerError.Line, compilerError.Column);
+                    }
+                    var errorPosition = new TextFilePosition(compilerError.FileName, textPosition);
+                    messageHandler.CSharpMessage(traceLevel, errorPosition, $"{compilerError.ErrorNumber}: {compilerError.ErrorText}");
                 }
             }
 
@@ -146,7 +154,7 @@ namespace Twofold.Compilation
                 return null;
             }
 
-            return mainType.AssemblyQualifiedName;
+            return mainType.FullName;
         }
     }
 }

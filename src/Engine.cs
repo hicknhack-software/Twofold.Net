@@ -28,11 +28,11 @@ namespace Twofold
 {
     public class Engine
     {
-        readonly ITextLoader templateLoader;
+        readonly ITemplateLoader templateLoader;
         readonly IMessageHandler messageHandler;
         readonly List<string> referencedAssemblies = new List<string>();
 
-        public Engine(ITextLoader templateLoader, IMessageHandler messageHandler, params string[] referencedAssemblies)
+        public Engine(ITemplateLoader templateLoader, IMessageHandler messageHandler, params string[] referencedAssemblies)
         {
             this.templateLoader = templateLoader;
             this.messageHandler = messageHandler;
@@ -52,10 +52,10 @@ namespace Twofold
                 compiledTemplate = templateCompiler.Compile(templateName);
             }
             catch (FileNotFoundException) {
-                messageHandler.Message(TraceLevel.Error, $"Template '{templateName}' not found");
+                messageHandler.Message(TraceLevel.Error, $"Template '{templateName}' not found.");
             }
             catch (IOException) {
-                messageHandler.Message(TraceLevel.Error, $"IO error while reading template '{templateName}'");
+                messageHandler.Message(TraceLevel.Error, $"IO error while reading template '{templateName}'.");
             }
             catch (Exception ex) {
                 messageHandler.Message(TraceLevel.Error, ex.ToString());
@@ -92,12 +92,12 @@ namespace Twofold
             if (parameterCountInvalid == false) {
                 ParameterInfo param = parameters[0];
                 parameterInvalid |= param.HasDefaultValue;
-                parameterInvalid |= (!param.IsIn);
+                parameterInvalid |= param.IsIn;
                 parameterInvalid |= param.IsLcid;
                 parameterInvalid |= param.IsOptional;
                 parameterInvalid |= param.IsOut;
                 parameterInvalid |= param.IsRetval;
-                parameterInvalid |= param.ParameterType.IsAssignableFrom(typeof(T));
+                parameterInvalid |= (param.ParameterType.IsAssignableFrom(typeof(T)) == false);
             }
 
             if (parameterCountInvalid || parameterInvalid) {

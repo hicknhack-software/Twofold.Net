@@ -48,15 +48,17 @@ namespace Twofold.Api
             }
             BeginIndex = 0;
             EndIndex = text.Length;
+            OriginalText = text;
+            Text = text;
         }
 
-        public TextSpan(int beginIndex, int endIndex, string text)
+        public TextSpan(string text, int beginIndex, int endIndex)
         {
-            if (beginIndex > endIndex) {
-                throw new ArgumentOutOfRangeException("beginIndex", "Must be less equal than endIndex.");
-            }
             if (text == null) {
                 throw new ArgumentNullException("text");
+            }
+            if (beginIndex > endIndex) {
+                throw new ArgumentOutOfRangeException("beginIndex", "Must be less equal than endIndex.");
             }
             if (endIndex > text.Length) {
                 throw new ArgumentOutOfRangeException("endIndex", "endIndex must be less equal string length.");

@@ -40,7 +40,7 @@ namespace Twofold.Extensions
                 }
                 ++index;
             }
-            return -1;
+            return endIndex;
         }
 
         /// <exception cref="ArgumentOutOfRangeException">beginIndex is greater than endIndex.</exception>
@@ -61,7 +61,7 @@ namespace Twofold.Extensions
                 }
                 ++index;
             }
-            return -1;
+            return endIndex;
         }
     }
 }
