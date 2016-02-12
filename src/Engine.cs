@@ -23,6 +23,7 @@ using System.IO;
 using System.Reflection;
 using Twofold.Api;
 using Twofold.Compilation;
+using Twofold.Execution;
 
 namespace Twofold
 {
@@ -46,14 +47,8 @@ namespace Twofold
         /// <returns>The compiled template or null if an error occured.</returns>
         public CompiledTemplate Compile(string templateName)
         {
-            CompiledTemplate compiledTemplate = null;
-            try {
-                var templateCompiler = new TemplateCompiler(templateLoader, messageHandler, referencedAssemblies);
-                compiledTemplate = templateCompiler.Compile(templateName);
-            }
-            catch (Exception ex) {
-                messageHandler.Message(TraceLevel.Error, ex.ToString());
-            }
+            var templateCompiler = new TemplateCompiler(templateLoader, messageHandler, referencedAssemblies);
+            CompiledTemplate compiledTemplate = templateCompiler.Compile(templateName);
             return compiledTemplate;
         }
 
@@ -65,54 +60,11 @@ namespace Twofold
         /// <param name="input">The parameter which is given to the template main method.</param>
         /// <returns>The generated target text or null if an error occured.</returns>
         /// <exception cref="ArgumentNullException">If compiledTemplate is null.</exception>
-        public Target Run<T>(CompiledTemplate compiledTemplate, T input) where T : class
+        public Target Run<T>(CompiledTemplate compiledTemplate, T input)
         {
-            if (compiledTemplate == null) {
-                throw new ArgumentNullException("compiledTemplate");
-            }
-
-            Assembly assembly = compiledTemplate.Assembly;
-            Type mainType = assembly.GetType(compiledTemplate.MainTypeName);
-            if (mainType == null) {
-                messageHandler.Message(TraceLevel.Error, $"Can't find main type in '{compiledTemplate.SourceName}'.");
-                return null;
-            }
-
-            MethodInfo mainMethod = mainType.GetMethod(Constants.EntryMethodName, BindingFlags.Public | BindingFlags.Static);
-            if (mainMethod == null) {
-                messageHandler.Message(TraceLevel.Error, $"Can't find main method in '{compiledTemplate.SourceName}'.");
-                return null;
-            }
-
-            // Validate parameters of main method
-            ParameterInfo[] parameters = mainMethod.GetParameters();
-            bool parameterCountInvalid = (parameters.Length != 1);
-            bool parameterInvalid = false;
-            if (parameterCountInvalid == false) {
-                ParameterInfo param = parameters[0];
-                parameterInvalid |= param.HasDefaultValue;
-                parameterInvalid |= param.IsIn;
-                parameterInvalid |= param.IsLcid;
-                parameterInvalid |= param.IsOptional;
-                parameterInvalid |= param.IsOut;
-                parameterInvalid |= param.IsRetval;
-                parameterInvalid |= (param.ParameterType.IsAssignableFrom(typeof(T)) == false);
-            }
-
-            if (parameterCountInvalid || parameterInvalid) {
-                messageHandler.Message(TraceLevel.Error, $"Template main method in '{compiledTemplate.SourceName}' has invalid signature. Expected 'public static {Constants.EntryMethodName}({typeof(T).ToString()})'.");
-                return null;
-            }
-
-            // Invoke main method
-            try {
-                mainMethod.Invoke(null, new object[] { input });
-            }
-            catch (Exception ex) {
-                messageHandler.Message(TraceLevel.Error, $"An exception occured in '{compiledTemplate.SourceName}': {ex.ToString()}");
-            }
-
-            return new Target();
+            var templateExecuter = new TemplateExecuter(messageHandler);
+            Target target = templateExecuter.Execute(compiledTemplate, input);
+            return target;
         }
     }
 }

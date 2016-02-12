@@ -57,6 +57,7 @@
     <Compile Include="Api\IMessageHandler.cs" />
     <Compile Include="Api\ITemplateLoader.cs" />
     <Compile Include="Api\FileLine.cs" />
+    <Compile Include="Execution\TemplateExecuter.cs" />
     <Compile Include="Extensions\CharExtensions.cs" />
     <Compile Include="Extensions\TextWriterExtensions.cs" />
     <Compile Include="Compilation\Parsing\BraceCounter.cs" />

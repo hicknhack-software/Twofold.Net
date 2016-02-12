@@ -19,5 +19,14 @@
 namespace Twofold.Api
 {
     public class Target
-    { }
+    {
+        public readonly string SourceName;
+        public readonly string GeneratedText;
+
+        public Target(string sourceName, string generatedText)
+        {
+            SourceName = sourceName;
+            GeneratedText = generatedText;
+        }
+    }
 }

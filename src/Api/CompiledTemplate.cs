@@ -25,12 +25,14 @@ namespace Twofold.Api
         public readonly Assembly @Assembly;
         public readonly string SourceName;
         public readonly string MainTypeName;
+        public readonly string TargetCode;
 
-        public CompiledTemplate(string sourceName, Assembly assembly, string mainTypeName)
+        public CompiledTemplate(string sourceName, Assembly assembly, string mainTypeName, string targetCode)
         {
             SourceName = sourceName;
             Assembly = assembly;
             MainTypeName = mainTypeName;
+            TargetCode = targetCode;
         }
     }
 }

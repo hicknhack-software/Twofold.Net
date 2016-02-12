@@ -134,7 +134,7 @@ namespace Twofold.Compilation
                 return null;
             }
 
-            return new CompiledTemplate(mainTemplateFilename, assembly, mainTypeName);
+            return new CompiledTemplate(mainTemplateFilename, assembly, mainTypeName, string.Join(Environment.NewLine, generatedTwofoldSources));
         }
 
         string GenerateCode(string sourceName, string sourceText, out List<string> includedFiles)
@@ -170,9 +170,8 @@ namespace Twofold.Compilation
             parameters.GenerateInMemory = true;
             parameters.TreatWarningsAsErrors = true;
             parameters.IncludeDebugInformation = false;
-            parameters.CompilerOptions = "/langversion:5 /nowarn:1633"; //1633 - Unknown pragma
-            parameters.ReferencedAssemblies.Add("System.dll");
-            parameters.ReferencedAssemblies.Add("System.Core.dll");
+            parameters.CompilerOptions = string.Join(" ", Constants.CompilerOptions);
+            parameters.ReferencedAssemblies.AddRange(Constants.CompilerAssemblies);
             parameters.ReferencedAssemblies.AddRange(referencedAssemblies.ToArray());
 
             // Compile

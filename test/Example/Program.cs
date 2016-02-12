@@ -18,6 +18,9 @@ namespace Example
             CompiledTemplate compiledTemplate = engine.Compile("ExampleMain");
             if (compiledTemplate != null) {
                 Target target = engine.Run(compiledTemplate, "HicknHack Software GmbH");
+                if(target != null) {
+                    Console.WriteLine(target.GeneratedText);
+                }
             }
 
             Console.ReadKey();
