@@ -18,9 +18,9 @@
  */
 using System;
 using System.Collections.Generic;
-using Twofold.Interface.Compilation.Parsing;
+using Twofold.Interface.Compilation;
 
-namespace Twofold.Interface.Compilation.Generation
+namespace Twofold.Interface.Compilation
 {
     public abstract class AbstractCodeGenerator
     {

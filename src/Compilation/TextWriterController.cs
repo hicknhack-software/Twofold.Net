@@ -21,7 +21,7 @@ using System.IO;
 using Twofold.Interface;
 using Twofold.Extensions;
 
-namespace Twofold.Compilation.Generation
+namespace Twofold.Compilation
 {
     public class TextWriterController
     {

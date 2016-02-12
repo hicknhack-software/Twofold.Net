@@ -51,7 +51,7 @@
     <Compile Include="Interface\SourceMapping\TextFilePosition.cs" />
     <Compile Include="Interface\SourceMapping\TextPosition.cs" />
     <Compile Include="Interface\TextSpan.cs" />
-    <Compile Include="Compilation\Parsing\PreprocessorRule.cs" />
+    <Compile Include="Compilation\PreprocessorRule.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Engine.cs" />
     <Compile Include="Interface\IMessageHandler.cs" />
@@ -60,20 +60,20 @@
     <Compile Include="Execution\TemplateExecuter.cs" />
     <Compile Include="Extensions\CharExtensions.cs" />
     <Compile Include="Extensions\TextWriterExtensions.cs" />
-    <Compile Include="Compilation\Parsing\BraceCounter.cs" />
-    <Compile Include="Compilation\Parsing\CallRule.cs" />
-    <Compile Include="Compilation\Parsing\InterpolateLineRule.cs" />
-    <Compile Include="Compilation\Parsing\InterpolationRule.cs" />
-    <Compile Include="Compilation\Parsing\PassThroughRule.cs" />
-    <Compile Include="Compilation\Generation\TextWriterController.cs" />
+    <Compile Include="Compilation\BraceCounter.cs" />
+    <Compile Include="Compilation\CallRule.cs" />
+    <Compile Include="Compilation\InterpolateLineRule.cs" />
+    <Compile Include="Compilation\InterpolationRule.cs" />
+    <Compile Include="Compilation\PassThroughRule.cs" />
+    <Compile Include="Compilation\TextWriterController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Interface\CompiledTemplate.cs" />
     <Compile Include="Interface\Template.cs" />
     <Compile Include="Interface\Target.cs" />
     <Compile Include="Compilation\TemplateCompiler.cs" />
-    <Compile Include="Compilation\Parsing\TemplateParser.cs" />
-    <Compile Include="Compilation\Generation\CSharpGenerator.cs" />
+    <Compile Include="Compilation\TemplateParser.cs" />
+    <Compile Include="Compilation\CSharpGenerator.cs" />
     <Compile Include="Twofold.2.cs" />
   </ItemGroup>
   <ItemGroup>

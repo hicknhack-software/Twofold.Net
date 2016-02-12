@@ -19,10 +19,10 @@
 using System.Collections.Generic;
 using System.IO;
 using Twofold.Interface;
-using Twofold.Interface.Compilation.Generation;
-using Twofold.Compilation.Parsing;
+using Twofold.Interface.Compilation;
+using Twofold.Compilation;
 
-namespace Twofold.Compilation.Generation
+namespace Twofold.Compilation
 {
     public sealed class CSharpGenerator : AbstractCodeGenerator
     {

@@ -18,12 +18,11 @@
  */
 using System.Collections.Generic;
 using Twofold.Interface;
-using Twofold.Interface.Compilation.Generation;
-using Twofold.Interface.Compilation.Parsing;
+using Twofold.Interface.Compilation;
 using Twofold.Interface.SourceMapping;
 using Twofold.Extensions;
 
-namespace Twofold.Compilation.Parsing
+namespace Twofold.Compilation
 {
     public sealed class TemplateParser : ITemplateParser
     {

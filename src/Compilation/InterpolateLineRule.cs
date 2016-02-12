@@ -18,9 +18,9 @@
  */
 using System.Collections.Generic;
 using Twofold.Interface;
-using Twofold.Interface.Compilation.Generation;
+using Twofold.Interface.Compilation;
 
-namespace Twofold.Compilation.Parsing
+namespace Twofold.Compilation
 {
     public class InterpolateLineRule : InterpolationRule
     {

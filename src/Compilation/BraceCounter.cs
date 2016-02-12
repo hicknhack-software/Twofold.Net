@@ -19,7 +19,7 @@
 using System;
 using Twofold.Extensions;
 
-namespace Twofold.Compilation.Parsing
+namespace Twofold.Compilation
 {
     public class BraceCounter
     {

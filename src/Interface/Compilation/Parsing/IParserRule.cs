@@ -17,9 +17,9 @@
  * limitations under the License.
  */
 using System.Collections.Generic;
-using Twofold.Interface.Compilation.Generation;
+using Twofold.Interface.Compilation;
 
-namespace Twofold.Interface.Compilation.Parsing
+namespace Twofold.Interface.Compilation
 {
     public interface IParserRule
     {

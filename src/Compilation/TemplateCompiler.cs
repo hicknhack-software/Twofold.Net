@@ -24,10 +24,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Twofold.Interface;
-using Twofold.Interface.Compilation.Parsing;
+using Twofold.Interface.Compilation;
 using Twofold.Interface.SourceMapping;
-using Twofold.Compilation.Generation;
-using Twofold.Compilation.Parsing;
 
 namespace Twofold.Compilation
 {
