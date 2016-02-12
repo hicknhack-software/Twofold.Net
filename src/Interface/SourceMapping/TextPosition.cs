@@ -73,6 +73,16 @@ namespace Twofold.Interface.SourceMapping
             Column = column;
         }
 
+        /// <summary>
+        /// Creates a TextPosition.
+        /// </summary>
+        /// <param name="textPosition">The source TextPosition.</param>
+        public TextPosition(TextPosition textPosition)
+        {
+            line = textPosition.line;
+            column = textPosition.column;
+        }
+
         public override int GetHashCode()
         {
             return Line.GetHashCode() ^ Column.GetHashCode();

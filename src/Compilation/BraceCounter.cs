@@ -21,7 +21,7 @@ using Twofold.Extensions;
 
 namespace Twofold.Compilation
 {
-    public class BraceCounter
+    internal class BraceCounter
     {
         static bool IsBraceOrQuote(char ch)
         {

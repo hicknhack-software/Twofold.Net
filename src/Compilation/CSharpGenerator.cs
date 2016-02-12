@@ -20,20 +20,20 @@ using System.Collections.Generic;
 using System.IO;
 using Twofold.Interface;
 using Twofold.Interface.Compilation;
-using Twofold.Compilation;
+using Twofold.TextRendering;
 
 namespace Twofold.Compilation
 {
-    public sealed class CSharpGenerator : AbstractCodeGenerator
+    internal sealed class CSharpGenerator : AbstractCodeGenerator
     {
-        readonly TextWriterController textWriterController;
+        readonly TextRenderer textWriterController;
         readonly TextWriter textWriter;
         readonly List<string> includedFiles;
 
         public CSharpGenerator(TemplateParser templateParser, TextWriter textWriter, List<string> includedFiles)
             : base(templateParser)
         {
-            this.textWriterController = new TextWriterController();
+            this.textWriterController = new TextRenderer();
             this.textWriter = textWriter;
             this.includedFiles = includedFiles;
         }
@@ -68,12 +68,14 @@ namespace Twofold.Compilation
             textWriterController.AppendNewLine(textWriter);
         }
 
+        //
         protected override void Generate(OriginExpression fragment)
         {
             textWriterController.Append(fragment.Span, textWriter);
             textWriterController.AppendNewLine(textWriter);
         }
-
+        
+        //
         protected override void Generate(OriginText fragment)
         {
             textWriterController.Append(fragment.Span, textWriter);
@@ -100,6 +102,11 @@ namespace Twofold.Compilation
             var lineDirective = $"#line 1 \"{sourceName}\"";
             textWriterController.Append(new TextSpan(lineDirective), textWriter);
             textWriterController.AppendNewLine(textWriter);
+
+            foreach (string targetCodeUsing in Constants.TargetCodeUsings) {
+                textWriterController.Append(new TextSpan(targetCodeUsing), textWriter);
+                textWriterController.AppendNewLine(textWriter);
+            }
         }
     }
 }

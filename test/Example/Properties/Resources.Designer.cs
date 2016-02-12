@@ -67,9 +67,10 @@ namespace Example.Properties {
         ///{
         ///	public static class Helper
         ///	{
-        ///		public static void DoSth()
+        ///		public static int Answer()
         ///		{
-        ///			int i = 0;
+        ///			int i = 42;
+        ///			return i;
         ///		}
         ///	}
         ///}.
@@ -81,17 +82,22 @@ namespace Example.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to using System;
+        ///   Looks up a localized string similar to #pragma include &quot;ExampleInclude&quot;
+        ///
+        ///using System;
         ///
         ///namespace Example
         ///{
-        ///	public class ExampleRenderer
-        ///	{
-        ///		public static void Main(string text)
-        ///		{
-        ///			System.Console.WriteLine(text);
-        ///		}
-        ///	}
+        ///    public class ExampleRenderer
+        ///    {
+        ///        public static void TwofoldMain(string text)
+        ///        {
+        ///            System.Console.WriteLine(&quot;The answer is: {0} {1}&quot;, Helper.Answer(), text);
+        ///            for (int i = 0; i &lt; 10; ++i) {
+        ///																							| Item #{i.ToString()} in the list.
+        ///			}
+        ///        }
+        ///    }
         ///}.
         /// </summary>
         internal static string ExampleMain {

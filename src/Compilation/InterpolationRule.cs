@@ -24,7 +24,7 @@ using Twofold.Extensions;
 
 namespace Twofold.Compilation
 {
-    public class InterpolationRule : IParserRule
+    internal class InterpolationRule : IParserRule
     {
         public List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)
         {

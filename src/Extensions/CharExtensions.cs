@@ -20,7 +20,7 @@ using System.Globalization;
 
 namespace Twofold.Extensions
 {
-    public static class CharExtensions
+    internal static class CharExtensions
     {
         public static bool IsSpace(char ch)
         {

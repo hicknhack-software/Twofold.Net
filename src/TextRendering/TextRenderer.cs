@@ -17,41 +17,30 @@
  * limitations under the License.
  */
 using System;
+using System.Collections.Generic;
 using System.IO;
-using Twofold.Interface;
 using Twofold.Extensions;
+using Twofold.Interface;
 
-namespace Twofold.Compilation
+namespace Twofold.TextRendering
 {
-    public class TextWriterController
+    internal class TextRenderer
     {
         // Fields
-        string indentation = "";
         string newLine = Environment.NewLine;
         bool currentLineEmpty = true;
+        Stack<string> indentationQueue = new Stack<string>();
 
         /// <summary>
         /// Current line
         /// </summary>
         public int Line { get; private set; } = 1;
+
         /// <summary>
         /// Current column. 0 means invalid Column.
         /// </summary>
         public int Column { get; private set; } = 1;
-        /// <summary>
-        /// String to use for indentation
-        /// </summary>
-        public string Indentation
-        {
-            get { return indentation; }
-            set
-            {
-                if (value == null) {
-                    throw new ArgumentNullException("Indentation");
-                }
-                indentation = value;
-            }
-        }
+
         /// <summary>
         /// New line signature either \n or \r\n.
         /// </summary>
@@ -68,7 +57,7 @@ namespace Twofold.Compilation
                 if (string.Compare(value, "\n") != 0 && string.Compare(value, "\r\n") != 0) {
                     throw new ArgumentException("New line must either be \r or \r\n.", "NewLine");
                 }
-                indentation = value;
+                newLine = value;
             }
         }
 
@@ -81,6 +70,8 @@ namespace Twofold.Compilation
             if (textSpan.IsEmpty) {
                 return;
             }
+
+            string indentation = (indentationQueue.Count > 0) ? indentationQueue.Peek() : "";
 
             var index = textSpan.BeginIndex;
             while (index < textSpan.EndIndex) {
@@ -116,6 +107,31 @@ namespace Twofold.Compilation
             ++Line;
             currentLineEmpty = true;
             Column = 1;
+        }
+
+        /// <summary>
+        /// Pushes an indentation level.
+        /// </summary>
+        /// <param name="indentation">The indentation text.</param>
+        public void PushIndentation(string indentation)
+        {
+            if (indentation == null) {
+                throw new ArgumentNullException("indentation");
+            }
+
+            string fullIndentation = indentation;
+            if (indentationQueue.Count > 0) {
+                fullIndentation = fullIndentation.Insert(0, indentationQueue.Peek());
+            }
+            indentationQueue.Push(fullIndentation);
+        }
+
+        /// <summary>
+        /// Pops the current indentation level.
+        /// </summary>
+        public void PopIndentation()
+        {
+            indentationQueue.Pop();
         }
     }
 }

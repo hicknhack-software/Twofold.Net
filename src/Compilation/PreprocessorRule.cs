@@ -23,7 +23,7 @@ using Twofold.Extensions;
 
 namespace Twofold.Compilation
 {
-    public class PreprocessorRule : IParserRule
+    internal class PreprocessorRule : IParserRule
     {
         public List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)
         {

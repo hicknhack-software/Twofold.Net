@@ -55,22 +55,23 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Twofold.csproj">
+    <ProjectReference Include="..\..\src\Twofold.Engine.csproj">
       <Project>{cac873f4-d95d-46d3-a176-9afa87406acd}</Project>
-      <Name>Twofold</Name>
+      <Name>Twofold.Engine</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ExampleInclude.txt" />
+    <None Include="Resources\ExampleInclude.tf" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\ExampleMain.txt" />
+    <None Include="Resources\ExampleMain.tf" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

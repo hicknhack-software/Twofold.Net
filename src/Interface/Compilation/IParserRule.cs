@@ -17,12 +17,11 @@
  * limitations under the License.
  */
 using System.Collections.Generic;
-using Twofold.Interface.Compilation;
 
 namespace Twofold.Interface.Compilation
 {
-    public interface ITemplateParser
+    public interface IParserRule
     {
-        List<AsbtractCodeFragment> Parse(string sourceName, string text);
+        List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler);
     }
 }

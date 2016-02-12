@@ -18,7 +18,6 @@
  */
 using System;
 using System.Collections.Generic;
-using Twofold.Interface.Compilation;
 
 namespace Twofold.Interface.Compilation
 {

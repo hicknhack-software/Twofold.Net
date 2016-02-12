@@ -29,7 +29,7 @@ using Twofold.Interface.SourceMapping;
 
 namespace Twofold.Compilation
 {
-    public sealed class TemplateCompiler
+    internal sealed class TemplateCompiler
     {
         readonly ITemplateLoader textLoader;
         readonly IMessageHandler messageHandler;
@@ -171,6 +171,7 @@ namespace Twofold.Compilation
             parameters.CompilerOptions = string.Join(" ", Constants.CompilerOptions);
             parameters.ReferencedAssemblies.AddRange(Constants.CompilerAssemblies);
             parameters.ReferencedAssemblies.AddRange(referencedAssemblies.ToArray());
+            parameters.ReferencedAssemblies.Add(typeof(TemplateCompiler).Assembly.Location);
 
             // Compile
             var codeProvider = new CSharpCodeProvider();

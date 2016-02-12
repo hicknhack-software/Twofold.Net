@@ -24,7 +24,7 @@ using Twofold.Extensions;
 
 namespace Twofold.Compilation
 {
-    public sealed class TemplateParser : ITemplateParser
+    internal sealed class TemplateParser : ITemplateParser
     {
         readonly Dictionary<char, IParserRule> parseRules = new Dictionary<char, IParserRule>();
         readonly IParserRule fallbackRule;

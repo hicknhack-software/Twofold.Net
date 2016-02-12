@@ -35,19 +35,21 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interface\Compilation\Generation\AbstractCodeGenerator.cs" />
-    <Compile Include="Interface\Compilation\Generation\AsbtractCodeFragment.cs" />
-    <Compile Include="Interface\Compilation\Generation\CodeFragmentTypes.cs" />
-    <Compile Include="Interface\Compilation\Generation\OriginExpression.cs" />
-    <Compile Include="Interface\Compilation\Generation\OriginPragma.cs" />
-    <Compile Include="Interface\Compilation\Generation\OriginScript.cs" />
-    <Compile Include="Interface\Compilation\Generation\OriginText.cs" />
-    <Compile Include="Interface\Compilation\Generation\TargetIndentation.cs" />
-    <Compile Include="Interface\Compilation\Generation\TargetNewLine.cs" />
-    <Compile Include="Interface\Compilation\Generation\TargetPopIndentation.cs" />
-    <Compile Include="Interface\Compilation\Generation\TargetPushIndentation.cs" />
-    <Compile Include="Interface\Compilation\Parsing\IParserRule.cs" />
-    <Compile Include="Interface\Compilation\Parsing\ITemplateParser.cs" />
+    <Compile Include="TextRendering\TargetRenderer.cs" />
+    <Compile Include="TextRendering\TextRenderer.cs" />
+    <Compile Include="Interface\Compilation\AbstractCodeGenerator.cs" />
+    <Compile Include="Interface\Compilation\AsbtractCodeFragment.cs" />
+    <Compile Include="Interface\Compilation\CodeFragmentTypes.cs" />
+    <Compile Include="Interface\Compilation\OriginExpression.cs" />
+    <Compile Include="Interface\Compilation\OriginPragma.cs" />
+    <Compile Include="Interface\Compilation\OriginScript.cs" />
+    <Compile Include="Interface\Compilation\OriginText.cs" />
+    <Compile Include="Interface\Compilation\TargetIndentation.cs" />
+    <Compile Include="Interface\Compilation\TargetNewLine.cs" />
+    <Compile Include="Interface\Compilation\TargetPopIndentation.cs" />
+    <Compile Include="Interface\Compilation\TargetPushIndentation.cs" />
+    <Compile Include="Interface\Compilation\IParserRule.cs" />
+    <Compile Include="Interface\Compilation\ITemplateParser.cs" />
     <Compile Include="Interface\SourceMapping\TextFilePosition.cs" />
     <Compile Include="Interface\SourceMapping\TextPosition.cs" />
     <Compile Include="Interface\TextSpan.cs" />
@@ -65,7 +67,6 @@
     <Compile Include="Compilation\InterpolateLineRule.cs" />
     <Compile Include="Compilation\InterpolationRule.cs" />
     <Compile Include="Compilation\PassThroughRule.cs" />
-    <Compile Include="Compilation\TextWriterController.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Interface\CompiledTemplate.cs" />

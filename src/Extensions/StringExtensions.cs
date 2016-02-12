@@ -20,7 +20,7 @@ using System;
 
 namespace Twofold.Extensions
 {
-    public static class StringExtensions
+    internal static class StringExtensions
     {
         /// <exception cref="ArgumentOutOfRangeException">beginIndex is greater than endIndex.</exception>
         /// <exception cref="ArgumentOutOfRangeException">endIndex is greater than string length.</exception>

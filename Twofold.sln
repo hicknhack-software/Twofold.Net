@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twofold", "src\Twofold.csproj", "{CAC873F4-D95D-46D3-A176-9AFA87406ACD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twofold.Engine", "src\Twofold.Engine.csproj", "{CAC873F4-D95D-46D3-A176-9AFA87406ACD}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "test\Example\Example.csproj", "{DEDFE4B4-0B4A-4E59-8E32-F8DA8F712DC3}"
 EndProject

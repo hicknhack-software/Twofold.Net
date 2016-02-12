@@ -21,7 +21,7 @@ using System.IO;
 
 namespace Twofold.Extensions
 {
-    public static class TextWriterExtensions
+    internal static class TextWriterExtensions
     {
         /// <exception cref="ArgumentOutOfRangeException">beginIndex is greater than endIndex.</exception>
         /// <exception cref="ArgumentOutOfRangeException">endIndex is greater than string length.</exception>

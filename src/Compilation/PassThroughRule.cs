@@ -22,7 +22,7 @@ using Twofold.Interface.Compilation;
 
 namespace Twofold.Compilation
 {
-    public class PassThroughRule : IParserRule
+    internal class PassThroughRule : IParserRule
     {
         public List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)
         {

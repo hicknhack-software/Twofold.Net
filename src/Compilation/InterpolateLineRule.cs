@@ -22,7 +22,7 @@ using Twofold.Interface.Compilation;
 
 namespace Twofold.Compilation
 {
-    public class InterpolateLineRule : InterpolationRule
+    internal class InterpolateLineRule : InterpolationRule
     {
         public new List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)
         {

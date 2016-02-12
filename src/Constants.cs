@@ -19,7 +19,7 @@
 
 namespace Twofold
 {
-    public static class Constants
+    internal static class Constants
     {
         public static readonly string[] CompilerOptions = {
             "/langversion:5",
@@ -31,7 +31,10 @@ namespace Twofold
             "System.Core.dll",
         };
 
-
         public const string EntryMethodName = "TwofoldMain";
+
+        public static readonly string[] TargetCodeUsings = {
+            "using Twofold.TextRendering;",
+        };
     }
 }

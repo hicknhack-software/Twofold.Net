@@ -30,7 +30,7 @@ namespace Twofold.Interface.SourceMapping
         }
 
         public TextFilePosition(string sourceName, TextPosition textPosition)
-            : base(textPosition.Line, textPosition.Column)
+            : base(textPosition)
         {
             SourceName = sourceName;
         }

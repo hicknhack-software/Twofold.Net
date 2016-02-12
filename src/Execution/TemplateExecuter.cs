@@ -18,12 +18,14 @@
  */
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reflection;
 using Twofold.Interface;
+using Twofold.TextRendering;
 
 namespace Twofold.Execution
 {
-    public class TemplateExecuter
+    internal class TemplateExecuter
     {
         readonly IMessageHandler messageHandler;
 
@@ -72,14 +74,18 @@ namespace Twofold.Execution
             }
 
             // Invoke main method
+            TextWriter textWriter = new StringWriter();
             try {
+                TargetRenderer.SetTextWriter(textWriter);
                 mainMethod.Invoke(null, new object[] { input });
             }
             catch (Exception ex) {
                 messageHandler.Message(TraceLevel.Error, $"An exception occured in '{compiledTemplate.SourceName}': {ex.ToString()}");
             }
 
-            return new Target(compiledTemplate.SourceName, compiledTemplate.TargetCode);
+            var target = new Target(compiledTemplate.SourceName, textWriter.ToString());
+            textWriter.Dispose();
+            return target;
         }
     }
 }

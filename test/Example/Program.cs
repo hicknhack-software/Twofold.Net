@@ -16,9 +16,11 @@ namespace Example
             Engine engine = new Engine(app, app);
 
             CompiledTemplate compiledTemplate = engine.Compile("ExampleMain");
+            Console.WriteLine(compiledTemplate.TargetCode);
+
             if (compiledTemplate != null) {
                 Target target = engine.Run(compiledTemplate, "HicknHack Software GmbH");
-                if(target != null) {
+                if (target != null) {
                     Console.WriteLine(target.GeneratedText);
                 }
             }
@@ -26,6 +28,7 @@ namespace Example
             Console.ReadKey();
         }
 
+        #region ITemplateLoader
         public Template Load(string name)
         {
             var text = Resources.ResourceManager.GetString(name);
@@ -36,6 +39,7 @@ namespace Example
             Template template = new Template(name, text);
             return template;
         }
+        #endregion
 
         #region IMessageHandler
         public void CSharpMessage(TraceLevel level, TextFilePosition position, string text)
