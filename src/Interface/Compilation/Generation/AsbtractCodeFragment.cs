@@ -16,13 +16,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Collections.Generic;
-using Twofold.Api.Compilation.Generation;
-
-namespace Twofold.Api.Compilation.Parsing
+namespace Twofold.Interface.Compilation.Generation
 {
-    public interface IParserRule
+    public abstract class AsbtractCodeFragment
     {
-        List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler);
+        public readonly CodeFragmentTypes Type;
+        public readonly FileLine Line;
+        public readonly TextSpan Span;
+
+        public AsbtractCodeFragment(CodeFragmentTypes type, FileLine line, TextSpan span)
+        {
+            Type = type;
+            Line = line;
+            Span = span;
+        }
     }
 }

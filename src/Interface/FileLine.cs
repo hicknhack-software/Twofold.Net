@@ -17,9 +17,9 @@
  * limitations under the License.
  */
 using System;
-using Twofold.Api.SourceMapping;
+using Twofold.Interface.SourceMapping;
 
-namespace Twofold.Api
+namespace Twofold.Interface
 {
     public struct FileLine
     {

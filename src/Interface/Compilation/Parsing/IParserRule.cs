@@ -16,12 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Twofold.Api.Compilation.Generation
+using System.Collections.Generic;
+using Twofold.Interface.Compilation.Generation;
+
+namespace Twofold.Interface.Compilation.Parsing
 {
-    public class OriginExpression : AsbtractCodeFragment
+    public interface IParserRule
     {
-        public OriginExpression(FileLine line, TextSpan span)
-            : base(CodeFragmentTypes.OriginExpression, line, span)
-        { }
+        List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler);
     }
 }

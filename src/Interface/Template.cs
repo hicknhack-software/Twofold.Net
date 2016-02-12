@@ -16,13 +16,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Collections.Generic;
-using Twofold.Api.Compilation.Generation;
-
-namespace Twofold.Api.Compilation.Parsing
+namespace Twofold.Interface
 {
-    public interface ITemplateParser
+    public class Template
     {
-        List<AsbtractCodeFragment> Parse(string sourceName, string text);
+        public readonly string SourceName;
+        public readonly string Text;
+
+        public Template(string sourceName, string text)
+        {
+            SourceName = sourceName;
+            Text = text;
+        }
     }
 }

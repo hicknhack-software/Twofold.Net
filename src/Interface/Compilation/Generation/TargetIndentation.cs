@@ -16,12 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Twofold.Api.Compilation.Generation
+namespace Twofold.Interface.Compilation.Generation
 {
-    public class TargetNewLine : AsbtractCodeFragment
+    public class TargetIndentation : AsbtractCodeFragment
     {
-        public TargetNewLine(FileLine line, TextSpan span)
-            : base(CodeFragmentTypes.TargetNewLine, line, span)
+        public TargetIndentation(FileLine line, TextSpan span)
+            : base(CodeFragmentTypes.TargetIndentation, line, span)
         { }
     }
 }

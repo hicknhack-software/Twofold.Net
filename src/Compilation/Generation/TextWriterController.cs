@@ -18,7 +18,7 @@
  */
 using System;
 using System.IO;
-using Twofold.Api;
+using Twofold.Interface;
 using Twofold.Extensions;
 
 namespace Twofold.Compilation.Generation

@@ -16,17 +16,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Twofold.Api
-{
-    public class Target
-    {
-        public readonly string SourceName;
-        public readonly string GeneratedText;
 
-        public Target(string sourceName, string generatedText)
-        {
-            SourceName = sourceName;
-            GeneratedText = generatedText;
-        }
+namespace Twofold.Interface
+{
+    public interface ITemplateLoader
+    {
+        /// <exception cref="FileNotFoundException"></exception>
+        /// <exception cref="IOException"></exception>
+        Template Load(string name);
     }
+
 }

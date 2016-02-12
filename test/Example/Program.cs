@@ -3,8 +3,8 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using Twofold;
-using Twofold.Api;
-using Twofold.Api.SourceMapping;
+using Twofold.Interface;
+using Twofold.Interface.SourceMapping;
 
 namespace Example
 {

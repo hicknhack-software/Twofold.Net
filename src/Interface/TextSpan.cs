@@ -18,7 +18,7 @@
  */
 using System;
 
-namespace Twofold.Api
+namespace Twofold.Interface
 {
     public class TextSpan
     {

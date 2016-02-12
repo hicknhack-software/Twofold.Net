@@ -16,18 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Twofold.Api.Compilation.Generation
+namespace Twofold.Interface.Compilation.Generation
 {
-    public class OriginPragma : AsbtractCodeFragment
+    public class TargetNewLine : AsbtractCodeFragment
     {
-        public readonly string Name;
-        public readonly string Argument;
-
-        public OriginPragma(string name, string argument, FileLine line, TextSpan span)
-            : base(CodeFragmentTypes.OriginPragma, line, span)
-        {
-            Name = name;
-            Argument = argument;
-        }
+        public TargetNewLine(FileLine line, TextSpan span)
+            : base(CodeFragmentTypes.TargetNewLine, line, span)
+        { }
     }
 }

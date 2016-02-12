@@ -21,7 +21,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using Twofold.Api;
+using Twofold.Interface;
 using Twofold.Compilation;
 using Twofold.Execution;
 

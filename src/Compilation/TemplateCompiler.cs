@@ -23,9 +23,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
-using Twofold.Api;
-using Twofold.Api.Compilation.Parsing;
-using Twofold.Api.SourceMapping;
+using Twofold.Interface;
+using Twofold.Interface.Compilation.Parsing;
+using Twofold.Interface.SourceMapping;
 using Twofold.Compilation.Generation;
 using Twofold.Compilation.Parsing;
 

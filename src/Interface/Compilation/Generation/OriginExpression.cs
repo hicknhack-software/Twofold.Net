@@ -16,17 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Twofold.Api.Compilation.Generation
+namespace Twofold.Interface.Compilation.Generation
 {
-    public enum CodeFragmentTypes
+    public class OriginExpression : AsbtractCodeFragment
     {
-        OriginExpression,
-        OriginPragma,
-        OriginScript,
-        OriginText,
-        TargetNewLine,
-        TargetIndentation,
-        TargetPushIndentation,
-        TargetPopIndentation,
+        public OriginExpression(FileLine line, TextSpan span)
+            : base(CodeFragmentTypes.OriginExpression, line, span)
+        { }
     }
 }

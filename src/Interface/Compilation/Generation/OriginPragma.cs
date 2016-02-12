@@ -16,23 +16,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Reflection;
-
-namespace Twofold.Api
+namespace Twofold.Interface.Compilation.Generation
 {
-    public class CompiledTemplate
+    public class OriginPragma : AsbtractCodeFragment
     {
-        public readonly Assembly @Assembly;
-        public readonly string SourceName;
-        public readonly string MainTypeName;
-        public readonly string TargetCode;
+        public readonly string Name;
+        public readonly string Argument;
 
-        public CompiledTemplate(string sourceName, Assembly assembly, string mainTypeName, string targetCode)
+        public OriginPragma(string name, string argument, FileLine line, TextSpan span)
+            : base(CodeFragmentTypes.OriginPragma, line, span)
         {
-            SourceName = sourceName;
-            Assembly = assembly;
-            MainTypeName = mainTypeName;
-            TargetCode = targetCode;
+            Name = name;
+            Argument = argument;
         }
     }
 }

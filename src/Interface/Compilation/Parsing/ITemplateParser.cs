@@ -16,14 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using System.Collections.Generic;
+using Twofold.Interface.Compilation.Generation;
 
-namespace Twofold.Api
+namespace Twofold.Interface.Compilation.Parsing
 {
-    public interface ITemplateLoader
+    public interface ITemplateParser
     {
-        /// <exception cref="FileNotFoundException"></exception>
-        /// <exception cref="IOException"></exception>
-        Template Load(string name);
+        List<AsbtractCodeFragment> Parse(string sourceName, string text);
     }
-
 }

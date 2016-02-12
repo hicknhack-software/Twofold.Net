@@ -16,15 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Diagnostics;
-using Twofold.Api.SourceMapping;
-
-namespace Twofold.Api
+namespace Twofold.Interface.Compilation.Generation
 {
-    public interface IMessageHandler
+    public class TargetPushIndentation : AsbtractCodeFragment
     {
-        void Message(TraceLevel level, string text);
-        void TemplateMessage(TraceLevel level, TextFilePosition position, string text);
-        void CSharpMessage(TraceLevel level, TextFilePosition position, string text);
-    };
+        public TargetPushIndentation(FileLine line, TextSpan span)
+            : base(CodeFragmentTypes.TargetPushIndentation, line, span)
+        { }
+    }
 }

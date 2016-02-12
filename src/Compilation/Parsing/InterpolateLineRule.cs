@@ -17,8 +17,8 @@
  * limitations under the License.
  */
 using System.Collections.Generic;
-using Twofold.Api;
-using Twofold.Api.Compilation.Generation;
+using Twofold.Interface;
+using Twofold.Interface.Compilation.Generation;
 
 namespace Twofold.Compilation.Parsing
 {

@@ -16,19 +16,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Twofold.Api.Compilation.Generation
-{
-    public abstract class AsbtractCodeFragment
-    {
-        public readonly CodeFragmentTypes Type;
-        public readonly FileLine Line;
-        public readonly TextSpan Span;
+using System.Reflection;
 
-        public AsbtractCodeFragment(CodeFragmentTypes type, FileLine line, TextSpan span)
+namespace Twofold.Interface
+{
+    public class CompiledTemplate
+    {
+        public readonly Assembly @Assembly;
+        public readonly string SourceName;
+        public readonly string MainTypeName;
+        public readonly string TargetCode;
+
+        public CompiledTemplate(string sourceName, Assembly assembly, string mainTypeName, string targetCode)
         {
-            Type = type;
-            Line = line;
-            Span = span;
+            SourceName = sourceName;
+            Assembly = assembly;
+            MainTypeName = mainTypeName;
+            TargetCode = targetCode;
         }
     }
 }

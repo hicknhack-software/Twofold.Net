@@ -18,7 +18,7 @@
  */
 using System;
 
-namespace Twofold.Api.SourceMapping
+namespace Twofold.Interface.SourceMapping
 {
     public class TextPosition : IEquatable<TextPosition>
     {

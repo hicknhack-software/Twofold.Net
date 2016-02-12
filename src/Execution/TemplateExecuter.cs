@@ -19,7 +19,7 @@
 using System;
 using System.Diagnostics;
 using System.Reflection;
-using Twofold.Api;
+using Twofold.Interface;
 
 namespace Twofold.Execution
 {

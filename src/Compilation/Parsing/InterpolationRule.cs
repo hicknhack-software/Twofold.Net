@@ -18,9 +18,9 @@
  */
 using System.Collections.Generic;
 using System.Diagnostics;
-using Twofold.Api;
-using Twofold.Api.Compilation.Generation;
-using Twofold.Api.Compilation.Parsing;
+using Twofold.Interface;
+using Twofold.Interface.Compilation.Generation;
+using Twofold.Interface.Compilation.Parsing;
 using Twofold.Extensions;
 
 namespace Twofold.Compilation.Parsing

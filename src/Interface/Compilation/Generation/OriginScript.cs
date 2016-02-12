@@ -16,17 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-namespace Twofold.Api
+namespace Twofold.Interface.Compilation.Generation
 {
-    public class Template
+    public class OriginScript : AsbtractCodeFragment
     {
-        public readonly string SourceName;
-        public readonly string Text;
-
-        public Template(string sourceName, string text)
-        {
-            SourceName = sourceName;
-            Text = text;
-        }
+        public OriginScript(FileLine line, TextSpan span)
+            : base(CodeFragmentTypes.OriginScript, line, span)
+        { }
     }
 }

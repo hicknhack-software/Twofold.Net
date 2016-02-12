@@ -18,8 +18,8 @@
  */
 using System.Collections.Generic;
 using System.IO;
-using Twofold.Api;
-using Twofold.Api.Compilation.Generation;
+using Twofold.Interface;
+using Twofold.Interface.Compilation.Generation;
 using Twofold.Compilation.Parsing;
 
 namespace Twofold.Compilation.Generation
