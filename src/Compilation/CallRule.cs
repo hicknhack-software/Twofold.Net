@@ -29,15 +29,12 @@ namespace Twofold.Compilation
         {
             List<AsbtractCodeFragment> fragments = new List<AsbtractCodeFragment>();
 
-            var indexBeginIndent = (line.BeginIndexNonSpace + 1); //skip matched character
-            var scriptBeginIndex = line.Text.IndexOfNot(indexBeginIndent, line.EndIndex, CharExtensions.IsSpace);
-            if (scriptBeginIndex == line.EndIndex) {
-                return fragments;
-            }
+            var indentBegin = (line.BeginNonSpace + 1); //skip matched character
+            var scriptBegin = line.Text.IndexOfNot(indentBegin, line.End, CharExtensions.IsSpace);
 
-            fragments.Add(new TargetPushIndentation(line, new TextSpan(line.Text, indexBeginIndent, scriptBeginIndex)));
-            fragments.Add(new OriginScript(line, new TextSpan(line.Text, scriptBeginIndex, line.EndIndex)));
-            fragments.Add(new TargetPopIndentation(line, new TextSpan(line.Text, indexBeginIndent, scriptBeginIndex)));
+            fragments.Add(new TargetPushIndentation(line, new TextSpan(line.Text, indentBegin, scriptBegin)));
+            fragments.Add(new OriginScript(line, new TextSpan(line.Text, scriptBegin, line.End)));
+            fragments.Add(new TargetPopIndentation(line, new TextSpan(line.Text, line.End, line.End)));
             return fragments;
         }
     }

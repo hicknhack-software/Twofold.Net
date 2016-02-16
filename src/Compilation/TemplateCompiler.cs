@@ -58,7 +58,7 @@ namespace Twofold.Compilation
             var parserRules = new Dictionary<char, IParserRule>
             {
                 {'\\', new InterpolationRule() },
-                {'|', new InterpolateLineRule() },
+                {'|', new InterpolationLineRule() },
                 {'=', new CallRule() },
                 {'#', new PreprocessorRule() },
             };
@@ -174,8 +174,10 @@ namespace Twofold.Compilation
             parameters.ReferencedAssemblies.Add(typeof(TemplateCompiler).Assembly.Location);
 
             // Compile
-            var codeProvider = new CSharpCodeProvider();
-            CompilerResults compilerResults = codeProvider.CompileAssemblyFromSource(parameters, sources.ToArray());
+            CompilerResults compilerResults;
+            using (var codeProvider = new CSharpCodeProvider()) {
+                compilerResults = codeProvider.CompileAssemblyFromSource(parameters, sources.ToArray());
+            }
 
             // Report errors
             foreach (CompilerError compilerError in compilerResults.Errors) {

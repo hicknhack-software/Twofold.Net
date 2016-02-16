@@ -64,7 +64,7 @@
     <Compile Include="Extensions\TextWriterExtensions.cs" />
     <Compile Include="Compilation\BraceCounter.cs" />
     <Compile Include="Compilation\CallRule.cs" />
-    <Compile Include="Compilation\InterpolateLineRule.cs" />
+    <Compile Include="Compilation\InterpolationLineRule.cs" />
     <Compile Include="Compilation\InterpolationRule.cs" />
     <Compile Include="Compilation\PassThroughRule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -75,10 +75,6 @@
     <Compile Include="Compilation\TemplateCompiler.cs" />
     <Compile Include="Compilation\TemplateParser.cs" />
     <Compile Include="Compilation\CSharpGenerator.cs" />
-    <Compile Include="Twofold.2.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Twofold.1.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

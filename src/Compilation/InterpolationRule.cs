@@ -26,49 +26,55 @@ namespace Twofold.Compilation
 {
     internal class InterpolationRule : IParserRule
     {
-        public List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)
+        public virtual List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)
         {
             List<AsbtractCodeFragment> fragments = new List<AsbtractCodeFragment>();
 
-            var beginIndexIndent = (line.BeginIndexNonSpace + 1); //skip matched character
-            var index = line.Text.IndexOfNot(beginIndexIndent, line.EndIndex, CharExtensions.IsSpace);
-            fragments.Add(new TargetIndentation(line, new TextSpan(line.Text, beginIndexIndent, index)));
+            var indentBegin = (line.BeginNonSpace + 1); //skip matched character
+            var index = line.Text.IndexOfNot(indentBegin, line.End, CharExtensions.IsSpace);
+            fragments.Add(new TargetIndentation(line, new TextSpan(line.Text, indentBegin, index)));
 
-            var endIndex = index;
-            while (index < line.EndIndex) {
-                index = line.Text.IndexOf(index, line.EndIndex, (ch) => ch == '#');
-                if (index == line.EndIndex) { // reached line end
+            var end = index;
+            while (index < line.End) {
+                index = line.Text.IndexOf(index, line.End, (ch) => ch == '#');
+                if (index == line.End) { // reached line end
                     break;
                 }
 
-                var expressionBeginIndex = index + 1; //skip #
-                if (expressionBeginIndex == line.EndIndex) { // reached line end
+                if ((index + 1) >= line.End) {
                     break;
                 }
 
-                switch (line.Text[expressionBeginIndex]) {
-                    case '#':
-                        fragments.Add(new OriginText(line, new TextSpan(line.Text, expressionBeginIndex, expressionBeginIndex + 1)));
-                        index = endIndex = expressionBeginIndex + 1;
-                        continue;
-
-                    case '{':
-                        var expressionEndIndex = BraceCounter.MatchBraces(line.Text, expressionBeginIndex, line.EndIndex);
-                        if (expressionEndIndex == line.EndIndex) {
-                            endIndex = line.EndIndex;
-                            messageHandler.TemplateMessage(TraceLevel.Error, line.Position, "Missing a closing '}'.");
-                            break;
+                switch (line.Text[index + 1]) {
+                    case '#': {
+                            var escapeBegin = (index + 1); //skip #
+                            fragments.Add(new OriginText(line, new TextSpan(line.Text, escapeBegin, escapeBegin + 1)));
+                            index = end = (escapeBegin + 1);
+                            continue;
                         }
-                        fragments.Add(new OriginExpression(line, new TextSpan(line.Text, expressionBeginIndex + 1, expressionEndIndex - 1)));
-                        index = endIndex = expressionEndIndex + 1;
-                        continue;
 
-                    default:
-                        index = endIndex = expressionBeginIndex + 1;
-                        continue;
+                    case '{': {
+                            fragments.Add(new OriginText(line, new TextSpan(line.Text, end, index)));
+
+                            var expressionBegin = (index + 1);
+                            var expressionEnd = BraceCounter.MatchBraces(line.Text, expressionBegin, line.End);
+                            if (expressionEnd == line.End) {
+                                end = line.End;
+                                messageHandler.TemplateMessage(TraceLevel.Error, line.Position, "Missing a closing '}'.");
+                                break;
+                            }
+                            fragments.Add(new OriginExpression(line, new TextSpan(line.Text, expressionBegin + 1, expressionEnd)));
+                            index = end = expressionEnd + 1;
+                            continue;
+                        }
+
+                    default: {
+                            index = end = (index + 2);
+                            continue;
+                        }
                 }
             }
-            fragments.Add(new OriginText(line, new TextSpan(line.Text, endIndex, line.EndIndex)));
+            fragments.Add(new OriginText(line, new TextSpan(line.Text, end, line.End)));
             return fragments;
         }
     }

@@ -17,51 +17,53 @@
  * limitations under the License.
  */
 using System;
+using System.Globalization;
+using System.Text;
 
 namespace Twofold.Extensions
 {
     internal static class StringExtensions
     {
-        /// <exception cref="ArgumentOutOfRangeException">beginIndex is greater than endIndex.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">endIndex is greater than string length.</exception>
-        public static int IndexOf(this string value, int beginIndex, int endIndex, Func<char, bool> predicate)
+        /// <exception cref="ArgumentOutOfRangeException">begin is greater than end.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">end is greater than string length.</exception>
+        public static int IndexOf(this string value, int begin, int end, Func<char, bool> predicate)
         {
-            if (beginIndex > endIndex) {
-                throw new ArgumentOutOfRangeException("beginIndex", "Must be less equal than endIndex.");
+            if (begin > end) {
+                throw new ArgumentOutOfRangeException("begin", "Must be less equal than end.");
             }
-            if (endIndex > value.Length) {
-                throw new ArgumentOutOfRangeException("endIndex", "endIndex must be less equal string length.");
+            if (end > value.Length) {
+                throw new ArgumentOutOfRangeException("end", "end must be less equal string length.");
             }
-            var index = beginIndex;
-            while (index < endIndex) {
+            var index = begin;
+            while (index < end) {
                 char ch = value[index];
                 if (predicate(ch)) {
                     return index;
                 }
                 ++index;
             }
-            return endIndex;
+            return end;
         }
 
-        /// <exception cref="ArgumentOutOfRangeException">beginIndex is greater than endIndex.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">endIndex is greater than string length.</exception>
-        public static int IndexOfNot(this string value, int beginIndex, int endIndex, Func<char, bool> predicate)
+        /// <exception cref="ArgumentOutOfRangeException">begin is greater than endIndex.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">end is greater than string length.</exception>
+        public static int IndexOfNot(this string value, int begin, int end, Func<char, bool> predicate)
         {
-            if (beginIndex > endIndex) {
-                throw new ArgumentOutOfRangeException("beginIndex", "Must be less equal than endIndex.");
+            if (begin > end) {
+                throw new ArgumentOutOfRangeException("begin", "Must be less equal than end.");
             }
-            if (endIndex > value.Length) {
-                throw new ArgumentOutOfRangeException("endIndex", "endIndex must be less equal string length.");
+            if (end > value.Length) {
+                throw new ArgumentOutOfRangeException("end", "end must be less equal string length.");
             }
-            var index = beginIndex;
-            while (index < endIndex) {
+            var index = begin;
+            while (index < end) {
                 char ch = value[index];
                 if (!predicate(ch)) {
                     return index;
                 }
                 ++index;
             }
-            return endIndex;
+            return end;
         }
     }
 }

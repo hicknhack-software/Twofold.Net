@@ -24,30 +24,30 @@ namespace Twofold.Interface
     public struct FileLine
     {
         public readonly string Text;
-        public readonly int BeginIndex;
-        public readonly int BeginIndexNonSpace;
-        public readonly int EndIndex;
+        public readonly int Begin;
+        public readonly int BeginNonSpace;
+        public readonly int End;
         public readonly TextFilePosition Position;
 
-        public FileLine(string text, int beginIndex, int beginIndexNonSpace, int endIndex, TextFilePosition position)
+        public FileLine(string text, int begin, int beginNonSpace, int end, TextFilePosition position)
         {
             if (text == null) {
                 throw new ArgumentNullException("text");
             }
-            if (beginIndex > beginIndexNonSpace) {
-                throw new ArgumentOutOfRangeException("beginIndex", "Must be less equal than beginIndexNonSpace.");
+            if (begin > beginNonSpace) {
+                throw new ArgumentOutOfRangeException("begin", "Must be less equal than beginNonSpace.");
             }
-            if (beginIndexNonSpace > endIndex) {
-                throw new ArgumentOutOfRangeException("beginIndexNonSpace", "Must be less equal than endIndex.");
+            if (beginNonSpace > end) {
+                throw new ArgumentOutOfRangeException("beginNonSpace", "Must be less equal than end.");
             }
-            if (endIndex > text.Length) {
-                throw new ArgumentOutOfRangeException("endIndex", "endIndex must be less equal string length.");
+            if (end > text.Length) {
+                throw new ArgumentOutOfRangeException("end", "end must be less equal string length.");
             }
 
             Text = text;
-            BeginIndex = beginIndex;
-            BeginIndexNonSpace = beginIndexNonSpace;
-            EndIndex = endIndex;
+            Begin = begin;
+            BeginNonSpace = beginNonSpace;
+            End = end;
             Position = position;
         }
     }

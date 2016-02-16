@@ -15,11 +15,14 @@ namespace Example
             Program app = new Program();
             Engine engine = new Engine(app, app);
 
-            CompiledTemplate compiledTemplate = engine.Compile("ExampleMain");
-            Console.WriteLine(compiledTemplate.TargetCode);
+            CompiledTemplate compiledTemplate = engine.Compile("Main");
+            Console.WriteLine("---------------------------------------------------------------");
+            Console.WriteLine(compiledTemplate.TargetCode);            
+            Console.WriteLine("---------------------------------------------------------------");
 
             if (compiledTemplate != null) {
                 Target target = engine.Run(compiledTemplate, "HicknHack Software GmbH");
+                Console.WriteLine("---------------------------------------------------------------");
                 if (target != null) {
                     Console.WriteLine(target.GeneratedText);
                 }

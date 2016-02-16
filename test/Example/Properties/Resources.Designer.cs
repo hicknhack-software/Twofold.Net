@@ -75,9 +75,9 @@ namespace Example.Properties {
         ///	}
         ///}.
         /// </summary>
-        internal static string ExampleInclude {
+        internal static string Include {
             get {
-                return ResourceManager.GetString("ExampleInclude", resourceCulture);
+                return ResourceManager.GetString("Include", resourceCulture);
             }
         }
         
@@ -100,9 +100,9 @@ namespace Example.Properties {
         ///    }
         ///}.
         /// </summary>
-        internal static string ExampleMain {
+        internal static string Main {
             get {
-                return ResourceManager.GetString("ExampleMain", resourceCulture);
+                return ResourceManager.GetString("Main", resourceCulture);
             }
         }
     }

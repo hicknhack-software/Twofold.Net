@@ -16,31 +16,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Twofold.Interface;
+using Twofold.Interface.Compilation;
 
-namespace Twofold
+namespace Twofold.Compilation
 {
-    public partial class Twofold
+    internal class InterpolationLineRule : InterpolationRule
     {
-
-
-        //////////////////////////
-        //#include "";
-
-        public class Main
+        public override List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)
         {
+            List<AsbtractCodeFragment> fragments = base.Parse(line, messageHandler);
+            fragments.Add(new TargetNewLine(line, new TextSpan(line.Text, line.End, line.End)));
+            return fragments;
         }
-
-        Main main = new Main();
-
-        public void Execute()
-        {
-        }
-        //////////////////////////
-
     }
 }

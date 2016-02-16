@@ -23,21 +23,21 @@ namespace Twofold.Extensions
 {
     internal static class TextWriterExtensions
     {
-        /// <exception cref="ArgumentOutOfRangeException">beginIndex is greater than endIndex.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">endIndex is greater than string length.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">begin is greater than end.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">end is greater than string length.</exception>
         /// <exception cref="ArgumentNullException">text is null.</exception>
-        public static void Write(this TextWriter textWriter, int beginIndex, int endIndex, string text)
+        public static void Write(this TextWriter textWriter, int begin, int end, string text)
         {
-            if (beginIndex > endIndex) {
-                throw new ArgumentOutOfRangeException("beginIndex", "Must be less equal than endIndex.");
+            if (begin > end) {
+                throw new ArgumentOutOfRangeException("begin", "Must be less equal than end.");
             }
             if (text == null) {
                 throw new ArgumentNullException("text");
             }
-            if (endIndex > text.Length) {
-                throw new ArgumentOutOfRangeException("endIndex", "endIndex must be less equal string length.");
+            if (end > text.Length) {
+                throw new ArgumentOutOfRangeException("end", "end must be less equal string length.");
             }
-            var writeText = text.Substring(beginIndex, endIndex - beginIndex);
+            var writeText = text.Substring(begin, end - begin);
             textWriter.Write(writeText);
         }
     }

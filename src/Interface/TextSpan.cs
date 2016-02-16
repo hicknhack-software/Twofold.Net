@@ -25,11 +25,11 @@ namespace Twofold.Interface
         /// <summary>
         /// Begin of the text span in the original text.
         /// </summary>
-        public readonly int BeginIndex;
+        public readonly int Begin;
         /// <summary>
         /// End + 1 of the text span in the original text.
         /// </summary>
-        public readonly int EndIndex;
+        public readonly int End;
         /// <summary>
         /// The complete original text.
         /// </summary>
@@ -39,34 +39,34 @@ namespace Twofold.Interface
         /// </summary>
         public readonly string Text;
 
-        public bool IsEmpty { get { return (BeginIndex == EndIndex); } }
+        public bool IsEmpty { get { return (Begin == End); } }
 
         public TextSpan(string text)
         {
             if (text == null) {
                 throw new ArgumentNullException("text");
             }
-            BeginIndex = 0;
-            EndIndex = text.Length;
+            Begin = 0;
+            End = text.Length;
             OriginalText = text;
             Text = text;
         }
 
-        public TextSpan(string text, int beginIndex, int endIndex)
+        public TextSpan(string text, int begin, int end)
         {
             if (text == null) {
                 throw new ArgumentNullException("text");
             }
-            if (beginIndex > endIndex) {
-                throw new ArgumentOutOfRangeException("beginIndex", "Must be less equal than endIndex.");
+            if (begin > end) {
+                throw new ArgumentOutOfRangeException("begin", "Must be less equal than end.");
             }
-            if (endIndex > text.Length) {
-                throw new ArgumentOutOfRangeException("endIndex", "endIndex must be less equal string length.");
+            if (end > text.Length) {
+                throw new ArgumentOutOfRangeException("end", "end must be less equal string length.");
             }
-            BeginIndex = beginIndex;
-            EndIndex = endIndex;
+            Begin = begin;
+            End = end;
             OriginalText = text;
-            Text = OriginalText.Substring(BeginIndex, EndIndex - BeginIndex);
+            Text = OriginalText.Substring(Begin, End - Begin);
         }
     }
 }

@@ -73,18 +73,18 @@ namespace Twofold.TextRendering
 
             string indentation = (indentationQueue.Count > 0) ? indentationQueue.Peek() : "";
 
-            var index = textSpan.BeginIndex;
-            while (index < textSpan.EndIndex) {
+            var index = textSpan.Begin;
+            while (index < textSpan.End) {
                 if (currentLineEmpty) {
                     writer.Write(indentation);
                     Column += indentation.Length;
                     currentLineEmpty = false;
                 }
 
-                var lineBreakIndex = textSpan.OriginalText.IndexOf(index, textSpan.EndIndex, ch => ch == '\n');
-                if (lineBreakIndex == textSpan.EndIndex) { // No line break found
-                    writer.Write(index, textSpan.EndIndex, textSpan.OriginalText);
-                    index += (textSpan.EndIndex - index);
+                var lineBreakIndex = textSpan.OriginalText.IndexOf(index, textSpan.End, ch => ch == '\n');
+                if (lineBreakIndex == textSpan.End) { // No line break found
+                    writer.Write(index, textSpan.End, textSpan.OriginalText);
+                    index += (textSpan.End - index);
                 }
                 else {  // Line break found
                     ++lineBreakIndex;

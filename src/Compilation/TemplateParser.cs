@@ -43,17 +43,17 @@ namespace Twofold.Compilation
 
             int index = 0;
             int nonSpaceIndex = 0;
-            int endIndex = 0;
+            int end = 0;
             int line = 1;
             while (index < text.Length) {
 
                 nonSpaceIndex = text.IndexOfNot(index, text.Length, CharExtensions.IsSpace);
-                endIndex = text.IndexOf(nonSpaceIndex, text.Length, CharExtensions.IsNewline);
+                end = text.IndexOf(nonSpaceIndex, text.Length, CharExtensions.IsNewline);
 
                 IParserRule parserRule;
                 List<AsbtractCodeFragment> ruleFragments;
                 var textFilePostion = new TextFilePosition(sourceName, new TextPosition(line, 1));
-                var fileLine = new FileLine(text, index, nonSpaceIndex, endIndex, textFilePostion);
+                var fileLine = new FileLine(text, index, nonSpaceIndex, end, textFilePostion);
                 if (parseRules.TryGetValue(text[nonSpaceIndex], out parserRule)) {
                     ruleFragments = parserRule.Parse(fileLine, messageHandler);
                 }
@@ -62,12 +62,12 @@ namespace Twofold.Compilation
                 }
                 fragments.AddRange(ruleFragments);
 
-                if (endIndex == text.Length) {
+                if (end == text.Length) {
                     break;
                 }
 
-                char complementaryNewLineChar = ((text[endIndex] == '\n') ? '\r' : '\n');
-                index = text.IndexOfNot(endIndex + 1, text.Length, c => c == complementaryNewLineChar);
+                char complementaryNewLineChar = ((text[end] == '\n') ? '\r' : '\n');
+                index = text.IndexOfNot(end + 1, text.Length, c => c == complementaryNewLineChar);
 
                 ++line;
             }

@@ -39,66 +39,67 @@ namespace Twofold.Compilation
         /// <summary>
         /// Finds index of closing quote. Search must begin on index of opening quote.
         /// </summary>
-        /// <returns>Index of end quote or endIndex if nothing found.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">beginIndex is greater than endIndex.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">endIndex is greater than string length.</exception>
-        /// <exception cref="InvalidOperationException">beginIndex must be on a ' order \ character.</exception>
-        public static int FindQuoteEnd(string text, int beginIndex, int endIndex)
+        /// <returns>Index of end quote or end if nothing found.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">begin is greater than end.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">end is greater than string length.</exception>
+        /// <exception cref="InvalidOperationException">begin must be on a ' order \ character.</exception>
+        public static int FindQuoteEnd(string text, int begin, int end)
         {
-            if (beginIndex > endIndex) {
-                throw new ArgumentException("beginIndex must be less equal endIndex.");
+            if (begin > end) {
+                throw new ArgumentException("begin must be less equal end.");
             }
-            if (endIndex > text.Length) {
-                throw new ArgumentOutOfRangeException("endIndex must be less equal text length.");
+            if (end > text.Length) {
+                throw new ArgumentOutOfRangeException("end must be less equal text length.");
             }
-            char quoteChar = text[beginIndex];
+            char quoteChar = text[begin];
             if (quoteChar != '"' && quoteChar != '\'') {
-                throw new InvalidOperationException("beginIndex must be on a ' or \" char.");
+                throw new InvalidOperationException("begin must be on a ' or \" char.");
             }
 
-            ++beginIndex;
-            while (beginIndex < endIndex) {
-                var index = text.IndexOf(beginIndex, endIndex, (ch) => ch == quoteChar);
-                if (index == endIndex) { // Invalid, not found
+            ++begin;
+            while (begin < end) {
+                var index = text.IndexOf(begin, end, (ch) => ch == quoteChar);
+                if (index == end) { // Invalid, not found
                     return index;
                 }
 
-                if ((index > beginIndex) && text[index - 1] != '\\') { //Success, found unescaped quote char
+                if ((index > begin) && text[index - 1] == '\\') { //Success, found unescaped quote char
+                    begin = (index + 1);
+                }
+                else {
                     return index;
                 }
-
-                beginIndex = (index + 1);
             }
 
-            return endIndex;
+            return end;
         }
 
         /// <summary>
         /// Finds index of closing brace. Search must begin on index of opening brace.
         /// </summary>
-        /// <returns>Index of closing brace or endIndex if nothing found.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">beginIndex is greater than endIndex.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">endIndex is greater than string length.</exception>
-        /// <exception cref="InvalidOperationException">beginIndex must be on a { character.</exception>
-        public static int MatchBraces(string text, int beginIndex, int endIndex)
+        /// <returns>Index of closing brace or end if nothing found.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">begin is greater than end.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">end is greater than string length.</exception>
+        /// <exception cref="InvalidOperationException">begin must be on a { character.</exception>
+        public static int MatchBraces(string text, int begin, int end)
         {
-            if (beginIndex > endIndex) {
-                throw new ArgumentException("beginIndex must be less equal endIndex.");
+            if (begin > end) {
+                throw new ArgumentException("begin must be less equal end.");
             }
-            if (endIndex > text.Length) {
-                throw new ArgumentOutOfRangeException("endIndex must be less equal text length.");
+            if (end > text.Length) {
+                throw new ArgumentOutOfRangeException("end must be less equal text length.");
             }
-            char braceChar = text[beginIndex];
+            char braceChar = text[begin];
             if (braceChar != '{') {
-                throw new InvalidOperationException("beginIndex must be on a '{' char.");
+                throw new InvalidOperationException("begin must be on a '{' char.");
             }
 
             int depth = 0;
-            while (beginIndex < endIndex) {
+            while (begin < end) {
 
-                var index = text.IndexOf(beginIndex, endIndex, BraceCounter.IsBraceOrQuote);
-                if (index == endIndex) { // Error, nothing found
-                    return endIndex;
+                var index = text.IndexOf(begin, end, BraceCounter.IsBraceOrQuote);
+                if (index == end) { // Error, nothing found
+                    return end;
                 }
 
                 switch (text[index]) {
@@ -108,7 +109,7 @@ namespace Twofold.Compilation
 
                     case '}':
                         if (depth == 0) { //Error, found closing brace before any opening
-                            return endIndex;
+                            return end;
                         }
                         --depth;
                         if (depth == 0) {
@@ -117,16 +118,16 @@ namespace Twofold.Compilation
                         break;
 
                     default:
-                        index = BraceCounter.FindQuoteEnd(text, index, endIndex);
-                        if (index == endIndex) { //Error, found no closing quote
-                            return endIndex;
+                        index = BraceCounter.FindQuoteEnd(text, index, end);
+                        if (index == end) { //Error, found no closing quote
+                            return end;
                         }
                         break;
                 }
-                beginIndex = (index + 1);
+                begin = (index + 1);
             }
 
-            return endIndex;
+            return end;
         }
     }
 

@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using Twofold.Interface;
 using Twofold.Interface.Compilation;
 using Twofold.Extensions;
+using System;
 
 namespace Twofold.Compilation
 {
@@ -30,12 +31,12 @@ namespace Twofold.Compilation
             List<AsbtractCodeFragment> fragments = new List<AsbtractCodeFragment>();
 
             while (true) {
-                var index = (line.BeginIndexNonSpace + 1); // Skip #
+                var index = (line.BeginNonSpace + 1); // Skip #
 
                 // Find 'pragma'
                 string preproDirective;
-                index = this.MatchNextToken(line.Text, index, line.EndIndex, out preproDirective);
-                if (index == line.EndIndex) {
+                index = this.MatchNextToken(line.Text, index, line.End, out preproDirective);
+                if (index == line.End) {
                     break;
                 }
                 if (string.Compare(preproDirective, "pragma") != 0) {
@@ -44,8 +45,8 @@ namespace Twofold.Compilation
 
                 // Find 'include'
                 string pragmaName;
-                index = this.MatchNextToken(line.Text, index, line.EndIndex, out pragmaName);
-                if (index == line.EndIndex) {
+                index = this.MatchNextToken(line.Text, index, line.End, out pragmaName);
+                if (index == line.End) {
                     break;
                 }
                 if (string.Compare(pragmaName, "include") != 0) {
@@ -53,42 +54,59 @@ namespace Twofold.Compilation
                 }
 
                 // Find '"<Filename>"'
-                var pragmaArgIndex = line.Text.IndexOf(index, line.EndIndex, ch => ch == '"');
-                if (pragmaArgIndex == line.EndIndex) {
+                var pragmaArgBegin = line.Text.IndexOf(index, line.End, ch => ch == '"');
+                if (pragmaArgBegin == line.End) {
                     break;
                 }
 
-                var pragmaArgEndIndex = BraceCounter.FindQuoteEnd(line.Text, index, line.EndIndex);
-                if (pragmaArgEndIndex == line.EndIndex) {
+                var pragmaArgEnd = BraceCounter.FindQuoteEnd(line.Text, index, line.End);
+                if (pragmaArgEnd == line.End) {
                     break;
                 }
 
                 // Extract <Filename> from '"<Filename>"'
-                string pragmaArgument = line.Text.Substring(pragmaArgIndex + 1, (pragmaArgEndIndex - pragmaArgIndex - 1));
-                var textSpan = new TextSpan(line.Text, line.BeginIndex, line.EndIndex);
+                string pragmaArgument = line.Text.Substring(pragmaArgBegin + 1, (pragmaArgEnd - pragmaArgBegin - 1));
+                var textSpan = new TextSpan(line.Text, line.Begin, line.End);
                 fragments.Add(new OriginPragma(pragmaName, pragmaArgument, line, textSpan));
 
-                index = (pragmaArgEndIndex + 1);
+                index = (pragmaArgEnd + 1);
 
                 break;
             }
 
-            fragments.Add(new OriginScript(line, new TextSpan(line.Text, line.BeginIndex, line.EndIndex)));
+            // No pragma dected, pass line through
+            if (fragments.Count == 0) {
+                fragments.Add(new OriginScript(line, new TextSpan(line.Text, line.Begin, line.End)));
+            }
+
             return fragments;
         }
 
-        int MatchNextToken(string text, int beginIndex, int endIndex, out string token)
+        int MatchNextToken(string text, int begin, int end, out string token)
         {
+            if (begin > end) {
+                throw new ArgumentOutOfRangeException("begin", "Must be less equal than end.");
+            }
+            if (end > text.Length) {
+                throw new ArgumentOutOfRangeException("end", "end must be less equal string length.");
+            }
+
             token = "";
 
-            int index = beginIndex;
-            var tokenIndex = text.IndexOfNot(index, endIndex, CharExtensions.IsSpace);
+            int index = begin;
+            var tokenIndex = text.IndexOfNot(index, end, CharExtensions.IsSpace);
+            if (tokenIndex == end) {
+                return end;
+            }
             index = (tokenIndex + 1);
 
-            var tokenEndIndex = text.IndexOf(index, endIndex, CharExtensions.IsSpace);
+            var tokenEndIndex = text.IndexOf(index, end, CharExtensions.IsSpace);
+            if (tokenEndIndex == end) {
+                return end;
+            }
             index = (tokenEndIndex + 1);
 
-            token = text.Substring(tokenIndex, (tokenEndIndex - tokenIndex));
+            token = text.Substring(tokenIndex, tokenEndIndex - tokenIndex);
 
             return index;
         }

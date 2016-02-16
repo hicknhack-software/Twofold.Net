@@ -27,7 +27,7 @@ namespace Twofold.Compilation
         public List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)
         {
             List<AsbtractCodeFragment> fragments = new List<AsbtractCodeFragment>();
-            fragments.Add(new OriginScript(line, new TextSpan(line.Text, line.BeginIndex, line.EndIndex)));
+            fragments.Add(new OriginScript(line, new TextSpan(line.Text, line.Begin, line.End)));
             return fragments;
         }
     }
