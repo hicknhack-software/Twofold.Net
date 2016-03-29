@@ -4,14 +4,23 @@ using System;
 
 namespace Example
 {
-    public class ExampleRenderer
+    public partial class ExampleRenderer
     {
-        public static void TwofoldMain(string text)
+
+        public static void TwofoldMain(ClassDescriptor classDescriptor)
         {
-            System.Console.WriteLine("The answer is: {0} {1}", Helper.Answer(), text);
-            for (int i = 0; i < 10; ++i) {
-																							| Item #{i.ToString()} in the "list".
+													|using System;
+													|
+													|namespace Generated
+													|{
+													|	class #{classDescriptor.Name}
+													|	{
+			foreach(var method in classDescriptor.Methods) {
+													=		ShowMethod(method);
 			}
+													|	}
+													|}
         }
+
     }
 }

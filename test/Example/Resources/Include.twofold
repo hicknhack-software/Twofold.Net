@@ -1,13 +1,29 @@
 using System;
+using System.Collections.Generic;
 
 namespace Example
 {
-	public static class Helper
-	{
-		public static int Answer()
+    public partial class ExampleRenderer
+    {
+
+		public static void ShowMethod(MethodDescriptor method)
 		{
-			int i = 42;
-			return i;
+													|#{method.ReturnType} #{method.Name}(#{ShowArguments(method.Arguments)}) {
+													|	#{method.Body}
+													|}
 		}
-	}
+
+		public static void ShowArguments(List<ArgumentDescriptor> arguments)
+		{
+			bool first = true;
+			foreach(var argument in arguments) {
+				if(first == false) {
+													\#{", "}
+				}
+													\#{argument.Type} #{argument.Name}
+				first = false;
+			}
+		}
+
+    }
 }

@@ -1,28 +1,84 @@
 ﻿using Example.Properties;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using Twofold;
 using Twofold.Interface;
 using Twofold.Interface.SourceMapping;
 
 namespace Example
 {
+    public class ArgumentDescriptor
+    {
+        public readonly string Type;
+        public readonly string Name;
+
+        public ArgumentDescriptor(string type, string name)
+        {
+            Type = type;
+            Name = name;
+        }
+    }
+
+    public class MethodDescriptor
+    {
+        public readonly string Name;
+        public readonly List<ArgumentDescriptor> Arguments;
+        public readonly string ReturnType;
+        public readonly string Body;
+
+        public MethodDescriptor(string returnType, string name, List<ArgumentDescriptor> arguments, string body)
+        {
+            ReturnType = returnType;
+            Name = name;
+            Arguments = arguments;
+            Body = body;
+        }
+    }
+
+    public class ClassDescriptor
+    {
+        public readonly string Name;
+        public readonly List<MethodDescriptor> Methods;
+
+        public ClassDescriptor(string name, List<MethodDescriptor> methods)
+        {
+            Name = name;
+            Methods = methods;
+        }
+    }
+
     class Program : ITemplateLoader, IMessageHandler
     {
         static void Main(string[] args)
         {
             Program app = new Program();
-            Engine engine = new Engine(app, app);
+            Engine engine = new Engine(app, app, Assembly.GetExecutingAssembly().Location);
 
-            CompiledTemplate compiledTemplate = engine.Compile("Main");
-            Console.WriteLine("---------------------------------------------------------------");
-            Console.WriteLine(compiledTemplate.TargetCode);            
-            Console.WriteLine("---------------------------------------------------------------");
+            TemplateCompilerResult compilerResult = engine.Compile("Main");
+            foreach (var nameSourceTuple in compilerResult.TargetCodes) {
+                Console.WriteLine(nameSourceTuple.Item1);
+                Console.WriteLine("-------");
+                Console.WriteLine(nameSourceTuple.Item2);
+                Console.WriteLine();
+            }
 
-            if (compiledTemplate != null) {
-                Target target = engine.Run(compiledTemplate, "HicknHack Software GmbH");
-                Console.WriteLine("---------------------------------------------------------------");
+            if (compilerResult.CompiledTemplate != null) {
+
+                var classDescriptor = new ClassDescriptor("TwofoldGenerated", new List<MethodDescriptor>
+                {
+                    new MethodDescriptor("void", "hello", new List<ArgumentDescriptor>
+                    {
+                        new ArgumentDescriptor("string", "greeted")
+                    }, "Console.WriteLine(\"Hello \" + greeted);"),
+                });
+
+
+                Target target = engine.Run(compilerResult.CompiledTemplate, classDescriptor);
+                Console.WriteLine("Generated code...");
+                Console.WriteLine("-------");
                 if (target != null) {
                     Console.WriteLine(target.GeneratedText);
                 }
