@@ -22,6 +22,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using Twofold.Interface;
 using Twofold.Interface.Compilation;
@@ -71,7 +72,7 @@ namespace Twofold.Compilation
         /// <param name="templateName">Name of template which will be resolved by ITemplateLoader.</param>
         /// <returns>Compiled template or null in case of an error.</returns>
         /// <exception cref="ArgumentException">If templateName is null or empty.</exception>
-        public CompiledTemplate Compile(string templateName)
+        public TemplateCompilerResult Compile(string templateName)
         {
             if (string.IsNullOrEmpty(templateName)) {
                 throw new ArgumentException("Can't be null or empty.", "templateName");
@@ -80,7 +81,7 @@ namespace Twofold.Compilation
             var templateNames = new Queue<string>();
             templateNames.Enqueue(templateName);
 
-            var generatedTwofoldSources = new List<string>();
+            var generatedTargetCodes = new List<Tuple<string, string>>();
 
             string mainTemplateFilename = null;
             bool mainTemplateFilenameSet = false;
@@ -113,7 +114,7 @@ namespace Twofold.Compilation
                 List<string> includedFiles;
                 string generatedCode = this.GenerateCode(template.SourceName, template.Text, out includedFiles);
                 if (generatedCode != null) {
-                    generatedTwofoldSources.Add(generatedCode);
+                    generatedTargetCodes.Add(Tuple.Create(template.SourceName, generatedCode));
                     foreach (var includedFile in includedFiles) {
                         templateNames.Enqueue(includedFile);
                     }
@@ -121,18 +122,19 @@ namespace Twofold.Compilation
             }
 
             // Compile CSharp code
-            Assembly assembly = this.CompileCode(generatedTwofoldSources);
+            Assembly assembly = this.CompileCode(generatedTargetCodes);
             if (assembly == null) {
-                return null;
+                return new TemplateCompilerResult(null, generatedTargetCodes);
             }
 
             // Check Twofold CSharp assembly for entry points/types
             string mainTypeName = this.DetectMainType(mainTemplateFilename, assembly);
             if (string.IsNullOrEmpty(mainTypeName)) {
-                return null;
+                return new TemplateCompilerResult(null, generatedTargetCodes);
             }
 
-            return new CompiledTemplate(mainTemplateFilename, assembly, mainTypeName, string.Join(Environment.NewLine, generatedTwofoldSources));
+            var compiledTemplate = new CompiledTemplate(mainTemplateFilename, assembly, mainTypeName);
+            return new TemplateCompilerResult(compiledTemplate, generatedTargetCodes);
         }
 
         string GenerateCode(string sourceName, string sourceText, out List<string> includedFiles)
@@ -161,7 +163,7 @@ namespace Twofold.Compilation
             return generatedCode;
         }
 
-        Assembly CompileCode(List<string> sources)
+        Assembly CompileCode(List<Tuple<string, string>> nameSourceTuples)
         {
             // Prepare compiler
             var parameters = new CompilerParameters();
@@ -176,7 +178,8 @@ namespace Twofold.Compilation
             // Compile
             CompilerResults compilerResults;
             using (var codeProvider = new CSharpCodeProvider()) {
-                compilerResults = codeProvider.CompileAssemblyFromSource(parameters, sources.ToArray());
+                var sources = nameSourceTuples.Select(nameCodeTuple => nameCodeTuple.Item2).ToArray();
+                compilerResults = codeProvider.CompileAssemblyFromSource(parameters, sources);
             }
 
             // Report errors

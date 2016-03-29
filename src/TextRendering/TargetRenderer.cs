@@ -11,7 +11,7 @@ namespace Twofold.TextRendering
     public static class TargetRenderer
     {
         static TextWriter textWriter = new StringWriter();
-        static TextRenderer renderer = new TextRenderer();
+        static readonly TextRenderer renderer = new TextRenderer();
 
         internal static void SetTextWriter(TextWriter textWriter)
         {
@@ -21,9 +21,25 @@ namespace Twofold.TextRendering
             TargetRenderer.textWriter = textWriter;
         }
 
-        public static void Append(string text)
+        /// <summary>
+        /// Executes the given function which must return a string and appends
+        /// the returned string to the text buffer.
+        /// </summary>
+        /// <param name="func">The function to execute.</param>
+        public static void Append(Func<string> func)
         {
-            TargetRenderer.renderer.Append(new TextSpan(text), TargetRenderer.textWriter);
+            string text = func();
+            var textSpan = new TextSpan(text);
+            TargetRenderer.renderer.Append(textSpan, TargetRenderer.textWriter);
+        }
+
+        /// <summary>
+        /// Executes the given function which must return void.
+        /// </summary>
+        /// <param name="action">The function to execute.</param>
+        public static void Append(Action action)
+        {
+            action();
         }
 
         public static void NewLine()
@@ -39,6 +55,21 @@ namespace Twofold.TextRendering
         public static void PopIndentation()
         {
             TargetRenderer.renderer.PopIndentation();
+        }
+
+        public static void PartIndentation(string indentation)
+        {
+            TargetRenderer.renderer.PartIndentation(indentation, TargetRenderer.textWriter);
+        }
+
+        public static void PushPartIndentation()
+        {
+            TargetRenderer.renderer.PushPartIndentation();
+        }
+
+        public static void PopPartIndentation()
+        {
+            TargetRenderer.renderer.PopPartIndentation();
         }
     }
 }

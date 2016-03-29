@@ -17,31 +17,23 @@
  * limitations under the License.
  */
 using System;
-using System.Reflection;
+using System.Collections.Generic;
 
 namespace Twofold.Interface
 {
-    public class CompiledTemplate
+    public sealed class TemplateCompilerResult
     {
-        public readonly Assembly @Assembly;
-        public readonly string SourceName;
-        public readonly string MainTypeName;
+        public readonly CompiledTemplate @CompiledTemplate;
+        public readonly List<Tuple<string, string>> TargetCodes;
 
-        public CompiledTemplate(string sourceName, Assembly assembly, string mainTypeName)
+        public TemplateCompilerResult(CompiledTemplate compiledTemplate, List<Tuple<string, string>> targetCodes)
         {
-            if (string.IsNullOrEmpty(sourceName)) {
-                throw new ArgumentException("Can't be null or empty.", "sourceName");
-            }
-            if (assembly == null) {
-                throw new ArgumentNullException("assembly");
-            }
-            if (string.IsNullOrEmpty(mainTypeName)) {
-                throw new ArgumentException("Can't be null or empty.", "mainTypeName");
+            if (targetCodes == null) {
+                throw new ArgumentNullException("targetCodes");
             }
 
-            SourceName = sourceName;
-            Assembly = assembly;
-            MainTypeName = mainTypeName;
+            CompiledTemplate = compiledTemplate;
+            TargetCodes = targetCodes;
         }
     }
 }

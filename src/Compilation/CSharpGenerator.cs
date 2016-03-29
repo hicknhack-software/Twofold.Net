@@ -16,9 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Microsoft.CSharp;
-using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -47,19 +44,28 @@ namespace Twofold.Compilation
 
         protected override void Generate(TargetIndentation fragment)
         {
-            textWriterController.Append(fragment.Span, textWriter);
+            //if (fragment.Span.IsEmpty) {
+            //    return;
+            //}
+
+            string escapedContent = this.EscapeString(fragment.Span.Text);
+            string renderCmd = $"TargetRenderer.PartIndentation(\"{escapedContent}\");";
+            textWriterController.Append(new TextSpan(renderCmd), textWriter);
             textWriterController.AppendNewLine(textWriter);
         }
 
         protected override void Generate(TargetPopIndentation fragment)
         {
-            textWriterController.Append(fragment.Span, textWriter);
+            string renderCmd = $"TargetRenderer.PopIndentation();";
+            textWriterController.Append(new TextSpan(renderCmd), textWriter);
             textWriterController.AppendNewLine(textWriter);
         }
 
         protected override void Generate(TargetPushIndentation fragment)
         {
-            textWriterController.Append(fragment.Span, textWriter);
+            string escapedContent = this.EscapeString(fragment.Span.Text);
+            string renderCmd = $"TargetRenderer.PushIndentation(\"{escapedContent}\");";
+            textWriterController.Append(new TextSpan(renderCmd), textWriter);
             textWriterController.AppendNewLine(textWriter);
         }
 
@@ -81,7 +87,12 @@ namespace Twofold.Compilation
                 return;
             }
 
-            string renderCmd = $"TargetRenderer.Append({fragment.Span.Text});";
+            var renderCmdBuilder = new StringBuilder();
+            renderCmdBuilder.Append("TargetRenderer.PushPartIndentation();");
+            renderCmdBuilder.Append($"TargetRenderer.Append(() => {fragment.Span.Text});");
+            renderCmdBuilder.Append("TargetRenderer.PopPartIndentation();");
+
+            string renderCmd = renderCmdBuilder.ToString();
             textWriterController.Append(new TextSpan(renderCmd), textWriter);
             textWriterController.AppendNewLine(textWriter);
         }
@@ -93,7 +104,7 @@ namespace Twofold.Compilation
             }
 
             string escapedContent = this.EscapeString(fragment.Span.Text);
-            string renderCmd = $"TargetRenderer.Append(\"{escapedContent}\");";
+            string renderCmd = $"TargetRenderer.Append(() => \"{escapedContent}\");";
             textWriterController.Append(new TextSpan(renderCmd), textWriter);
             textWriterController.AppendNewLine(textWriter);
         }

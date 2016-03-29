@@ -35,6 +35,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interface\TemplateCompilerResult.cs" />
     <Compile Include="TextRendering\TargetRenderer.cs" />
     <Compile Include="TextRendering\TextRenderer.cs" />
     <Compile Include="Interface\Compilation\AbstractCodeGenerator.cs" />

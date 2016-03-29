@@ -45,11 +45,10 @@ namespace Twofold
         /// </summary>
         /// <param name="templateName">Name of Twofold template.</param>
         /// <returns>The compiled template or null if an error occured.</returns>
-        public CompiledTemplate Compile(string templateName)
+        public TemplateCompilerResult Compile(string templateName)
         {
             var templateCompiler = new TemplateCompiler(templateLoader, messageHandler, referencedAssemblies);
-            CompiledTemplate compiledTemplate = templateCompiler.Compile(templateName);
-            return compiledTemplate;
+            return templateCompiler.Compile(templateName);
         }
 
         /// <summary>
