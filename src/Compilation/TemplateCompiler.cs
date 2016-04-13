@@ -85,6 +85,7 @@ namespace Twofold.Compilation
 
             string mainTemplateFilename = null;
             bool mainTemplateFilenameSet = false;
+            var generatedFiles = new HashSet<string>();
 
             while (templateNames.Count > 0) {
 
@@ -96,7 +97,7 @@ namespace Twofold.Compilation
                     if (mainTemplateFilenameSet == false) {
                         mainTemplateFilename = template.SourceName;
                         mainTemplateFilenameSet = true;
-                    }
+                    }                    
                 }
                 catch (FileNotFoundException) {
                     messageHandler.Message(TraceLevel.Error, $"Can't find template '{templateName}'.");
@@ -114,8 +115,12 @@ namespace Twofold.Compilation
                 List<string> includedFiles;
                 string generatedCode = this.GenerateCode(template.SourceName, template.Text, out includedFiles);
                 if (generatedCode != null) {
+                    generatedFiles.Add(loadTemplateName);
                     generatedTargetCodes.Add(Tuple.Create(template.SourceName, generatedCode));
                     foreach (var includedFile in includedFiles) {
+                        if(generatedFiles.Contains(includedFile)) {
+                            continue;
+                        }
                         templateNames.Enqueue(includedFile);
                     }
                 }
