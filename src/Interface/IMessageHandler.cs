@@ -23,6 +23,13 @@ namespace Twofold.Interface
 {
     public interface IMessageHandler
     {
+        /// <summary>
+        /// Invoke if a message occured while executing Twofold.
+        /// </summary>
+        /// <param name="level">Severity of the message.</param>
+        /// <param name="text">Message text.</param>
+        /// <param name="source">Source, e.g. filepath, the message belongs to. Can be empty.</param>
+        /// <param name="position">Position the message belongs to.</param>
         void Message(TraceLevel level, string text, string source, TextPosition position);
     };
 }
