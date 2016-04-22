@@ -29,7 +29,7 @@ namespace Twofold.Interface
         public TemplateCompilerResult(CompiledTemplate compiledTemplate, List<Tuple<string, string>> targetCodes)
         {
             if (targetCodes == null) {
-                throw new ArgumentNullException("targetCodes");
+                throw new ArgumentNullException(nameof(targetCodes));
             }
 
             CompiledTemplate = compiledTemplate;

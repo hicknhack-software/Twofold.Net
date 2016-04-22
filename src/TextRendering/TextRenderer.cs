@@ -58,10 +58,10 @@ namespace Twofold.TextRendering
             set
             {
                 if (value == null) {
-                    throw new ArgumentNullException("NewLine");
+                    throw new ArgumentNullException(nameof(NewLine));
                 }
                 if (string.Compare(value, "\n") != 0 && string.Compare(value, "\r\n") != 0) {
-                    throw new ArgumentException("New line must either be \r or \r\n.", "NewLine");
+                    throw new ArgumentException("New line must either be \r or \r\n.", nameof(NewLine));
                 }
                 newLine = value;
             }
@@ -122,7 +122,7 @@ namespace Twofold.TextRendering
         public void PushIndentation(string indentation)
         {
             if (indentation == null) {
-                throw new ArgumentNullException("indentation");
+                throw new ArgumentNullException(nameof(indentation));
             }
 
             string fullIndentation = indentation;
@@ -143,7 +143,7 @@ namespace Twofold.TextRendering
         public void PartIndentation(string indentation, TextWriter writer)
         {
             if (indentation == null) {
-                throw new ArgumentNullException("indentation");
+                throw new ArgumentNullException(nameof(indentation));
             }
 
             if (IsLineBlank) {

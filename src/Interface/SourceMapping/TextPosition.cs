@@ -16,42 +16,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 using System;
 
 namespace Twofold.Interface.SourceMapping
 {
     public class TextPosition : IEquatable<TextPosition>
     {
-        int line = 0;
-        int column = 0;
-
-        public bool IsValid
-        {
-            get { return (line != 0) && (column != 0); }
-        }
-        public int Line
-        {
-            get { return line; }
-            private set
-            {
-                if (value < 1) {
-                    throw new ArgumentOutOfRangeException("Line", "Must be greater than zero.");
-                }
-                line = value;
-            }
-        }
-        public int Column
-        {
-            get { return column; }
-            private set
-            {
-                if (value < 1) {
-                    throw new ArgumentOutOfRangeException("Column", "Must be greater than zero.");
-                }
-                column = value;
-            }
-        }
-
+        private int line = 0;
+        private int column = 0;
         /// <summary>
         /// Creates an invalid TextPosition.
         /// </summary>
@@ -63,11 +36,13 @@ namespace Twofold.Interface.SourceMapping
         /// </summary>
         public TextPosition(int line, int column)
         {
-            if (line < 1) {
-                throw new ArgumentOutOfRangeException("line", "Must be greater than zero.");
+            if (line < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(line), "Must be greater than zero.");
             }
-            if (column < 1) {
-                throw new ArgumentOutOfRangeException("column", "Must be greater than zero.");
+            if (column < 1)
+            {
+                throw new ArgumentOutOfRangeException(nameof(column), "Must be greater than zero.");
             }
             Line = line;
             Column = column;
@@ -83,6 +58,37 @@ namespace Twofold.Interface.SourceMapping
             column = textPosition.column;
         }
 
+        public bool IsValid
+        {
+            get { return (line != 0) && (column != 0); }
+        }
+
+        public int Line
+        {
+            get { return line; }
+            private set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(Line), "Must be greater than zero.");
+                }
+                line = value;
+            }
+        }
+
+        public int Column
+        {
+            get { return column; }
+            private set
+            {
+                if (value < 1)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(Column), "Must be greater than zero.");
+                }
+                column = value;
+            }
+        }
+
         public override int GetHashCode()
         {
             return Line.GetHashCode() ^ Column.GetHashCode();
@@ -94,6 +100,7 @@ namespace Twofold.Interface.SourceMapping
         }
 
         #region IEquatable
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(obj, null)) return false;
@@ -104,13 +111,15 @@ namespace Twofold.Interface.SourceMapping
 
         public bool Equals(TextPosition other)
         {
-            if (other == null) {
+            if (other == null)
+            {
                 return false;
             }
             return line == other.line
                 && column == other.column
                 ;
         }
-        #endregion
+
+        #endregion IEquatable
     }
 }

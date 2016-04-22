@@ -21,6 +21,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using Twofold.Interface;
+using Twofold.Interface.SourceMapping;
 using Twofold.TextRendering;
 
 namespace Twofold.Execution
@@ -37,19 +38,19 @@ namespace Twofold.Execution
         public Target Execute<T>(CompiledTemplate compiledTemplate, T input)
         {
             if (compiledTemplate == null) {
-                throw new ArgumentNullException("compiledTemplate");
+                throw new ArgumentNullException(nameof(compiledTemplate));
             }
 
             Assembly assembly = compiledTemplate.Assembly;
             Type mainType = assembly.GetType(compiledTemplate.MainTypeName);
             if (mainType == null) {
-                messageHandler.Message(TraceLevel.Error, $"Can't find main type in '{compiledTemplate.SourceName}'.");
+                messageHandler.Message(TraceLevel.Error, $"Can't find main type.", compiledTemplate.SourceName, new TextPosition());
                 return null;
             }
 
             MethodInfo mainMethod = mainType.GetMethod(Constants.EntryMethodName, BindingFlags.Public | BindingFlags.Static);
             if (mainMethod == null) {
-                messageHandler.Message(TraceLevel.Error, $"Can't find main method in '{compiledTemplate.SourceName}'.");
+                messageHandler.Message(TraceLevel.Error, $"Can't find main method.", compiledTemplate.SourceName, new TextPosition());
                 return null;
             }
 
@@ -69,7 +70,7 @@ namespace Twofold.Execution
             }
 
             if (parameterCountInvalid || parameterInvalid) {
-                messageHandler.Message(TraceLevel.Error, $"Template main method in '{compiledTemplate.SourceName}' has invalid signature. Expected 'public static {Constants.EntryMethodName}({typeof(T)})'.");
+                messageHandler.Message(TraceLevel.Error, $"Template main method has invalid signature. Expected 'public static {Constants.EntryMethodName}({typeof(T)})'.", compiledTemplate.SourceName, new TextPosition());
                 return null;
             }
 
@@ -80,7 +81,7 @@ namespace Twofold.Execution
                 mainMethod.Invoke(null, new object[] { input });
             }
             catch (Exception ex) {
-                messageHandler.Message(TraceLevel.Error, $"An exception occured in '{compiledTemplate.SourceName}': {ex.ToString()}");
+                messageHandler.Message(TraceLevel.Error, ex.ToString(), compiledTemplate.SourceName, new TextPosition());
             }
 
             var target = new Target(compiledTemplate.SourceName, textWriter.ToString());

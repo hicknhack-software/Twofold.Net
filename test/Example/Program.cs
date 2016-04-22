@@ -101,29 +101,20 @@ namespace Example
         #endregion
 
         #region IMessageHandler
-        public void CSharpMessage(TraceLevel level, TextFilePosition position, string text)
+        public void Message(TraceLevel level, string text, string source, TextPosition position)
         {
-            string positionText = "";
-            if (position.IsValid) {
-                positionText = $"({ position.Line},{ position.Column})";
+            if(string.IsNullOrEmpty(source))
+            {
+                Trace.WriteLine($"Twofold: {level.ToString()}: {text}");
+                return;
             }
 
-            Trace.WriteLine($"{position.SourceName}{positionText}: {level.ToString()}: {text}");
-        }
-
-        public void Message(TraceLevel level, string text)
-        {
-            Trace.WriteLine($"Twofold: {level.ToString()}: {text}");
-        }
-
-        public void TemplateMessage(TraceLevel level, TextFilePosition position, string text)
-        {
             string positionText = "";
-            if (position.IsValid) {
-                positionText = $"({ position.Line},{ position.Column})";
+            if (position.IsValid)
+            {
+                positionText = $"({position.Line},{position.Column})";
             }
-
-            Trace.WriteLine($"{position.SourceName}{positionText}: {level.ToString()}: {text}");
+            Trace.WriteLine($"{source}{positionText}: {level.ToString()}: {text}");
         }
         #endregion
     }

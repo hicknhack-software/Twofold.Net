@@ -16,7 +16,7 @@ namespace Twofold.TextRendering
         internal static void SetTextWriter(TextWriter textWriter)
         {
             if (textWriter == null) {
-                throw new ArgumentNullException("textWriter");
+                throw new ArgumentNullException(nameof(textWriter));
             }
             TargetRenderer.textWriter = textWriter;
         }

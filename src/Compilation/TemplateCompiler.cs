@@ -46,10 +46,10 @@ namespace Twofold.Compilation
         public TemplateCompiler(ITemplateLoader templateLoader, IMessageHandler messageHandler, List<string> referencedAssemblies)
         {
             if (templateLoader == null) {
-                throw new ArgumentNullException("templateLoader");
+                throw new ArgumentNullException(nameof(templateLoader));
             }
             if (messageHandler == null) {
-                throw new ArgumentNullException("messageHandler");
+                throw new ArgumentNullException(nameof(messageHandler));
             }
 
             this.textLoader = templateLoader;
@@ -75,7 +75,7 @@ namespace Twofold.Compilation
         public TemplateCompilerResult Compile(string templateName)
         {
             if (string.IsNullOrEmpty(templateName)) {
-                throw new ArgumentException("Can't be null or empty.", "templateName");
+                throw new ArgumentException("Can't be null or empty.", nameof(templateName));
             }
 
             var templateNames = new Queue<string>();
@@ -100,11 +100,11 @@ namespace Twofold.Compilation
                     }                    
                 }
                 catch (FileNotFoundException) {
-                    messageHandler.Message(TraceLevel.Error, $"Can't find template '{templateName}'.");
+                    messageHandler.Message(TraceLevel.Error, $"Can't find template '{templateName}'.", string.Empty, new TextPosition());
                     throw;
                 }
                 catch (IOException) {
-                    messageHandler.Message(TraceLevel.Error, $"IO error while reading template '{templateName}'.");
+                    messageHandler.Message(TraceLevel.Error, $"IO error while reading template '{templateName}'.", string.Empty, new TextPosition());
                     throw;
                 }
                 catch (Exception) {
@@ -145,10 +145,10 @@ namespace Twofold.Compilation
         string GenerateCode(string sourceName, string sourceText, out List<string> includedFiles)
         {
             if (sourceName == null) {
-                throw new ArgumentNullException("sourceName");
+                throw new ArgumentNullException(nameof(sourceName));
             }
             if (sourceText == null) {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException("sourceText", "text");
             }
 
             TextWriter codeWriter = null;
@@ -195,8 +195,7 @@ namespace Twofold.Compilation
                 }
 
                 TraceLevel traceLevel = compilerError.IsWarning ? TraceLevel.Warning : TraceLevel.Error;
-                var errorPosition = new TextFilePosition(compilerError.FileName, textPosition);
-                messageHandler.CSharpMessage(traceLevel, errorPosition, $"{compilerError.ErrorNumber}: {compilerError.ErrorText}");
+                messageHandler.Message(traceLevel, $"{compilerError.ErrorNumber}: {compilerError.ErrorText}", compilerError.FileName, textPosition);
             }
 
             if (compilerResults.Errors.Count > 0) {
@@ -220,7 +219,7 @@ namespace Twofold.Compilation
             }
 
             if (mainMethod == null) {
-                messageHandler.Message(TraceLevel.Error, $"Can't find static template entry method '{Constants.EntryMethodName}' in '{sourceName}'.");
+                messageHandler.Message(TraceLevel.Error, $"Can't find static template entry method '{Constants.EntryMethodName}'.", sourceName, new TextPosition());
                 return null;
             }
 

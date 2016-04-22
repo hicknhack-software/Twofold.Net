@@ -30,13 +30,13 @@ namespace Twofold.Interface
         public CompiledTemplate(string sourceName, Assembly assembly, string mainTypeName)
         {
             if (string.IsNullOrEmpty(sourceName)) {
-                throw new ArgumentException("Can't be null or empty.", "sourceName");
+                throw new ArgumentException("Can't be null or empty.", nameof(sourceName));
             }
             if (assembly == null) {
-                throw new ArgumentNullException("assembly");
+                throw new ArgumentNullException(nameof(assembly));
             }
             if (string.IsNullOrEmpty(mainTypeName)) {
-                throw new ArgumentException("Can't be null or empty.", "mainTypeName");
+                throw new ArgumentException("Can't be null or empty.", nameof(mainTypeName));
             }
 
             SourceName = sourceName;

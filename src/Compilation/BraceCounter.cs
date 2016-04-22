@@ -46,14 +46,14 @@ namespace Twofold.Compilation
         public static int FindQuoteEnd(string text, int begin, int end)
         {
             if (begin > end) {
-                throw new ArgumentException("begin must be less equal end.");
+                throw new ArgumentException($"{nameof(begin)} must be less equal {nameof(end)}.");
             }
             if (end > text.Length) {
-                throw new ArgumentOutOfRangeException("end must be less equal text length.");
+                throw new ArgumentOutOfRangeException($"{nameof(end)} must be less equal {nameof(text)} length.");
             }
             char quoteChar = text[begin];
             if (quoteChar != '"' && quoteChar != '\'') {
-                throw new InvalidOperationException("begin must be on a ' or \" char.");
+                throw new InvalidOperationException($"{nameof(begin)} must be on a ' or \" char.");
             }
 
             ++begin;
@@ -84,14 +84,14 @@ namespace Twofold.Compilation
         public static int MatchBraces(string text, int begin, int end)
         {
             if (begin > end) {
-                throw new ArgumentException("begin must be less equal end.");
+                throw new ArgumentException($"{nameof(begin)} must be less equal {nameof(end)}.");
             }
             if (end > text.Length) {
-                throw new ArgumentOutOfRangeException("end must be less equal text length.");
+                throw new ArgumentOutOfRangeException($"{nameof(end)} must be less equal {nameof(text)} length.");
             }
             char braceChar = text[begin];
             if (braceChar != '{') {
-                throw new InvalidOperationException("begin must be on a '{' char.");
+                throw new InvalidOperationException($"{nameof(begin)} must be on a '{{' char.");
             }
 
             int depth = 0;

@@ -24,14 +24,13 @@ namespace Twofold.Interface.SourceMapping
     {
         public readonly string SourceName;
 
-        public TextFilePosition(string sourceName)
-        {
-            SourceName = sourceName;
-        }
-
         public TextFilePosition(string sourceName, TextPosition textPosition)
             : base(textPosition)
         {
+            if(sourceName == null)
+            {
+                throw new ArgumentNullException(nameof(sourceName));
+            }
             SourceName = sourceName;
         }
 
@@ -42,7 +41,7 @@ namespace Twofold.Interface.SourceMapping
 
         public override string ToString()
         {
-            return $"{SourceName} L:{Line}, C:{Column}";
+            return $"{SourceName} ({Line}, {Column})";
         }
 
         #region IEquatable

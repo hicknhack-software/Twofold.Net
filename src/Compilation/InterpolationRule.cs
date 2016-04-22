@@ -60,7 +60,7 @@ namespace Twofold.Compilation
                             var expressionEnd = BraceCounter.MatchBraces(line.Text, expressionBegin, line.End);
                             if (expressionEnd == line.End) {
                                 end = line.End;
-                                messageHandler.TemplateMessage(TraceLevel.Error, line.Position, "Missing a closing '}'.");
+                                messageHandler.Message(TraceLevel.Error, "Missing closing '}'.", line.Position.SourceName, line.Position);
                                 break;
                             }
                             fragments.Add(new OriginExpression(line, new TextSpan(line.Text, expressionBegin + 1, expressionEnd)));

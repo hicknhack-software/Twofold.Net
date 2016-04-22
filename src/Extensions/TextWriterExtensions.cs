@@ -29,13 +29,13 @@ namespace Twofold.Extensions
         public static void Write(this TextWriter textWriter, int begin, int end, string text)
         {
             if (begin > end) {
-                throw new ArgumentOutOfRangeException("begin", "Must be less equal than end.");
+                throw new ArgumentOutOfRangeException(nameof(begin), "Must be less equal than end.");
             }
             if (text == null) {
-                throw new ArgumentNullException("text");
+                throw new ArgumentNullException(nameof(text));
             }
             if (end > text.Length) {
-                throw new ArgumentOutOfRangeException("end", "end must be less equal string length.");
+                throw new ArgumentOutOfRangeException(nameof(end), "end must be less equal string length.");
             }
             var writeText = text.Substring(begin, end - begin);
             textWriter.Write(writeText);

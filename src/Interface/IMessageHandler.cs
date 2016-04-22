@@ -23,8 +23,6 @@ namespace Twofold.Interface
 {
     public interface IMessageHandler
     {
-        void Message(TraceLevel level, string text);
-        void TemplateMessage(TraceLevel level, TextFilePosition position, string text);
-        void CSharpMessage(TraceLevel level, TextFilePosition position, string text);
+        void Message(TraceLevel level, string text, string source, TextPosition position);
     };
 }

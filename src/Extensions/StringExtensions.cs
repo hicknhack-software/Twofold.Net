@@ -29,10 +29,10 @@ namespace Twofold.Extensions
         public static int IndexOf(this string value, int begin, int end, Func<char, bool> predicate)
         {
             if (begin > end) {
-                throw new ArgumentOutOfRangeException("begin", "Must be less equal than end.");
+                throw new ArgumentOutOfRangeException(nameof(begin), "Must be less equal than end.");
             }
             if (end > value.Length) {
-                throw new ArgumentOutOfRangeException("end", "end must be less equal string length.");
+                throw new ArgumentOutOfRangeException(nameof(end), "end must be less equal string length.");
             }
             var index = begin;
             while (index < end) {
@@ -50,10 +50,10 @@ namespace Twofold.Extensions
         public static int IndexOfNot(this string value, int begin, int end, Func<char, bool> predicate)
         {
             if (begin > end) {
-                throw new ArgumentOutOfRangeException("begin", "Must be less equal than end.");
+                throw new ArgumentOutOfRangeException(nameof(begin), "Must be less equal than end.");
             }
             if (end > value.Length) {
-                throw new ArgumentOutOfRangeException("end", "end must be less equal string length.");
+                throw new ArgumentOutOfRangeException(nameof(end), "end must be less equal string length.");
             }
             var index = begin;
             while (index < end) {
