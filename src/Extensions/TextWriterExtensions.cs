@@ -16,11 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using System.IO;
 
 namespace Twofold.Extensions
 {
+    using System;
+    using System.IO;
+
     internal static class TextWriterExtensions
     {
         /// <exception cref="ArgumentOutOfRangeException">begin is greater than end.</exception>
@@ -28,13 +29,16 @@ namespace Twofold.Extensions
         /// <exception cref="ArgumentNullException">text is null.</exception>
         public static void Write(this TextWriter textWriter, int begin, int end, string text)
         {
-            if (begin > end) {
+            if (begin > end)
+            {
                 throw new ArgumentOutOfRangeException(nameof(begin), "Must be less equal than end.");
             }
-            if (text == null) {
+            if (text == null)
+            {
                 throw new ArgumentNullException(nameof(text));
             }
-            if (end > text.Length) {
+            if (end > text.Length)
+            {
                 throw new ArgumentOutOfRangeException(nameof(end), "end must be less equal string length.");
             }
             var writeText = text.Substring(begin, end - begin);

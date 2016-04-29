@@ -16,21 +16,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using Twofold.Extensions;
 
 namespace Twofold.Compilation
 {
+    using Extensions;
+    using System;
+
     internal class BraceCounter
     {
-        static bool IsBraceOrQuote(char ch)
+        private static bool IsBraceOrQuote(char ch)
         {
-            switch (ch) {
+            switch (ch)
+            {
                 case '{':
                 case '}':
                 case '"':
                 case '\'':
                     return true;
+
                 default:
                     return false;
             }
@@ -45,28 +48,35 @@ namespace Twofold.Compilation
         /// <exception cref="InvalidOperationException">begin must be on a ' order \ character.</exception>
         public static int FindQuoteEnd(string text, int begin, int end)
         {
-            if (begin > end) {
+            if (begin > end)
+            {
                 throw new ArgumentException($"{nameof(begin)} must be less equal {nameof(end)}.");
             }
-            if (end > text.Length) {
+            if (end > text.Length)
+            {
                 throw new ArgumentOutOfRangeException($"{nameof(end)} must be less equal {nameof(text)} length.");
             }
             char quoteChar = text[begin];
-            if (quoteChar != '"' && quoteChar != '\'') {
+            if (quoteChar != '"' && quoteChar != '\'')
+            {
                 throw new InvalidOperationException($"{nameof(begin)} must be on a ' or \" char.");
             }
 
             ++begin;
-            while (begin < end) {
+            while (begin < end)
+            {
                 var index = text.IndexOf(begin, end, (ch) => ch == quoteChar);
-                if (index == end) { // Invalid, not found
+                if (index == end)
+                { // Invalid, not found
                     return index;
                 }
 
-                if ((index > begin) && text[index - 1] == '\\') { //Success, found unescaped quote char
+                if ((index > begin) && text[index - 1] == '\\')
+                { //Success, found unescaped quote char
                     begin = (index + 1);
                 }
-                else {
+                else
+                {
                     return index;
                 }
             }
@@ -83,43 +93,51 @@ namespace Twofold.Compilation
         /// <exception cref="InvalidOperationException">begin must be on a { character.</exception>
         public static int MatchBraces(string text, int begin, int end)
         {
-            if (begin > end) {
+            if (begin > end)
+            {
                 throw new ArgumentException($"{nameof(begin)} must be less equal {nameof(end)}.");
             }
-            if (end > text.Length) {
+            if (end > text.Length)
+            {
                 throw new ArgumentOutOfRangeException($"{nameof(end)} must be less equal {nameof(text)} length.");
             }
             char braceChar = text[begin];
-            if (braceChar != '{') {
+            if (braceChar != '{')
+            {
                 throw new InvalidOperationException($"{nameof(begin)} must be on a '{{' char.");
             }
 
             int depth = 0;
-            while (begin < end) {
-
+            while (begin < end)
+            {
                 var index = text.IndexOf(begin, end, BraceCounter.IsBraceOrQuote);
-                if (index == end) { // Error, nothing found
+                if (index == end)
+                { // Error, nothing found
                     return end;
                 }
 
-                switch (text[index]) {
+                switch (text[index])
+                {
                     case '{':
                         ++depth;
                         break;
 
                     case '}':
-                        if (depth == 0) { //Error, found closing brace before any opening
+                        if (depth == 0)
+                        { //Error, found closing brace before any opening
                             return end;
                         }
                         --depth;
-                        if (depth == 0) {
+                        if (depth == 0)
+                        {
                             return index; //Found, all closed
                         }
                         break;
 
                     default:
                         index = BraceCounter.FindQuoteEnd(text, index, end);
-                        if (index == end) { //Error, found no closing quote
+                        if (index == end)
+                        { //Error, found no closing quote
                             return end;
                         }
                         break;
@@ -130,5 +148,4 @@ namespace Twofold.Compilation
             return end;
         }
     }
-
 }

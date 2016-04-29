@@ -16,51 +16,59 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Collections.Generic;
-using Twofold.Interface;
-using Twofold.Interface.Compilation;
-using Twofold.Extensions;
-using System;
 
 namespace Twofold.Compilation
 {
+    using Extensions;
+    using Interface;
+    using Interface.Compilation;
+    using System;
+    using System.Collections.Generic;
+
     internal class PreprocessorRule : IParserRule
     {
         public List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)
         {
-            List<AsbtractCodeFragment> fragments = new List<AsbtractCodeFragment>();
+            var fragments = new List<AsbtractCodeFragment>();
 
-            while (true) {
+            while (true)
+            {
                 var index = (line.BeginNonSpace + 1); // Skip #
 
                 // Find 'pragma'
                 string preproDirective;
                 index = this.MatchNextToken(line.Text, index, line.End, out preproDirective);
-                if (index == line.End) {
+                if (index == line.End)
+                {
                     break;
                 }
-                if (string.Compare(preproDirective, "pragma") != 0) {
+                if (string.Compare(preproDirective, "pragma", StringComparison.Ordinal) != 0)
+                {
                     break;
                 }
 
                 // Find 'include'
                 string pragmaName;
                 index = this.MatchNextToken(line.Text, index, line.End, out pragmaName);
-                if (index == line.End) {
+                if (index == line.End)
+                {
                     break;
                 }
-                if (string.Compare(pragmaName, "include") != 0) {
+                if (string.Compare(pragmaName, "include", StringComparison.Ordinal) != 0)
+                {
                     break;
                 }
 
                 // Find '"<Filename>"'
                 var pragmaArgBegin = line.Text.IndexOf(index, line.End, ch => ch == '"');
-                if (pragmaArgBegin == line.End) {
+                if (pragmaArgBegin == line.End)
+                {
                     break;
                 }
 
                 var pragmaArgEnd = BraceCounter.FindQuoteEnd(line.Text, index, line.End);
-                if (pragmaArgEnd == line.End) {
+                if (pragmaArgEnd == line.End)
+                {
                     break;
                 }
 
@@ -74,20 +82,23 @@ namespace Twofold.Compilation
                 break;
             }
 
-            // No pragma dected, pass line through
-            if (fragments.Count == 0) {
+            // No pragma detected, pass line through
+            if (fragments.Count == 0)
+            {
                 fragments.Add(new OriginScript(line, new TextSpan(line.Text, line.Begin, line.End)));
             }
 
             return fragments;
         }
 
-        int MatchNextToken(string text, int begin, int end, out string token)
+        private int MatchNextToken(string text, int begin, int end, out string token)
         {
-            if (begin > end) {
+            if (begin > end)
+            {
                 throw new ArgumentOutOfRangeException(nameof(begin), "Must be less equal than end.");
             }
-            if (end > text.Length) {
+            if (end > text.Length)
+            {
                 throw new ArgumentOutOfRangeException(nameof(end), "end must be less equal string length.");
             }
 
@@ -95,13 +106,15 @@ namespace Twofold.Compilation
 
             int index = begin;
             var tokenIndex = text.IndexOfNot(index, end, CharExtensions.IsSpace);
-            if (tokenIndex == end) {
+            if (tokenIndex == end)
+            {
                 return end;
             }
             index = (tokenIndex + 1);
 
             var tokenEndIndex = text.IndexOf(index, end, CharExtensions.IsSpace);
-            if (tokenEndIndex == end) {
+            if (tokenEndIndex == end)
+            {
                 return end;
             }
             index = (tokenEndIndex + 1);

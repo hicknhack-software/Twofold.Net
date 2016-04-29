@@ -16,49 +16,57 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Collections.Generic;
-using System.Diagnostics;
-using Twofold.Interface;
-using Twofold.Interface.Compilation;
-using Twofold.Extensions;
 
 namespace Twofold.Compilation
 {
+    using Extensions;
+    using Interface;
+    using Interface.Compilation;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+
     internal class InterpolationRule : IParserRule
     {
         public virtual List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)
         {
-            List<AsbtractCodeFragment> fragments = new List<AsbtractCodeFragment>();
+            var fragments = new List<AsbtractCodeFragment>();
 
             var indentBegin = (line.BeginNonSpace + 1); //skip matched character
             var index = line.Text.IndexOfNot(indentBegin, line.End, CharExtensions.IsSpace);
             fragments.Add(new TargetIndentation(line, new TextSpan(line.Text, indentBegin, index)));
 
             var end = index;
-            while (index < line.End) {
+            while (index < line.End)
+            {
                 index = line.Text.IndexOf(index, line.End, (ch) => ch == '#');
-                if (index == line.End) { // reached line end
+                if (index == line.End)
+                { // reached line end
                     break;
                 }
 
-                if ((index + 1) >= line.End) {
+                if ((index + 1) >= line.End)
+                {
                     break;
                 }
 
-                switch (line.Text[index + 1]) {
-                    case '#': {
+                switch (line.Text[index + 1])
+                {
+                    case '#':
+                        {
                             var escapeBegin = (index + 1); //skip #
                             fragments.Add(new OriginText(line, new TextSpan(line.Text, escapeBegin, escapeBegin + 1)));
                             index = end = (escapeBegin + 1);
                             continue;
                         }
 
-                    case '{': {
+                    case '{':
+                        {
                             fragments.Add(new OriginText(line, new TextSpan(line.Text, end, index)));
 
                             var expressionBegin = (index + 1);
                             var expressionEnd = BraceCounter.MatchBraces(line.Text, expressionBegin, line.End);
-                            if (expressionEnd == line.End) {
+                            if (expressionEnd == line.End)
+                            {
                                 end = line.End;
                                 messageHandler.Message(TraceLevel.Error, "Missing closing '}'.", line.Position.SourceName, line.Position);
                                 break;
@@ -68,7 +76,8 @@ namespace Twofold.Compilation
                             continue;
                         }
 
-                    default: {
+                    default:
+                        {
                             index = end = (index + 2);
                             continue;
                         }

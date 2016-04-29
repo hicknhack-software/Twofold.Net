@@ -16,23 +16,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Text;
-using Twofold.Interface;
-using Twofold.Interface.Compilation;
-using Twofold.TextRendering;
 
 namespace Twofold.Compilation
 {
+    using Interface;
+    using Interface.Compilation;
+    using System.Collections.Generic;
+    using System.Globalization;
+    using System.IO;
+    using System.Text;
+    using TextRendering;
+
     internal sealed class CSharpGenerator : AbstractCodeGenerator
     {
-        static readonly char[] hexDigit = "0123456789abcdef".ToCharArray();
-        readonly TextRenderer textWriterController;
-        readonly TextWriter textWriter;
-        readonly List<string> includedFiles;
-
+        private static readonly char[] hexDigit = "0123456789abcdef".ToCharArray();
+        private readonly TextRenderer textWriterController;
+        private readonly TextWriter textWriter;
+        private readonly List<string> includedFiles;
 
         public CSharpGenerator(TemplateParser templateParser, TextWriter textWriter, List<string> includedFiles)
             : base(templateParser)
@@ -83,7 +83,8 @@ namespace Twofold.Compilation
 
         protected override void Generate(OriginExpression fragment)
         {
-            if (fragment.Span.IsEmpty) {
+            if (fragment.Span.IsEmpty)
+            {
                 return;
             }
 
@@ -99,7 +100,8 @@ namespace Twofold.Compilation
 
         protected override void Generate(OriginText fragment)
         {
-            if (fragment.Span.IsEmpty) {
+            if (fragment.Span.IsEmpty)
+            {
                 return;
             }
 
@@ -111,9 +113,12 @@ namespace Twofold.Compilation
 
         protected override void Generate(OriginPragma fragment)
         {
-            switch (fragment.Name) {
-                case "include": {
-                        if (string.IsNullOrEmpty(fragment.Argument) == false) {
+            switch (fragment.Name)
+            {
+                case "include":
+                    {
+                        if (string.IsNullOrEmpty(fragment.Argument) == false)
+                        {
                             includedFiles.Add(fragment.Argument);
                         }
                     }
@@ -132,19 +137,22 @@ namespace Twofold.Compilation
             textWriterController.Append(new TextSpan(lineDirective), textWriter);
             textWriterController.AppendNewLine(textWriter);
 
-            foreach (string targetCodeUsing in Constants.TargetCodeUsings) {
+            foreach (string targetCodeUsing in Constants.TargetCodeUsings)
+            {
                 textWriterController.Append(new TextSpan(targetCodeUsing), textWriter);
                 textWriterController.AppendNewLine(textWriter);
             }
         }
 
-        string EscapeString(string text)
+        private string EscapeString(string text)
         {
             var sb = new StringBuilder(text.Length);
             var len = text.Length;
-            for (int c = 0; c < len; ++c) {
+            for (int c = 0; c < len; ++c)
+            {
                 char ch = text[c];
-                switch (ch) {
+                switch (ch)
+                {
                     case '\'': sb.Append(@"\'"); break;
                     case '\"': sb.Append("\\\""); break;
                     case '\\': sb.Append(@"\\"); break;
@@ -156,9 +164,12 @@ namespace Twofold.Compilation
                     case '\r': sb.Append(@"\r"); break;
                     case '\t': sb.Append(@"\t"); break;
                     case '\v': sb.Append(@"\v"); break;
-                    default: {
-                            switch (char.GetUnicodeCategory(ch)) {
-                                case UnicodeCategory.Control: {
+                    default:
+                        {
+                            switch (char.GetUnicodeCategory(ch))
+                            {
+                                case UnicodeCategory.Control:
+                                    {
                                         var c1 = hexDigit[(ch >> 12) & 0x0F];
                                         var c2 = hexDigit[(ch >> 8) & 0x0F];
                                         var c3 = hexDigit[(ch >> 4) & 0x0F];

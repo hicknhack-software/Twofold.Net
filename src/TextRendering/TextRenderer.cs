@@ -16,26 +16,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using System.Collections.Generic;
-using System.IO;
-using Twofold.Extensions;
-using Twofold.Interface;
 
 namespace Twofold.TextRendering
 {
+    using Extensions;
+    using Interface;
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+
     internal class TextRenderer
     {
         // Fields
-        string newLine = Environment.NewLine;
-        bool lineBlank = true;
-        readonly Stack<Tuple<string, string>> indentationQueue = new Stack<Tuple<string, string>>();
-        string partIndentation = "";
+        private string newLine = Environment.NewLine;
+
+        private bool lineBlank = true;
+        private readonly Stack<Tuple<string, string>> indentationQueue = new Stack<Tuple<string, string>>();
+        private string partIndentation = "";
 
         /// <summary>
         /// Indicates whether the current line is blank.
         /// </summary>
-        public bool IsLineBlank { get { return lineBlank; } }
+        public bool IsLineBlank
+        {
+            get { return lineBlank; }
+        }
 
         /// <summary>
         /// Current line
@@ -57,10 +62,12 @@ namespace Twofold.TextRendering
             get { return newLine; }
             set
             {
-                if (value == null) {
+                if (value == null)
+                {
                     throw new ArgumentNullException(nameof(NewLine));
                 }
-                if (string.Compare(value, "\n") != 0 && string.Compare(value, "\r\n") != 0) {
+                if (string.Compare(value, "\n", StringComparison.Ordinal) != 0 && string.Compare(value, "\r\n", StringComparison.Ordinal) != 0)
+                {
                     throw new ArgumentException("New line must either be \r or \r\n.", nameof(NewLine));
                 }
                 newLine = value;
@@ -73,26 +80,31 @@ namespace Twofold.TextRendering
         public void Append(TextSpan textSpan, TextWriter writer)
         {
             // Skip empty spans
-            if (textSpan.IsEmpty) {
+            if (textSpan.IsEmpty)
+            {
                 return;
             }
 
             string indentation = (indentationQueue.Count > 0) ? indentationQueue.Peek().Item2 : "";
 
             var index = textSpan.Begin;
-            while (index < textSpan.End) {
-                if (lineBlank) {
+            while (index < textSpan.End)
+            {
+                if (lineBlank)
+                {
                     writer.Write(indentation);
                     Column += indentation.Length;
                     lineBlank = false;
                 }
 
                 var lineBreakIndex = textSpan.OriginalText.IndexOf(index, textSpan.End, ch => ch == '\n');
-                if (lineBreakIndex == textSpan.End) { // No line break found
+                if (lineBreakIndex == textSpan.End)
+                { // No line break found
                     writer.Write(index, textSpan.End, textSpan.OriginalText);
                     index += (textSpan.End - index);
                 }
-                else {  // Line break found
+                else
+                {  // Line break found
                     ++lineBreakIndex;
                     writer.Write(index, lineBreakIndex, textSpan.OriginalText);
                     index += (lineBreakIndex - index);
@@ -121,12 +133,14 @@ namespace Twofold.TextRendering
         /// <param name="indentation">The indentation text.</param>
         public void PushIndentation(string indentation)
         {
-            if (indentation == null) {
+            if (indentation == null)
+            {
                 throw new ArgumentNullException(nameof(indentation));
             }
 
             string fullIndentation = indentation;
-            if (indentationQueue.Count > 0) {
+            if (indentationQueue.Count > 0)
+            {
                 fullIndentation = fullIndentation.Insert(0, indentationQueue.Peek().Item2);
             }
             indentationQueue.Push(Tuple.Create(indentation, fullIndentation));
@@ -142,11 +156,13 @@ namespace Twofold.TextRendering
 
         public void PartIndentation(string indentation, TextWriter writer)
         {
-            if (indentation == null) {
+            if (indentation == null)
+            {
                 throw new ArgumentNullException(nameof(indentation));
             }
 
-            if (IsLineBlank) {
+            if (IsLineBlank)
+            {
                 partIndentation = indentation;
             }
             this.Append(new TextSpan(indentation), writer);

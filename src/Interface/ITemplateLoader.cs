@@ -25,5 +25,4 @@ namespace Twofold.Interface
         /// <exception cref="IOException"></exception>
         Template Load(string name);
     }
-
 }

@@ -16,22 +16,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using Twofold.Interface;
-using Twofold.Compilation;
-using Twofold.Execution;
 
 namespace Twofold
 {
+    using Compilation;
+    using Execution;
+    using Interface;
+    using System.Collections.Generic;
+
     public class Engine
     {
-        readonly ITemplateLoader templateLoader;
-        readonly IMessageHandler messageHandler;
-        readonly List<string> referencedAssemblies = new List<string>();
+        private readonly ITemplateLoader templateLoader;
+        private readonly IMessageHandler messageHandler;
+        private readonly List<string> referencedAssemblies = new List<string>();
 
         public Engine(ITemplateLoader templateLoader, IMessageHandler messageHandler, params string[] referencedAssemblies)
         {

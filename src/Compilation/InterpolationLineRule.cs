@@ -16,12 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Collections.Generic;
-using Twofold.Interface;
-using Twofold.Interface.Compilation;
 
 namespace Twofold.Compilation
 {
+    using Interface;
+    using Interface.Compilation;
+    using System.Collections.Generic;
+
     internal class InterpolationLineRule : InterpolationRule
     {
         public override List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)

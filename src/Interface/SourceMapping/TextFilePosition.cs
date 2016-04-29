@@ -16,10 +16,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
 
 namespace Twofold.Interface.SourceMapping
 {
+    using System;
+
     public class TextFilePosition : TextPosition, IEquatable<TextFilePosition>
     {
         public readonly string SourceName;
@@ -27,7 +28,7 @@ namespace Twofold.Interface.SourceMapping
         public TextFilePosition(string sourceName, TextPosition textPosition)
             : base(textPosition)
         {
-            if(sourceName == null)
+            if (sourceName == null)
             {
                 throw new ArgumentNullException(nameof(sourceName));
             }
@@ -45,6 +46,7 @@ namespace Twofold.Interface.SourceMapping
         }
 
         #region IEquatable
+
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(obj, null)) return false;
@@ -55,13 +57,15 @@ namespace Twofold.Interface.SourceMapping
 
         public bool Equals(TextFilePosition other)
         {
-            if (other == null) {
+            if (other == null)
+            {
                 return false;
             }
             return base.Equals((TextPosition)other)
-                && (string.Compare(SourceName, other.SourceName) == 0)
+                && (string.Compare(SourceName, other.SourceName, StringComparison.Ordinal) == 0)
                 ;
         }
-        #endregion
+
+        #endregion IEquatable
     }
 }

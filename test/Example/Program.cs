@@ -58,14 +58,19 @@ namespace Example
             Engine engine = new Engine(app, app, Assembly.GetExecutingAssembly().Location);
 
             TemplateCompilerResult compilerResult = engine.Compile("Main");
-            foreach (var nameSourceTuple in compilerResult.TargetCodes) {
-                Console.WriteLine(nameSourceTuple.Item1);
-                Console.WriteLine("-------");
-                Console.WriteLine(nameSourceTuple.Item2);
-                Console.WriteLine();
-            }
 
-            if (compilerResult.CompiledTemplate != null) {
+            using (var fileStream = new FileStream("TwofoldRenderCode.cs", FileMode.CreateNew))
+            using (var writer = new StreamWriter(fileStream))
+                foreach (var nameSourceTuple in compilerResult.TargetCodes)
+                {
+                    writer.WriteLine($"//{nameSourceTuple.Item1}");
+                    writer.WriteLine("//////////////////////////////////////////////////////");
+                    writer.WriteLine($"{nameSourceTuple.Item2}");
+                    writer.WriteLine();
+                }
+
+            if (compilerResult.CompiledTemplate != null)
+            {
 
                 var classDescriptor = new ClassDescriptor("TwofoldGenerated", new List<MethodDescriptor>
                 {
@@ -79,7 +84,8 @@ namespace Example
                 Target target = engine.Run(compilerResult.CompiledTemplate, classDescriptor);
                 Console.WriteLine("Generated code...");
                 Console.WriteLine("-------");
-                if (target != null) {
+                if (target != null)
+                {
                     Console.WriteLine(target.GeneratedText);
                 }
             }
@@ -91,7 +97,8 @@ namespace Example
         public Template Load(string name)
         {
             var text = Resources.ResourceManager.GetString(name);
-            if (text == null) {
+            if (text == null)
+            {
                 throw new FileNotFoundException("", name);
             }
 
@@ -103,7 +110,7 @@ namespace Example
         #region IMessageHandler
         public void Message(TraceLevel level, string text, string source, TextPosition position)
         {
-            if(string.IsNullOrEmpty(source))
+            if (string.IsNullOrEmpty(source))
             {
                 Trace.WriteLine($"Twofold: {level.ToString()}: {text}");
                 return;
@@ -112,7 +119,7 @@ namespace Example
             string positionText = "";
             if (position.IsValid)
             {
-                positionText = $"({position.Line},{position.Column})";
+                positionText = position.ToString();
             }
             Trace.WriteLine($"{source}{positionText}: {level.ToString()}: {text}");
         }

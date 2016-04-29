@@ -16,11 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using System.Reflection;
 
 namespace Twofold.Interface
 {
+    using System;
+    using System.Reflection;
+
     public class CompiledTemplate
     {
         public readonly Assembly @Assembly;
@@ -29,13 +30,16 @@ namespace Twofold.Interface
 
         public CompiledTemplate(string sourceName, Assembly assembly, string mainTypeName)
         {
-            if (string.IsNullOrEmpty(sourceName)) {
+            if (string.IsNullOrEmpty(sourceName))
+            {
                 throw new ArgumentException("Can't be null or empty.", nameof(sourceName));
             }
-            if (assembly == null) {
+            if (assembly == null)
+            {
                 throw new ArgumentNullException(nameof(assembly));
             }
-            if (string.IsNullOrEmpty(mainTypeName)) {
+            if (string.IsNullOrEmpty(mainTypeName))
+            {
                 throw new ArgumentException("Can't be null or empty.", nameof(mainTypeName));
             }
 

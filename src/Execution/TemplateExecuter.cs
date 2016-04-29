@@ -16,19 +16,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using Twofold.Interface;
-using Twofold.Interface.SourceMapping;
-using Twofold.TextRendering;
 
 namespace Twofold.Execution
 {
+    using Interface;
+    using Interface.SourceMapping;
+    using System;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Reflection;
+    using TextRendering;
+
     internal class TemplateExecuter
     {
-        readonly IMessageHandler messageHandler;
+        private readonly IMessageHandler messageHandler;
 
         public TemplateExecuter(IMessageHandler messageHandler)
         {
@@ -37,20 +38,23 @@ namespace Twofold.Execution
 
         public Target Execute<T>(CompiledTemplate compiledTemplate, T input)
         {
-            if (compiledTemplate == null) {
+            if (compiledTemplate == null)
+            {
                 throw new ArgumentNullException(nameof(compiledTemplate));
             }
 
             Assembly assembly = compiledTemplate.Assembly;
             Type mainType = assembly.GetType(compiledTemplate.MainTypeName);
-            if (mainType == null) {
-                messageHandler.Message(TraceLevel.Error, $"Can't find main type.", compiledTemplate.SourceName, new TextPosition());
+            if (mainType == null)
+            {
+                messageHandler.Message(TraceLevel.Error, $"Can't find main type '{compiledTemplate.MainTypeName}'.", compiledTemplate.SourceName, new TextPosition());
                 return null;
             }
 
             MethodInfo mainMethod = mainType.GetMethod(Constants.EntryMethodName, BindingFlags.Public | BindingFlags.Static);
-            if (mainMethod == null) {
-                messageHandler.Message(TraceLevel.Error, $"Can't find main method.", compiledTemplate.SourceName, new TextPosition());
+            if (mainMethod == null)
+            {
+                messageHandler.Message(TraceLevel.Error, $"Can't find main method '{Constants.EntryMethodName}'.", compiledTemplate.SourceName, new TextPosition());
                 return null;
             }
 
@@ -58,7 +62,8 @@ namespace Twofold.Execution
             ParameterInfo[] parameters = mainMethod.GetParameters();
             bool parameterCountInvalid = (parameters.Length != 1);
             bool parameterInvalid = false;
-            if (parameterCountInvalid == false) {
+            if (parameterCountInvalid == false)
+            {
                 ParameterInfo param = parameters[0];
                 parameterInvalid |= param.HasDefaultValue;
                 parameterInvalid |= param.IsIn;
@@ -69,18 +74,21 @@ namespace Twofold.Execution
                 parameterInvalid |= (param.ParameterType.IsAssignableFrom(typeof(T)) == false);
             }
 
-            if (parameterCountInvalid || parameterInvalid) {
+            if (parameterCountInvalid || parameterInvalid)
+            {
                 messageHandler.Message(TraceLevel.Error, $"Template main method has invalid signature. Expected 'public static {Constants.EntryMethodName}({typeof(T)})'.", compiledTemplate.SourceName, new TextPosition());
                 return null;
             }
 
             // Invoke main method
             TextWriter textWriter = new StringWriter();
-            try {
+            try
+            {
                 TargetRenderer.SetTextWriter(textWriter);
                 mainMethod.Invoke(null, new object[] { input });
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 messageHandler.Message(TraceLevel.Error, ex.ToString(), compiledTemplate.SourceName, new TextPosition());
             }
 

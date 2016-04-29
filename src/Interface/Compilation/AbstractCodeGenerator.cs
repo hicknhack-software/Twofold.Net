@@ -16,14 +16,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using System.Collections.Generic;
 
 namespace Twofold.Interface.Compilation
 {
+    using System;
+    using System.Collections.Generic;
+
     public abstract class AbstractCodeGenerator
     {
-        readonly ITemplateParser parser;
+        private readonly ITemplateParser parser;
 
         public AbstractCodeGenerator(ITemplateParser parser)
         {
@@ -35,8 +36,10 @@ namespace Twofold.Interface.Compilation
             this.PreGeneration(sourceName, text);
 
             List<AsbtractCodeFragment> fragments = parser.Parse(sourceName, text);
-            foreach (var codeFragment in fragments) {
-                switch (codeFragment.Type) {
+            foreach (var codeFragment in fragments)
+            {
+                switch (codeFragment.Type)
+                {
                     case CodeFragmentTypes.OriginExpression:
                         this.Generate((OriginExpression)codeFragment);
                         break;
@@ -70,24 +73,35 @@ namespace Twofold.Interface.Compilation
                         break;
 
                     default:
-                        throw new NotSupportedException($"CodeFragmentType '{codeFragment.Type.ToString()} is not supported.'");
+                        throw new NotSupportedException($"CodeFragmentType '{codeFragment.Type.ToString()}' is not supported.");
                 }
             }
 
             this.PostGeneration(sourceName, text);
         }
 
-        protected virtual void PreGeneration(string sourceName, string text) { }
-        protected virtual void PostGeneration(string sourceName, string text) { }
+        protected virtual void PreGeneration(string sourceName, string text)
+        {
+        }
+
+        protected virtual void PostGeneration(string sourceName, string text)
+        {
+        }
 
         protected abstract void Generate(OriginText fragment);
+
         protected abstract void Generate(OriginExpression fragment);
+
         protected abstract void Generate(OriginPragma fragment);
+
         protected abstract void Generate(OriginScript fragment);
 
         protected abstract void Generate(TargetNewLine fragment);
+
         protected abstract void Generate(TargetIndentation fragment);
+
         protected abstract void Generate(TargetPushIndentation fragment);
+
         protected abstract void Generate(TargetPopIndentation fragment);
     }
 }

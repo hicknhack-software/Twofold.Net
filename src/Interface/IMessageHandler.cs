@@ -16,11 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Diagnostics;
-using Twofold.Interface.SourceMapping;
 
 namespace Twofold.Interface
 {
+    using SourceMapping;
+    using System.Diagnostics;
+
     public interface IMessageHandler
     {
         /// <summary>

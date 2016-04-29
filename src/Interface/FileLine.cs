@@ -16,11 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using Twofold.Interface.SourceMapping;
 
 namespace Twofold.Interface
 {
+    using SourceMapping;
+    using System;
+
     public struct FileLine
     {
         public readonly string Text;
@@ -31,16 +32,20 @@ namespace Twofold.Interface
 
         public FileLine(string text, int begin, int beginNonSpace, int end, TextFilePosition position)
         {
-            if (text == null) {
+            if (text == null)
+            {
                 throw new ArgumentNullException(nameof(text));
             }
-            if (begin > beginNonSpace) {
+            if (begin > beginNonSpace)
+            {
                 throw new ArgumentOutOfRangeException(nameof(begin), "Must be less equal than beginNonSpace.");
             }
-            if (beginNonSpace > end) {
+            if (beginNonSpace > end)
+            {
                 throw new ArgumentOutOfRangeException(nameof(beginNonSpace), "Must be less equal than end.");
             }
-            if (end > text.Length) {
+            if (end > text.Length)
+            {
                 throw new ArgumentOutOfRangeException(nameof(end), "end must be less equal string length.");
             }
 

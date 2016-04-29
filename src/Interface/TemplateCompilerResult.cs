@@ -16,11 +16,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using System.Collections.Generic;
 
 namespace Twofold.Interface
 {
+    using System;
+    using System.Collections.Generic;
+
     public sealed class TemplateCompilerResult
     {
         public readonly CompiledTemplate @CompiledTemplate;
@@ -28,7 +29,8 @@ namespace Twofold.Interface
 
         public TemplateCompilerResult(CompiledTemplate compiledTemplate, List<Tuple<string, string>> targetCodes)
         {
-            if (targetCodes == null) {
+            if (targetCodes == null)
+            {
                 throw new ArgumentNullException(nameof(targetCodes));
             }
 

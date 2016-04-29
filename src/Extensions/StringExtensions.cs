@@ -16,28 +16,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using System.Globalization;
-using System.Text;
 
 namespace Twofold.Extensions
 {
+    using System;
+
     internal static class StringExtensions
     {
         /// <exception cref="ArgumentOutOfRangeException">begin is greater than end.</exception>
         /// <exception cref="ArgumentOutOfRangeException">end is greater than string length.</exception>
         public static int IndexOf(this string value, int begin, int end, Func<char, bool> predicate)
         {
-            if (begin > end) {
+            if (begin > end)
+            {
                 throw new ArgumentOutOfRangeException(nameof(begin), "Must be less equal than end.");
             }
-            if (end > value.Length) {
+            if (end > value.Length)
+            {
                 throw new ArgumentOutOfRangeException(nameof(end), "end must be less equal string length.");
             }
             var index = begin;
-            while (index < end) {
+            while (index < end)
+            {
                 char ch = value[index];
-                if (predicate(ch)) {
+                if (predicate(ch))
+                {
                     return index;
                 }
                 ++index;
@@ -49,16 +52,20 @@ namespace Twofold.Extensions
         /// <exception cref="ArgumentOutOfRangeException">end is greater than string length.</exception>
         public static int IndexOfNot(this string value, int begin, int end, Func<char, bool> predicate)
         {
-            if (begin > end) {
+            if (begin > end)
+            {
                 throw new ArgumentOutOfRangeException(nameof(begin), "Must be less equal than end.");
             }
-            if (end > value.Length) {
+            if (end > value.Length)
+            {
                 throw new ArgumentOutOfRangeException(nameof(end), "end must be less equal string length.");
             }
             var index = begin;
-            while (index < end) {
+            while (index < end)
+            {
                 char ch = value[index];
-                if (!predicate(ch)) {
+                if (!predicate(ch))
+                {
                     return index;
                 }
                 ++index;

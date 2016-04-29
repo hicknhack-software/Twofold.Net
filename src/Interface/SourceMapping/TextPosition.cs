@@ -17,14 +17,15 @@
  * limitations under the License.
  */
 
-using System;
-
 namespace Twofold.Interface.SourceMapping
 {
-    public class TextPosition : IEquatable<TextPosition>
+    using System;
+
+    public class TextPosition : IEquatable<TextPosition>, IComparable<TextPosition>
     {
         private int line = 0;
         private int column = 0;
+
         /// <summary>
         /// Creates an invalid TextPosition.
         /// </summary>
@@ -121,5 +122,26 @@ namespace Twofold.Interface.SourceMapping
         }
 
         #endregion IEquatable
+
+        #region IComparable
+
+        public int CompareTo(TextPosition other)
+        {
+            int lineDiff = line - other.line;
+            if (0 != lineDiff)
+            {
+                return lineDiff;
+            }
+
+            int columnDiff = column - other.column;
+            if (0 != columnDiff)
+            {
+                return columnDiff;
+            }
+
+            return 0;
+        }
+
+        #endregion IComparable
     }
 }

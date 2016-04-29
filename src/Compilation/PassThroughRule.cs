@@ -16,19 +16,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Collections.Generic;
-using Twofold.Interface;
-using Twofold.Interface.Compilation;
 
 namespace Twofold.Compilation
 {
+    using Interface;
+    using Interface.Compilation;
+    using System.Collections.Generic;
+
     internal class PassThroughRule : IParserRule
     {
         public List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)
         {
-            List<AsbtractCodeFragment> fragments = new List<AsbtractCodeFragment>();
-            fragments.Add(new OriginScript(line, new TextSpan(line.Text, line.Begin, line.End)));
-            return fragments;
+            return new List<AsbtractCodeFragment>
+            {
+                new OriginScript(line, new TextSpan(line.Text, line.Begin, line.End))
+            };
         }
     }
 }

@@ -16,10 +16,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Globalization;
 
 namespace Twofold.Extensions
 {
+    using System.Globalization;
+
     internal static class CharExtensions
     {
         public static bool IsSpace(char ch)

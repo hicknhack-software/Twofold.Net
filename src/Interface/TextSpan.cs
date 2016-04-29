@@ -16,34 +16,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
 
 namespace Twofold.Interface
 {
+    using System;
+
     public class TextSpan
     {
         /// <summary>
         /// Begin of the text span in the original text.
         /// </summary>
         public readonly int Begin;
+
         /// <summary>
         /// End + 1 of the text span in the original text.
         /// </summary>
         public readonly int End;
+
         /// <summary>
         /// The complete original text.
         /// </summary>
         public readonly string OriginalText;
+
         /// <summary>
         /// The text span from the original text.
         /// </summary>
         public readonly string Text;
 
-        public bool IsEmpty { get { return (Begin == End); } }
-
         public TextSpan(string text)
         {
-            if (text == null) {
+            if (text == null)
+            {
                 throw new ArgumentNullException(nameof(text));
             }
             Begin = 0;
@@ -54,13 +57,16 @@ namespace Twofold.Interface
 
         public TextSpan(string text, int begin, int end)
         {
-            if (text == null) {
+            if (text == null)
+            {
                 throw new ArgumentNullException(nameof(text));
             }
-            if (begin > end) {
+            if (begin > end)
+            {
                 throw new ArgumentOutOfRangeException(nameof(begin), "Must be less equal than end.");
             }
-            if (end > text.Length) {
+            if (end > text.Length)
+            {
                 throw new ArgumentOutOfRangeException(nameof(end), "end must be less equal string length.");
             }
             Begin = begin;
@@ -68,5 +74,7 @@ namespace Twofold.Interface
             OriginalText = text;
             Text = OriginalText.Substring(Begin, End - Begin);
         }
+
+        public bool IsEmpty { get { return (Begin == End); } }
     }
 }

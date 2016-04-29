@@ -16,13 +16,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Collections.Generic;
-using Twofold.Interface;
-using Twofold.Interface.Compilation;
-using Twofold.Extensions;
 
 namespace Twofold.Compilation
 {
+    using Extensions;
+    using Interface;
+    using Interface.Compilation;
+    using System.Collections.Generic;
+
     internal class CallRule : IParserRule
     {
         public List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)

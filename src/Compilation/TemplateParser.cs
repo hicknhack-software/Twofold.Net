@@ -16,19 +16,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System.Collections.Generic;
-using Twofold.Interface;
-using Twofold.Interface.Compilation;
-using Twofold.Interface.SourceMapping;
-using Twofold.Extensions;
 
 namespace Twofold.Compilation
 {
+    using Extensions;
+    using Interface;
+    using Interface.Compilation;
+    using Interface.SourceMapping;
+    using System.Collections.Generic;
+
     internal sealed class TemplateParser : ITemplateParser
     {
-        readonly Dictionary<char, IParserRule> parseRules = new Dictionary<char, IParserRule>();
-        readonly IParserRule fallbackRule;
-        readonly IMessageHandler messageHandler;
+        private readonly Dictionary<char, IParserRule> parseRules;
+        private readonly IParserRule fallbackRule;
+        private readonly IMessageHandler messageHandler;
 
         public TemplateParser(Dictionary<char, IParserRule> parseRules, IParserRule fallbackRule, IMessageHandler messageHandler)
         {
@@ -39,14 +40,14 @@ namespace Twofold.Compilation
 
         public List<AsbtractCodeFragment> Parse(string sourceName, string text)
         {
-            List<AsbtractCodeFragment> fragments = new List<AsbtractCodeFragment>();
+            var fragments = new List<AsbtractCodeFragment>();
 
             int index = 0;
             int nonSpaceIndex = 0;
             int end = 0;
             int line = 1;
-            while (index < text.Length) {
-
+            while (index < text.Length)
+            {
                 nonSpaceIndex = text.IndexOfNot(index, text.Length, CharExtensions.IsSpace);
                 end = text.IndexOf(nonSpaceIndex, text.Length, CharExtensions.IsNewline);
 
@@ -54,15 +55,18 @@ namespace Twofold.Compilation
                 List<AsbtractCodeFragment> ruleFragments;
                 var textFilePostion = new TextFilePosition(sourceName, new TextPosition(line, 1));
                 var fileLine = new FileLine(text, index, nonSpaceIndex, end, textFilePostion);
-                if (parseRules.TryGetValue(text[nonSpaceIndex], out parserRule)) {
+                if (parseRules.TryGetValue(text[nonSpaceIndex], out parserRule))
+                {
                     ruleFragments = parserRule.Parse(fileLine, messageHandler);
                 }
-                else {
+                else
+                {
                     ruleFragments = fallbackRule.Parse(fileLine, messageHandler);
                 }
                 fragments.AddRange(ruleFragments);
 
-                if (end == text.Length) {
+                if (end == text.Length)
+                {
                     break;
                 }
 

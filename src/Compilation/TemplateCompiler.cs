@@ -16,26 +16,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Microsoft.CSharp;
-using System;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using Twofold.Interface;
-using Twofold.Interface.Compilation;
-using Twofold.Interface.SourceMapping;
 
 namespace Twofold.Compilation
 {
+    using Interface;
+    using Interface.Compilation;
+    using Interface.SourceMapping;
+    using Microsoft.CSharp;
+    using System;
+    using System.CodeDom.Compiler;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
+
     internal sealed class TemplateCompiler
     {
-        readonly ITemplateLoader textLoader;
-        readonly IMessageHandler messageHandler;
-        readonly List<string> referencedAssemblies;
-        readonly TemplateParser templateParser;
+        private readonly ITemplateLoader textLoader;
+        private readonly IMessageHandler messageHandler;
+        private readonly List<string> referencedAssemblies;
+        private readonly TemplateParser templateParser;
 
         /// <summary>
         /// Constructs a TemplateCompiler.
@@ -45,10 +46,12 @@ namespace Twofold.Compilation
         /// <param name="referencedAssemblies">Additional assemblied to include in template compilation.</param>
         public TemplateCompiler(ITemplateLoader templateLoader, IMessageHandler messageHandler, List<string> referencedAssemblies)
         {
-            if (templateLoader == null) {
+            if (templateLoader == null)
+            {
                 throw new ArgumentNullException(nameof(templateLoader));
             }
-            if (messageHandler == null) {
+            if (messageHandler == null)
+            {
                 throw new ArgumentNullException(nameof(messageHandler));
             }
 
@@ -74,7 +77,8 @@ namespace Twofold.Compilation
         /// <exception cref="ArgumentException">If templateName is null or empty.</exception>
         public TemplateCompilerResult Compile(string templateName)
         {
-            if (string.IsNullOrEmpty(templateName)) {
+            if (string.IsNullOrEmpty(templateName))
+            {
                 throw new ArgumentException("Can't be null or empty.", nameof(templateName));
             }
 
@@ -87,38 +91,46 @@ namespace Twofold.Compilation
             bool mainTemplateFilenameSet = false;
             var generatedFiles = new HashSet<string>();
 
-            while (templateNames.Count > 0) {
-
+            while (templateNames.Count > 0)
+            {
                 // Load template
                 string loadTemplateName = templateNames.Dequeue();
                 Template template = null;
-                try {
+                try
+                {
                     template = textLoader.Load(loadTemplateName);
-                    if (mainTemplateFilenameSet == false) {
+                    if (mainTemplateFilenameSet == false)
+                    {
                         mainTemplateFilename = template.SourceName;
                         mainTemplateFilenameSet = true;
-                    }                    
+                    }
                 }
-                catch (FileNotFoundException) {
+                catch (FileNotFoundException)
+                {
                     messageHandler.Message(TraceLevel.Error, $"Can't find template '{templateName}'.", string.Empty, new TextPosition());
                     throw;
                 }
-                catch (IOException) {
+                catch (IOException)
+                {
                     messageHandler.Message(TraceLevel.Error, $"IO error while reading template '{templateName}'.", string.Empty, new TextPosition());
                     throw;
                 }
-                catch (Exception) {
+                catch (Exception)
+                {
                     continue;
                 }
 
                 // Generate Twofold enhanced CSharp code from template
                 List<string> includedFiles;
                 string generatedCode = this.GenerateCode(template.SourceName, template.Text, out includedFiles);
-                if (generatedCode != null) {
+                if (generatedCode != null)
+                {
                     generatedFiles.Add(loadTemplateName);
                     generatedTargetCodes.Add(Tuple.Create(template.SourceName, generatedCode));
-                    foreach (var includedFile in includedFiles) {
-                        if(generatedFiles.Contains(includedFile)) {
+                    foreach (var includedFile in includedFiles)
+                    {
+                        if (generatedFiles.Contains(includedFile))
+                        {
                             continue;
                         }
                         templateNames.Enqueue(includedFile);
@@ -128,13 +140,15 @@ namespace Twofold.Compilation
 
             // Compile CSharp code
             Assembly assembly = this.CompileCode(generatedTargetCodes);
-            if (assembly == null) {
+            if (assembly == null)
+            {
                 return new TemplateCompilerResult(null, generatedTargetCodes);
             }
 
             // Check Twofold CSharp assembly for entry points/types
             string mainTypeName = this.DetectMainType(mainTemplateFilename, assembly);
-            if (string.IsNullOrEmpty(mainTypeName)) {
+            if (string.IsNullOrEmpty(mainTypeName))
+            {
                 return new TemplateCompilerResult(null, generatedTargetCodes);
             }
 
@@ -142,33 +156,37 @@ namespace Twofold.Compilation
             return new TemplateCompilerResult(compiledTemplate, generatedTargetCodes);
         }
 
-        string GenerateCode(string sourceName, string sourceText, out List<string> includedFiles)
+        private string GenerateCode(string sourceName, string sourceText, out List<string> includedFiles)
         {
-            if (sourceName == null) {
+            if (sourceName == null)
+            {
                 throw new ArgumentNullException(nameof(sourceName));
             }
-            if (sourceText == null) {
-                throw new ArgumentNullException("sourceText", "text");
+            if (sourceText == null)
+            {
+                throw new ArgumentNullException(nameof(sourceText), "text");
             }
 
             TextWriter codeWriter = null;
             includedFiles = new List<string>();
             string generatedCode = null;
 
-            try {
+            try
+            {
                 codeWriter = new StringWriter();
                 var csharpGenerator = new CSharpGenerator(templateParser, codeWriter, includedFiles);
                 csharpGenerator.Generate(sourceName, sourceText);
                 generatedCode = codeWriter.ToString();
             }
-            finally {
+            finally
+            {
                 codeWriter.Dispose();
             }
 
             return generatedCode;
         }
 
-        Assembly CompileCode(List<Tuple<string, string>> nameSourceTuples)
+        private Assembly CompileCode(List<Tuple<string, string>> nameSourceTuples)
         {
             // Prepare compiler
             var parameters = new CompilerParameters();
@@ -182,15 +200,18 @@ namespace Twofold.Compilation
 
             // Compile
             CompilerResults compilerResults;
-            using (var codeProvider = new CSharpCodeProvider()) {
+            using (var codeProvider = new CSharpCodeProvider())
+            {
                 var sources = nameSourceTuples.Select(nameCodeTuple => nameCodeTuple.Item2).ToArray();
                 compilerResults = codeProvider.CompileAssemblyFromSource(parameters, sources);
             }
 
             // Report errors
-            foreach (CompilerError compilerError in compilerResults.Errors) {
+            foreach (CompilerError compilerError in compilerResults.Errors)
+            {
                 var textPosition = new TextPosition();
-                if (compilerError.Line != 0 && compilerError.Column != 0) {
+                if (compilerError.Line != 0 && compilerError.Column != 0)
+                {
                     textPosition = new TextPosition(compilerError.Line, compilerError.Column);
                 }
 
@@ -198,27 +219,31 @@ namespace Twofold.Compilation
                 messageHandler.Message(traceLevel, $"{compilerError.ErrorNumber}: {compilerError.ErrorText}", compilerError.FileName, textPosition);
             }
 
-            if (compilerResults.Errors.Count > 0) {
+            if (compilerResults.Errors.Count > 0)
+            {
                 return null;
             }
             return compilerResults.CompiledAssembly;
         }
 
-        string DetectMainType(string sourceName, Assembly assembly)
+        private string DetectMainType(string sourceName, Assembly assembly)
         {
             Type mainType = null;
             MethodInfo mainMethod = null;
 
             Type[] exportedTypes = assembly.GetExportedTypes();
-            foreach (var exportedType in exportedTypes) {
+            foreach (var exportedType in exportedTypes)
+            {
                 mainMethod = exportedType.GetMethod(Constants.EntryMethodName, BindingFlags.Public | BindingFlags.Static);
-                if (mainMethod != null) {
+                if (mainMethod != null)
+                {
                     mainType = exportedType;
                     break;
                 }
             }
 
-            if (mainMethod == null) {
+            if (mainMethod == null)
+            {
                 messageHandler.Message(TraceLevel.Error, $"Can't find static template entry method '{Constants.EntryMethodName}'.", sourceName, new TextPosition());
                 return null;
             }
