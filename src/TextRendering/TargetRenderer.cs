@@ -41,7 +41,7 @@ namespace Twofold.TextRendering
         /// the returned string to the text buffer.
         /// </summary>
         /// <param name="func">The function to execute.</param>
-        public static void Append(Func<string> func)
+        public static void Write(Func<string> func)
         {
             if(TargetRenderer.renderer == null)
             {
@@ -49,14 +49,14 @@ namespace Twofold.TextRendering
             }
             string text = func();
             var textSpan = new TextSpan(text);
-            TargetRenderer.renderer.Append(textSpan);
+            TargetRenderer.renderer.Write(textSpan);
         }
 
         /// <summary>
         /// Executes the given function which must return void.
         /// </summary>
         /// <param name="action">The function to execute.</param>
-        public static void Append(Action action)
+        public static void Write(Action action)
         {
             if (TargetRenderer.renderer == null)
             {
@@ -65,13 +65,13 @@ namespace Twofold.TextRendering
             action();
         }
 
-        public static void NewLine()
+        public static void WriteLine()
         {
             if (TargetRenderer.renderer == null)
             {
                 return;
             }
-            TargetRenderer.renderer.AppendNewLine();
+            TargetRenderer.renderer.WriteLine();
         }
 
         public static void PushIndentation(string indentation)

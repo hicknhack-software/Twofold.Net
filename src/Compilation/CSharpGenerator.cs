@@ -19,7 +19,6 @@
 
 namespace Twofold.Compilation
 {
-    using Interface;
     using Interface.Compilation;
     using System.Collections.Generic;
     using System.Globalization;
@@ -47,37 +46,32 @@ namespace Twofold.Compilation
             //}
 
             string escapedContent = this.EscapeString(fragment.Span.Text);
-            textRenderer.Append($"TargetRenderer.PartIndentation(\"{escapedContent}\");");
-            textRenderer.AppendNewLine();
-            textRenderer.AppendNewLine();
+            textRenderer.WriteLine($"TargetRenderer.PartIndentation(\"{escapedContent}\");");
+            textRenderer.WriteLine();
         }
 
         protected override void Generate(TargetPopIndentation fragment)
         {
-            textRenderer.Append("TargetRenderer.PopIndentation();");
-            textRenderer.AppendNewLine();
-            textRenderer.AppendNewLine();
+            textRenderer.WriteLine("TargetRenderer.PopIndentation();");
+            textRenderer.WriteLine();
         }
 
         protected override void Generate(TargetPushIndentation fragment)
         {
             string escapedContent = this.EscapeString(fragment.Span.Text);
-            textRenderer.Append($"TargetRenderer.PushIndentation(\"{escapedContent}\");");
-            textRenderer.AppendNewLine();
-            textRenderer.AppendNewLine();
+            textRenderer.WriteLine($"TargetRenderer.PushIndentation(\"{escapedContent}\");");
+            textRenderer.WriteLine();
         }
 
         protected override void Generate(TargetNewLine fragment)
         {
-            textRenderer.Append("TargetRenderer.NewLine();");
-            textRenderer.AppendNewLine();
-            textRenderer.AppendNewLine();
+            textRenderer.WriteLine("TargetRenderer.WriteLine();");
+            textRenderer.WriteLine();
         }
 
         protected override void Generate(OriginScript fragment)
         {
-            textRenderer.Append(fragment.Span);
-            textRenderer.AppendNewLine();
+            textRenderer.WriteLine(fragment.Span);
         }
 
         protected override void Generate(OriginExpression fragment)
@@ -87,13 +81,10 @@ namespace Twofold.Compilation
                 return;
             }
 
-            textRenderer.Append("TargetRenderer.PushPartIndentation();");
-            textRenderer.AppendNewLine();
-            textRenderer.Append($"TargetRenderer.Append(() => {fragment.Span.Text});");
-            textRenderer.AppendNewLine();
-            textRenderer.Append("TargetRenderer.PopPartIndentation();");
-            textRenderer.AppendNewLine();
-            textRenderer.AppendNewLine();
+            textRenderer.WriteLine("TargetRenderer.PushPartIndentation();");
+            textRenderer.WriteLine($"TargetRenderer.Write(() => {fragment.Span.Text});");
+            textRenderer.WriteLine("TargetRenderer.PopPartIndentation();");
+            textRenderer.WriteLine();
         }
 
         protected override void Generate(OriginText fragment)
@@ -104,9 +95,8 @@ namespace Twofold.Compilation
             }
 
             string escapedContent = this.EscapeString(fragment.Span.Text);
-            textRenderer.Append($"TargetRenderer.Append(() => \"{escapedContent}\");");
-            textRenderer.AppendNewLine();
-            textRenderer.AppendNewLine();
+            textRenderer.WriteLine($"TargetRenderer.Write(() => \"{escapedContent}\");");
+            textRenderer.WriteLine();
         }
 
         protected override void Generate(OriginPragma fragment)
@@ -125,21 +115,16 @@ namespace Twofold.Compilation
                 default:
                     break;
             }
-            textRenderer.Append(fragment.Span);
-            textRenderer.AppendNewLine();
-            textRenderer.AppendNewLine();
+            textRenderer.WriteLine(fragment.Span);
         }
 
         protected override void PreGeneration(string sourceName, string text)
         {
-            textRenderer.Append($"#line 1 \"{sourceName}\"");
-            textRenderer.AppendNewLine();
-
             foreach (string targetCodeUsing in Constants.TargetCodeUsings)
             {
-                textRenderer.Append(targetCodeUsing);
-                textRenderer.AppendNewLine();
+                textRenderer.WriteLine(targetCodeUsing);
             }
+            textRenderer.WriteLine($"#line 1 \"{sourceName}\"");
         }
 
         private string EscapeString(string text)

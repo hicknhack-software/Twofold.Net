@@ -87,7 +87,7 @@ namespace Twofold.TextRendering
         /// <summary>
         /// Append text.
         /// </summary>
-        public void Append(TextSpan textSpan)
+        public void Write(TextSpan textSpan)
         {
             // Skip empty spans
             if (textSpan.IsEmpty)
@@ -126,16 +126,28 @@ namespace Twofold.TextRendering
             }
         }
 
-        public void Append(string text)
+        public void Write(string text)
         {
             var textSpan = new TextSpan(text);
-            this.Append(textSpan);
+            this.Write(textSpan);
+        }
+
+        public void WriteLine(TextSpan textSpan)
+        {
+            this.Write(textSpan);
+            this.WriteLine();
+        }
+
+        public void WriteLine(string text)
+        {
+            this.Write(text);
+            this.WriteLine();
         }
 
         /// <summary>
         /// Append the NewLine string.
         /// </summary>
-        public void AppendNewLine()
+        public void WriteLine()
         {
             this.textWriter.Write(newLine);
             ++Line;
@@ -181,7 +193,7 @@ namespace Twofold.TextRendering
             {
                 partIndentation = indentation;
             }
-            this.Append(indentation);
+            this.Write(indentation);
         }
 
         public void PushPartIndentation()
