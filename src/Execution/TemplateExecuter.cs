@@ -81,7 +81,7 @@ namespace Twofold.Execution
             }
 
             // Invoke main method
-            TextWriter textWriter = new StringWriter();
+            var textWriter = new StringWriter();
             try
             {
                 TargetRenderer.SetTextWriter(textWriter);

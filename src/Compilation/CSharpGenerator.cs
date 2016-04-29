@@ -30,15 +30,13 @@ namespace Twofold.Compilation
     internal sealed class CSharpGenerator : AbstractCodeGenerator
     {
         private static readonly char[] hexDigit = "0123456789abcdef".ToCharArray();
-        private readonly TextRenderer textWriterController;
-        private readonly TextWriter textWriter;
+        private readonly TextRenderer textRenderer;
         private readonly List<string> includedFiles;
 
         public CSharpGenerator(TemplateParser templateParser, TextWriter textWriter, List<string> includedFiles)
             : base(templateParser)
         {
-            this.textWriterController = new TextRenderer();
-            this.textWriter = textWriter;
+            this.textRenderer = new TextRenderer(textWriter);
             this.includedFiles = includedFiles;
         }
 
@@ -50,35 +48,35 @@ namespace Twofold.Compilation
 
             string escapedContent = this.EscapeString(fragment.Span.Text);
             string renderCmd = $"TargetRenderer.PartIndentation(\"{escapedContent}\");";
-            textWriterController.Append(new TextSpan(renderCmd), textWriter);
-            textWriterController.AppendNewLine(textWriter);
+            textRenderer.Append(renderCmd);
+            textRenderer.AppendNewLine();
         }
 
         protected override void Generate(TargetPopIndentation fragment)
         {
             string renderCmd = $"TargetRenderer.PopIndentation();";
-            textWriterController.Append(new TextSpan(renderCmd), textWriter);
-            textWriterController.AppendNewLine(textWriter);
+            textRenderer.Append(renderCmd);
+            textRenderer.AppendNewLine();
         }
 
         protected override void Generate(TargetPushIndentation fragment)
         {
             string escapedContent = this.EscapeString(fragment.Span.Text);
             string renderCmd = $"TargetRenderer.PushIndentation(\"{escapedContent}\");";
-            textWriterController.Append(new TextSpan(renderCmd), textWriter);
-            textWriterController.AppendNewLine(textWriter);
+            textRenderer.Append(renderCmd);
+            textRenderer.AppendNewLine();
         }
 
         protected override void Generate(TargetNewLine fragment)
         {
             string renderCmd = $"TargetRenderer.NewLine();";
-            textWriterController.Append(new TextSpan(renderCmd), textWriter);
+            textRenderer.Append(renderCmd);
         }
 
         protected override void Generate(OriginScript fragment)
         {
-            textWriterController.Append(fragment.Span, textWriter);
-            textWriterController.AppendNewLine(textWriter);
+            textRenderer.Append(fragment.Span);
+            textRenderer.AppendNewLine();
         }
 
         protected override void Generate(OriginExpression fragment)
@@ -94,8 +92,8 @@ namespace Twofold.Compilation
             renderCmdBuilder.Append("TargetRenderer.PopPartIndentation();");
 
             string renderCmd = renderCmdBuilder.ToString();
-            textWriterController.Append(new TextSpan(renderCmd), textWriter);
-            textWriterController.AppendNewLine(textWriter);
+            textRenderer.Append(renderCmd);
+            textRenderer.AppendNewLine();
         }
 
         protected override void Generate(OriginText fragment)
@@ -107,8 +105,8 @@ namespace Twofold.Compilation
 
             string escapedContent = this.EscapeString(fragment.Span.Text);
             string renderCmd = $"TargetRenderer.Append(() => \"{escapedContent}\");";
-            textWriterController.Append(new TextSpan(renderCmd), textWriter);
-            textWriterController.AppendNewLine(textWriter);
+            textRenderer.Append(renderCmd);
+            textRenderer.AppendNewLine();
         }
 
         protected override void Generate(OriginPragma fragment)
@@ -127,20 +125,20 @@ namespace Twofold.Compilation
                 default:
                     break;
             }
-            textWriterController.Append(fragment.Span, textWriter);
-            textWriterController.AppendNewLine(textWriter);
+            textRenderer.Append(fragment.Span);
+            textRenderer.AppendNewLine();
         }
 
         protected override void PreGeneration(string sourceName, string text)
         {
             var lineDirective = $"#line 1 \"{sourceName}\"";
-            textWriterController.Append(new TextSpan(lineDirective), textWriter);
-            textWriterController.AppendNewLine(textWriter);
+            textRenderer.Append(lineDirective);
+            textRenderer.AppendNewLine();
 
             foreach (string targetCodeUsing in Constants.TargetCodeUsings)
             {
-                textWriterController.Append(new TextSpan(targetCodeUsing), textWriter);
-                textWriterController.AppendNewLine(textWriter);
+                textRenderer.Append(targetCodeUsing);
+                textRenderer.AppendNewLine();
             }
         }
 

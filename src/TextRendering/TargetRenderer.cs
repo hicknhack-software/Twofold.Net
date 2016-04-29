@@ -29,16 +29,11 @@ namespace Twofold.TextRendering
     /// </summary>
     public static class TargetRenderer
     {
-        private static TextWriter textWriter = new StringWriter();
-        private static readonly TextRenderer renderer = new TextRenderer();
+        private static TextRenderer renderer;
 
-        internal static void SetTextWriter(TextWriter newTextWriter)
+        internal static void SetTextWriter(TextWriter textWriter)
         {
-            if (newTextWriter == null)
-            {
-                throw new ArgumentNullException(nameof(newTextWriter));
-            }
-            TargetRenderer.textWriter = newTextWriter;
+            TargetRenderer.renderer = new TextRenderer(textWriter);
         }
 
         /// <summary>
@@ -48,9 +43,13 @@ namespace Twofold.TextRendering
         /// <param name="func">The function to execute.</param>
         public static void Append(Func<string> func)
         {
+            if(TargetRenderer.renderer == null)
+            {
+                return;
+            }
             string text = func();
             var textSpan = new TextSpan(text);
-            TargetRenderer.renderer.Append(textSpan, TargetRenderer.textWriter);
+            TargetRenderer.renderer.Append(textSpan);
         }
 
         /// <summary>
@@ -59,36 +58,64 @@ namespace Twofold.TextRendering
         /// <param name="action">The function to execute.</param>
         public static void Append(Action action)
         {
+            if (TargetRenderer.renderer == null)
+            {
+                return;
+            }
             action();
         }
 
         public static void NewLine()
         {
-            TargetRenderer.renderer.AppendNewLine(TargetRenderer.textWriter);
+            if (TargetRenderer.renderer == null)
+            {
+                return;
+            }
+            TargetRenderer.renderer.AppendNewLine();
         }
 
         public static void PushIndentation(string indentation)
         {
+            if (TargetRenderer.renderer == null)
+            {
+                return;
+            }
             TargetRenderer.renderer.PushIndentation(indentation);
         }
 
         public static void PopIndentation()
         {
+            if (TargetRenderer.renderer == null)
+            {
+                return;
+            }
             TargetRenderer.renderer.PopIndentation();
         }
 
         public static void PartIndentation(string indentation)
         {
-            TargetRenderer.renderer.PartIndentation(indentation, TargetRenderer.textWriter);
+            if (TargetRenderer.renderer == null)
+            {
+                return;
+            }
+            TargetRenderer.renderer.PartIndentation(indentation);
         }
 
         public static void PushPartIndentation()
         {
+            if (TargetRenderer.renderer == null)
+            {
+                return;
+            }
             TargetRenderer.renderer.PushPartIndentation();
         }
 
         public static void PopPartIndentation()
         {
+            if (TargetRenderer.renderer == null)
+            {
+                return;
+            }
             TargetRenderer.renderer.PopPartIndentation();
         }
     }

@@ -25,14 +25,46 @@ namespace Twofold.TextRendering
     using System.Collections.Generic;
     using System.IO;
 
+    /// <summary>
+    /// This class is used by the TargetRenderer to produce the rendererd
+    /// output.
+    /// </summary>
     internal class TextRenderer
     {
         // Fields
         private string newLine = Environment.NewLine;
-
         private bool lineBlank = true;
         private readonly Stack<Tuple<string, string>> indentationQueue = new Stack<Tuple<string, string>>();
-        private string partIndentation = "";
+        private string partIndentation = string.Empty;
+        private readonly TextWriter textWriter;
+
+        /// <exception cref="ArgumentNullException">textWriter is null.</exception>
+        public TextRenderer(TextWriter textWriter)
+            : this(textWriter, Environment.NewLine)
+        { }
+
+        /// <exception cref="ArgumentNullException">textWriter is null.</exception>
+        /// <exception cref="ArgumentNullException">newLine is null.</exception>
+        /// <exception cref="ArgumentException">newLine is not \r or \r\n.</exception>
+        public TextRenderer(TextWriter textWriter, string newLine)
+        {
+            if(textWriter == null)
+            {
+                throw new ArgumentNullException(nameof(textWriter));
+            }
+            this.textWriter = textWriter;
+
+            if (newLine == null)
+            {
+                throw new ArgumentNullException(nameof(newLine));
+            }
+            if (string.Compare(newLine, "\n", StringComparison.Ordinal) != 0 
+                && string.Compare(newLine, "\r\n", StringComparison.Ordinal) != 0)
+            {
+                throw new ArgumentException("New line must either be \r or \r\n.", nameof(newLine));
+            }
+            this.newLine = newLine;
+        }
 
         /// <summary>
         /// Indicates whether the current line is blank.
@@ -53,31 +85,9 @@ namespace Twofold.TextRendering
         public int Column { get; private set; } = 1;
 
         /// <summary>
-        /// New line signature either \n or \r\n.
-        /// </summary>
-        /// <exception cref="ArgumentNullException">NewLine is null.</exception>
-        /// <exception cref="ArgumentException">NewLine is not \r or \r\n.</exception>
-        public string NewLine
-        {
-            get { return newLine; }
-            set
-            {
-                if (value == null)
-                {
-                    throw new ArgumentNullException(nameof(NewLine));
-                }
-                if (string.Compare(value, "\n", StringComparison.Ordinal) != 0 && string.Compare(value, "\r\n", StringComparison.Ordinal) != 0)
-                {
-                    throw new ArgumentException("New line must either be \r or \r\n.", nameof(NewLine));
-                }
-                newLine = value;
-            }
-        }
-
-        /// <summary>
         /// Append text.
         /// </summary>
-        public void Append(TextSpan textSpan, TextWriter writer)
+        public void Append(TextSpan textSpan)
         {
             // Skip empty spans
             if (textSpan.IsEmpty)
@@ -92,7 +102,7 @@ namespace Twofold.TextRendering
             {
                 if (lineBlank)
                 {
-                    writer.Write(indentation);
+                    this.textWriter.Write(indentation);
                     Column += indentation.Length;
                     lineBlank = false;
                 }
@@ -100,13 +110,13 @@ namespace Twofold.TextRendering
                 var lineBreakIndex = textSpan.OriginalText.IndexOf(index, textSpan.End, ch => ch == '\n');
                 if (lineBreakIndex == textSpan.End)
                 { // No line break found
-                    writer.Write(index, textSpan.End, textSpan.OriginalText);
+                    this.textWriter.Write(index, textSpan.End, textSpan.OriginalText);
                     index += (textSpan.End - index);
                 }
                 else
                 {  // Line break found
                     ++lineBreakIndex;
-                    writer.Write(index, lineBreakIndex, textSpan.OriginalText);
+                    this.textWriter.Write(index, lineBreakIndex, textSpan.OriginalText);
                     index += (lineBreakIndex - index);
 
                     ++Line;
@@ -116,12 +126,18 @@ namespace Twofold.TextRendering
             }
         }
 
+        public void Append(string text)
+        {
+            var textSpan = new TextSpan(text);
+            this.Append(textSpan);
+        }
+
         /// <summary>
         /// Append the NewLine string.
         /// </summary>
-        public void AppendNewLine(TextWriter writer)
+        public void AppendNewLine()
         {
-            writer.Write(NewLine);
+            this.textWriter.Write(newLine);
             ++Line;
             lineBlank = true;
             Column = 1;
@@ -154,7 +170,7 @@ namespace Twofold.TextRendering
             indentationQueue.Pop();
         }
 
-        public void PartIndentation(string indentation, TextWriter writer)
+        public void PartIndentation(string indentation)
         {
             if (indentation == null)
             {
@@ -165,7 +181,7 @@ namespace Twofold.TextRendering
             {
                 partIndentation = indentation;
             }
-            this.Append(new TextSpan(indentation), writer);
+            this.Append(indentation);
         }
 
         public void PushPartIndentation()

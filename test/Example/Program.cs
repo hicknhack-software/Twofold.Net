@@ -59,6 +59,7 @@ namespace Example
 
             TemplateCompilerResult compilerResult = engine.Compile("Main");
 
+            File.Delete("TwofoldRenderCode.cs");
             using (var fileStream = new FileStream("TwofoldRenderCode.cs", FileMode.CreateNew))
             using (var writer = new StreamWriter(fileStream))
                 foreach (var nameSourceTuple in compilerResult.TargetCodes)
