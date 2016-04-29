@@ -47,30 +47,31 @@ namespace Twofold.Compilation
             //}
 
             string escapedContent = this.EscapeString(fragment.Span.Text);
-            string renderCmd = $"TargetRenderer.PartIndentation(\"{escapedContent}\");";
-            textRenderer.Append(renderCmd);
+            textRenderer.Append($"TargetRenderer.PartIndentation(\"{escapedContent}\");");
+            textRenderer.AppendNewLine();
             textRenderer.AppendNewLine();
         }
 
         protected override void Generate(TargetPopIndentation fragment)
         {
-            string renderCmd = $"TargetRenderer.PopIndentation();";
-            textRenderer.Append(renderCmd);
+            textRenderer.Append("TargetRenderer.PopIndentation();");
+            textRenderer.AppendNewLine();
             textRenderer.AppendNewLine();
         }
 
         protected override void Generate(TargetPushIndentation fragment)
         {
             string escapedContent = this.EscapeString(fragment.Span.Text);
-            string renderCmd = $"TargetRenderer.PushIndentation(\"{escapedContent}\");";
-            textRenderer.Append(renderCmd);
+            textRenderer.Append($"TargetRenderer.PushIndentation(\"{escapedContent}\");");
+            textRenderer.AppendNewLine();
             textRenderer.AppendNewLine();
         }
 
         protected override void Generate(TargetNewLine fragment)
         {
-            string renderCmd = $"TargetRenderer.NewLine();";
-            textRenderer.Append(renderCmd);
+            textRenderer.Append("TargetRenderer.NewLine();");
+            textRenderer.AppendNewLine();
+            textRenderer.AppendNewLine();
         }
 
         protected override void Generate(OriginScript fragment)
@@ -86,13 +87,12 @@ namespace Twofold.Compilation
                 return;
             }
 
-            var renderCmdBuilder = new StringBuilder();
-            renderCmdBuilder.Append("TargetRenderer.PushPartIndentation();");
-            renderCmdBuilder.Append($"TargetRenderer.Append(() => {fragment.Span.Text});");
-            renderCmdBuilder.Append("TargetRenderer.PopPartIndentation();");
-
-            string renderCmd = renderCmdBuilder.ToString();
-            textRenderer.Append(renderCmd);
+            textRenderer.Append("TargetRenderer.PushPartIndentation();");
+            textRenderer.AppendNewLine();
+            textRenderer.Append($"TargetRenderer.Append(() => {fragment.Span.Text});");
+            textRenderer.AppendNewLine();
+            textRenderer.Append("TargetRenderer.PopPartIndentation();");
+            textRenderer.AppendNewLine();
             textRenderer.AppendNewLine();
         }
 
@@ -104,8 +104,8 @@ namespace Twofold.Compilation
             }
 
             string escapedContent = this.EscapeString(fragment.Span.Text);
-            string renderCmd = $"TargetRenderer.Append(() => \"{escapedContent}\");";
-            textRenderer.Append(renderCmd);
+            textRenderer.Append($"TargetRenderer.Append(() => \"{escapedContent}\");");
+            textRenderer.AppendNewLine();
             textRenderer.AppendNewLine();
         }
 
@@ -127,12 +127,12 @@ namespace Twofold.Compilation
             }
             textRenderer.Append(fragment.Span);
             textRenderer.AppendNewLine();
+            textRenderer.AppendNewLine();
         }
 
         protected override void PreGeneration(string sourceName, string text)
         {
-            var lineDirective = $"#line 1 \"{sourceName}\"";
-            textRenderer.Append(lineDirective);
+            textRenderer.Append($"#line 1 \"{sourceName}\"");
             textRenderer.AppendNewLine();
 
             foreach (string targetCodeUsing in Constants.TargetCodeUsings)
