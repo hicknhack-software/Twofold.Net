@@ -17,17 +17,23 @@
  * limitations under the License.
  */
 
-namespace Twofold.Interface.Compilation
+namespace Twofold.Compilation.Rules
 {
-    public enum CodeFragmentTypes
+    using Interface;
+    using Interface.Compilation;
+    using System.Collections.Generic;
+
+    /// <summary>
+    /// Rule which transfers template code directly to output.
+    /// </summary>
+    internal class PassThroughRule : IParserRule
     {
-        OriginExpression,
-        OriginPragma,
-        OriginScript,
-        OriginText,
-        TargetNewLine,
-        TargetIndentation,
-        TargetPushIndentation,
-        TargetPopIndentation,
+        public List<AsbtractRenderCommand> Parse(FileLine line, IMessageHandler messageHandler)
+        {
+            return new List<AsbtractRenderCommand>
+            {
+                new OriginScript(line, new TextSpan(line.Text, line.Begin, line.End))
+            };
+        }
     }
 }

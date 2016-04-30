@@ -97,7 +97,7 @@ namespace Twofold.Interface.SourceMapping
 
         public override string ToString()
         {
-            return $"L:{line}, C:{column}";
+            return $"({line}, {column})";
         }
 
         #region IEquatable

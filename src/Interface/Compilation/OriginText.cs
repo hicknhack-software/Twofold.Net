@@ -19,10 +19,16 @@
 
 namespace Twofold.Interface.Compilation
 {
-    public class OriginText : AsbtractCodeFragment
+    public class OriginText : AsbtractRenderCommand
     {
-        public OriginText(FileLine line, TextSpan span)
-            : base(CodeFragmentTypes.OriginText, line, span)
-        { }
+        public readonly TextSpan TextSpan;
+        public readonly TextSpan EndSpan;
+
+        public OriginText(FileLine line, TextSpan textSpan, TextSpan endSpan)
+            : base(RenderCommandTypes.OriginText, line)
+        {
+            this.TextSpan = textSpan;
+            this.EndSpan = endSpan;
+        }
     }
 }

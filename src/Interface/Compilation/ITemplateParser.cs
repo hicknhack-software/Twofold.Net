@@ -23,6 +23,6 @@ namespace Twofold.Interface.Compilation
 
     public interface ITemplateParser
     {
-        List<AsbtractCodeFragment> Parse(string sourceName, string text);
+        List<AsbtractRenderCommand> Parse(string sourceName, string text);
     }
 }

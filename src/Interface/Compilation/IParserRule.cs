@@ -23,6 +23,6 @@ namespace Twofold.Interface.Compilation
 
     public interface IParserRule
     {
-        List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler);
+        List<AsbtractRenderCommand> Parse(FileLine line, IMessageHandler messageHandler);
     }
 }

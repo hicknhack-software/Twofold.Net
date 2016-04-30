@@ -24,12 +24,12 @@ namespace Twofold.Interface
     public class TextSpan
     {
         /// <summary>
-        /// Begin of the text span in the original text.
+        /// Begin of the text span in the OriginalText.
         /// </summary>
         public readonly int Begin;
 
         /// <summary>
-        /// End + 1 of the text span in the original text.
+        /// End + 1 of the text span in the OriginalText.
         /// </summary>
         public readonly int End;
 
@@ -39,7 +39,7 @@ namespace Twofold.Interface
         public readonly string OriginalText;
 
         /// <summary>
-        /// The text span from the original text.
+        /// The text span [Begin, End) from the OriginalText.
         /// </summary>
         public readonly string Text;
 

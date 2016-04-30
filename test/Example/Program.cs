@@ -64,8 +64,6 @@ namespace Example
             using (var writer = new StreamWriter(fileStream))
                 foreach (var nameSourceTuple in compilerResult.TargetCodes)
                 {
-                    writer.WriteLine($"//{nameSourceTuple.Item1}");
-                    writer.WriteLine("//////////////////////////////////////////////////////");
                     writer.WriteLine($"{nameSourceTuple.Item2}");
                     writer.WriteLine();
                 }

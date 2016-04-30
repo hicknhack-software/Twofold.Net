@@ -20,6 +20,7 @@
 namespace Twofold.Compilation
 {
     using Interface.Compilation;
+    using Interface.SourceMapping;
     using System.Collections.Generic;
     using System.Globalization;
     using System.IO;
@@ -28,86 +29,138 @@ namespace Twofold.Compilation
 
     internal sealed class CSharpGenerator : AbstractCodeGenerator
     {
-        private static readonly char[] hexDigit = "0123456789abcdef".ToCharArray();
-        private readonly TextRenderer textRenderer;
-        private readonly List<string> includedFiles;
+        private static readonly char[] HexDigit = "0123456789abcdef".ToCharArray();
+        private readonly TextRenderer TextRenderer;
+        private readonly SourceMap SourceMap;
+        private readonly List<string> IncludedFiles;
 
-        public CSharpGenerator(TemplateParser templateParser, TextWriter textWriter, List<string> includedFiles)
+        public CSharpGenerator(TemplateParser templateParser, TextWriter textWriter, SourceMap sourceMap, List<string> includedFiles)
             : base(templateParser)
         {
-            this.textRenderer = new TextRenderer(textWriter);
-            this.includedFiles = includedFiles;
+            this.TextRenderer = new TextRenderer(textWriter);
+            this.SourceMap = sourceMap;
+            this.IncludedFiles = includedFiles;
         }
 
-        protected override void Generate(TargetIndentation fragment)
+        protected override void Generate(TargetIndentation command)
         {
             //if (fragment.Span.IsEmpty) {
             //    return;
             //}
+            
+            this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.BeginSpan));
+            this.TextRenderer.Write("TargetRenderer.PartIndentation(\"");
 
-            string escapedContent = this.EscapeString(fragment.Span.Text);
-            textRenderer.WriteLine($"TargetRenderer.PartIndentation(\"{escapedContent}\");");
-            textRenderer.WriteLine();
+            if (command.IndentationSpan.IsEmpty == false)
+            {
+                //TODO: Interpolation 1:1
+                this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.IndentationSpan));
+                var escapedText = this.EscapeString(command.IndentationSpan.Text);
+                this.TextRenderer.Write(escapedText);
+            }
+
+            this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.EndSpan));
+            this.TextRenderer.WriteLine("\");");
+
+            this.TextRenderer.WriteLine();
         }
 
-        protected override void Generate(TargetPopIndentation fragment)
+        protected override void Generate(TargetPopIndentation command)
         {
-            textRenderer.WriteLine("TargetRenderer.PopIndentation();");
-            textRenderer.WriteLine();
+            this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.IndentationSpan));
+            this.TextRenderer.WriteLine("TargetRenderer.PopIndentation();");
+            this.TextRenderer.WriteLine();
         }
 
-        protected override void Generate(TargetPushIndentation fragment)
+        protected override void Generate(TargetPushIndentation command)
         {
-            string escapedContent = this.EscapeString(fragment.Span.Text);
-            textRenderer.WriteLine($"TargetRenderer.PushIndentation(\"{escapedContent}\");");
-            textRenderer.WriteLine();
+            this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.BeginSpan));
+            this.TextRenderer.Write("TargetRenderer.PushIndentation(\"");
+
+            if (command.IndentationSpan.IsEmpty == false)
+            {
+                //TODO: Interpolation 1:1
+                this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.IndentationSpan));
+                var escapedText = this.EscapeString(command.IndentationSpan.Text);
+                this.TextRenderer.Write(escapedText);
+            }
+
+            this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.EndSpan));
+            this.TextRenderer.WriteLine("\");");
+            this.TextRenderer.WriteLine();
         }
 
-        protected override void Generate(TargetNewLine fragment)
+        protected override void Generate(TargetNewLine command)
         {
-            textRenderer.WriteLine("TargetRenderer.WriteLine();");
-            textRenderer.WriteLine();
+            this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.NewLineSpan));
+            this.TextRenderer.WriteLine("TargetRenderer.WriteLine();");
+            this.TextRenderer.WriteLine();
         }
 
-        protected override void Generate(OriginScript fragment)
+        protected override void Generate(OriginScript command)
         {
-            textRenderer.WriteLine(fragment.Span);
+            if (command.ScriptSpan.IsEmpty == false)
+            {
+                //TODO: Interpolation 1:1
+                this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.ScriptSpan));
+                this.TextRenderer.WriteLine(command.ScriptSpan);
+            }
         }
 
-        protected override void Generate(OriginExpression fragment)
+        protected override void Generate(OriginExpression command)
         {
-            if (fragment.Span.IsEmpty)
+            if (command.ExpressionSpan.IsEmpty)
             {
                 return;
             }
 
-            textRenderer.WriteLine("TargetRenderer.PushPartIndentation();");
-            textRenderer.WriteLine($"TargetRenderer.Write(() => {fragment.Span.Text});");
-            textRenderer.WriteLine("TargetRenderer.PopPartIndentation();");
-            textRenderer.WriteLine();
+            this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.BeginSpan));
+            this.TextRenderer.Write("TargetRenderer.PushPartIndentation();TargetRenderer.Write(() => ");
+
+            if (command.ExpressionSpan.IsEmpty == false)
+            {
+                //TODO: Interpolation 1:1
+                this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.ExpressionSpan));
+                this.TextRenderer.Write(command.ExpressionSpan.Text);
+            }
+
+            this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.EndSpan));
+            this.TextRenderer.WriteLine(");TargetRenderer.PopPartIndentation();");
+            this.TextRenderer.WriteLine();
         }
 
-        protected override void Generate(OriginText fragment)
+        protected override void Generate(OriginText command)
         {
-            if (fragment.Span.IsEmpty)
+            if (command.TextSpan.IsEmpty)
             {
                 return;
             }
 
-            string escapedContent = this.EscapeString(fragment.Span.Text);
-            textRenderer.WriteLine($"TargetRenderer.Write(() => \"{escapedContent}\");");
-            textRenderer.WriteLine();
+            this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.TextSpan));
+            this.TextRenderer.Write("TargetRenderer.Write(() => \"");
+
+            if (command.TextSpan.IsEmpty == false)
+            {
+                //TODO: Interpolation 1:1
+                this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.TextSpan));
+                var escapedText = this.EscapeString(command.TextSpan.Text);
+                this.TextRenderer.Write(escapedText);
+            }
+
+            this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.EndSpan));
+            this.TextRenderer.WriteLine("\");");
+            this.TextRenderer.WriteLine();
         }
 
-        protected override void Generate(OriginPragma fragment)
+        protected override void Generate(OriginPragma command)
         {
-            switch (fragment.Name)
+            switch (command.Name)
             {
                 case "include":
                     {
-                        if (string.IsNullOrEmpty(fragment.Argument) == false)
+                        if (string.IsNullOrEmpty(command.Argument) == false)
                         {
-                            includedFiles.Add(fragment.Argument);
+                            IncludedFiles.Add(command.Argument);
                         }
                     }
                     break;
@@ -115,16 +168,22 @@ namespace Twofold.Compilation
                 default:
                     break;
             }
-            textRenderer.WriteLine(fragment.Span);
+
+            //TODO: Interpolation 1:1
+            this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.PragmaSpan));
+            this.TextRenderer.WriteLine(command.PragmaSpan);
         }
 
         protected override void PreGeneration(string sourceName, string text)
         {
+            this.TextRenderer.WriteLine($"// {sourceName}");
+            this.TextRenderer.WriteLine("////////////////////////////////////////////////////////////////////////////////");
+
             foreach (string targetCodeUsing in Constants.TargetCodeUsings)
             {
-                textRenderer.WriteLine(targetCodeUsing);
+                this.TextRenderer.WriteLine(targetCodeUsing);
             }
-            textRenderer.WriteLine($"#line 1 \"{sourceName}\"");
+            this.TextRenderer.WriteLine($"#line 1 \"{sourceName}\"");
         }
 
         private string EscapeString(string text)
@@ -153,10 +212,10 @@ namespace Twofold.Compilation
                             {
                                 case UnicodeCategory.Control:
                                     {
-                                        var c1 = hexDigit[(ch >> 12) & 0x0F];
-                                        var c2 = hexDigit[(ch >> 8) & 0x0F];
-                                        var c3 = hexDigit[(ch >> 4) & 0x0F];
-                                        var c4 = hexDigit[ch & 0x0F];
+                                        var c1 = HexDigit[(ch >> 12) & 0x0F];
+                                        var c2 = HexDigit[(ch >> 8) & 0x0F];
+                                        var c3 = HexDigit[(ch >> 4) & 0x0F];
+                                        var c4 = HexDigit[ch & 0x0F];
                                         sb
                                             .Append(@"\x")
                                             .Append(c1)
@@ -176,5 +235,8 @@ namespace Twofold.Compilation
             }
             return sb.ToString();
         }
+
+        private TextPosition TextRendererPosition() => new TextPosition(this.TextRenderer.Line, this.TextRenderer.Column);
+
     }
 }

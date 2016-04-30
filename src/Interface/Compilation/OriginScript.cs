@@ -19,10 +19,17 @@
 
 namespace Twofold.Interface.Compilation
 {
-    public class OriginScript : AsbtractCodeFragment
+    /// <summary>
+    /// Adds template text 1:1 to the output.
+    /// </summary>
+    public class OriginScript : AsbtractRenderCommand
     {
-        public OriginScript(FileLine line, TextSpan span)
-            : base(CodeFragmentTypes.OriginScript, line, span)
-        { }
+        public readonly TextSpan ScriptSpan;
+
+        public OriginScript(FileLine line, TextSpan scriptSpan)
+            : base(RenderCommandTypes.OriginScript, line)
+        {
+            this.ScriptSpan = scriptSpan;
+        }
     }
 }

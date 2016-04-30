@@ -35,45 +35,45 @@ namespace Twofold.Interface.Compilation
         {
             this.PreGeneration(sourceName, text);
 
-            List<AsbtractCodeFragment> fragments = parser.Parse(sourceName, text);
-            foreach (var codeFragment in fragments)
+            List<AsbtractRenderCommand> commands = parser.Parse(sourceName, text);
+            foreach (var command in commands)
             {
-                switch (codeFragment.Type)
+                switch (command.Type)
                 {
-                    case CodeFragmentTypes.OriginExpression:
-                        this.Generate((OriginExpression)codeFragment);
+                    case RenderCommandTypes.OriginExpression:
+                        this.Generate((OriginExpression)command);
                         break;
 
-                    case CodeFragmentTypes.OriginPragma:
-                        this.Generate((OriginPragma)codeFragment);
+                    case RenderCommandTypes.OriginPragma:
+                        this.Generate((OriginPragma)command);
                         break;
 
-                    case CodeFragmentTypes.OriginScript:
-                        this.Generate((OriginScript)codeFragment);
+                    case RenderCommandTypes.OriginScript:
+                        this.Generate((OriginScript)command);
                         break;
 
-                    case CodeFragmentTypes.OriginText:
-                        this.Generate((OriginText)codeFragment);
+                    case RenderCommandTypes.OriginText:
+                        this.Generate((OriginText)command);
                         break;
 
-                    case CodeFragmentTypes.TargetIndentation:
-                        this.Generate((TargetIndentation)codeFragment);
+                    case RenderCommandTypes.TargetIndentation:
+                        this.Generate((TargetIndentation)command);
                         break;
 
-                    case CodeFragmentTypes.TargetNewLine:
-                        this.Generate((TargetNewLine)codeFragment);
+                    case RenderCommandTypes.TargetNewLine:
+                        this.Generate((TargetNewLine)command);
                         break;
 
-                    case CodeFragmentTypes.TargetPopIndentation:
-                        this.Generate((TargetPopIndentation)codeFragment);
+                    case RenderCommandTypes.TargetPopIndentation:
+                        this.Generate((TargetPopIndentation)command);
                         break;
 
-                    case CodeFragmentTypes.TargetPushIndentation:
-                        this.Generate((TargetPushIndentation)codeFragment);
+                    case RenderCommandTypes.TargetPushIndentation:
+                        this.Generate((TargetPushIndentation)command);
                         break;
 
                     default:
-                        throw new NotSupportedException($"CodeFragmentType '{codeFragment.Type.ToString()}' is not supported.");
+                        throw new NotSupportedException($"CodeFragmentType '{command.Type.ToString()}' is not supported.");
                 }
             }
 
@@ -88,20 +88,20 @@ namespace Twofold.Interface.Compilation
         {
         }
 
-        protected abstract void Generate(OriginText fragment);
+        protected abstract void Generate(OriginText command);
 
-        protected abstract void Generate(OriginExpression fragment);
+        protected abstract void Generate(OriginExpression command);
 
-        protected abstract void Generate(OriginPragma fragment);
+        protected abstract void Generate(OriginPragma command);
 
-        protected abstract void Generate(OriginScript fragment);
+        protected abstract void Generate(OriginScript command);
 
-        protected abstract void Generate(TargetNewLine fragment);
+        protected abstract void Generate(TargetNewLine command);
 
-        protected abstract void Generate(TargetIndentation fragment);
+        protected abstract void Generate(TargetIndentation command);
 
-        protected abstract void Generate(TargetPushIndentation fragment);
+        protected abstract void Generate(TargetPushIndentation command);
 
-        protected abstract void Generate(TargetPopIndentation fragment);
+        protected abstract void Generate(TargetPopIndentation command);
     }
 }

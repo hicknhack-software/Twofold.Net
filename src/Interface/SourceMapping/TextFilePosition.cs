@@ -42,7 +42,7 @@ namespace Twofold.Interface.SourceMapping
 
         public override string ToString()
         {
-            return $"{SourceName} ({Line}, {Column})";
+            return $"{SourceName}: {base.ToString()}";
         }
 
         #region IEquatable

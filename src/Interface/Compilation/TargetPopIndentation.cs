@@ -19,10 +19,14 @@
 
 namespace Twofold.Interface.Compilation
 {
-    public class TargetPopIndentation : AsbtractCodeFragment
+    public class TargetPopIndentation : AsbtractRenderCommand
     {
-        public TargetPopIndentation(FileLine line, TextSpan span)
-            : base(CodeFragmentTypes.TargetPopIndentation, line, span)
-        { }
+        public readonly TextSpan IndentationSpan;
+
+        public TargetPopIndentation(FileLine line, TextSpan indentationSpan)
+            : base(RenderCommandTypes.TargetPopIndentation, line)
+        {
+            this.IndentationSpan = indentationSpan;
+        }
     }
 }

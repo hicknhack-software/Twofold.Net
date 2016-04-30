@@ -17,25 +17,21 @@
  * limitations under the License.
  */
 
-namespace Twofold.Compilation
+namespace Twofold.Compilation.Rules
 {
-    using Extensions;
     using Interface;
     using Interface.Compilation;
     using System.Collections.Generic;
 
-    internal class CallRule : IParserRule
+    /// <summary>
+    /// Rule which handles template interpolation and appends a new line to output: "| #{...} ... #{...}"
+    /// </summary>
+    internal class InterpolationLineRule : InterpolationRule
     {
-        public List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)
+        public override List<AsbtractRenderCommand> Parse(FileLine line, IMessageHandler messageHandler)
         {
-            List<AsbtractCodeFragment> fragments = new List<AsbtractCodeFragment>();
-
-            var indentBegin = (line.BeginNonSpace + 1); //skip matched character
-            var scriptBegin = line.Text.IndexOfNot(indentBegin, line.End, CharExtensions.IsSpace);
-
-            fragments.Add(new TargetPushIndentation(line, new TextSpan(line.Text, indentBegin, scriptBegin)));
-            fragments.Add(new OriginScript(line, new TextSpan(line.Text, scriptBegin, line.End)));
-            fragments.Add(new TargetPopIndentation(line, new TextSpan(line.Text, line.End, line.End)));
+            List<AsbtractRenderCommand> fragments = base.Parse(line, messageHandler);
+            fragments.Add(new TargetNewLine(line, new TextSpan(line.Text, line.End, line.End)));
             return fragments;
         }
     }

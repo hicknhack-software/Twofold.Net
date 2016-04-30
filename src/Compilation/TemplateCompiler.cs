@@ -23,6 +23,7 @@ namespace Twofold.Compilation
     using Interface.Compilation;
     using Interface.SourceMapping;
     using Microsoft.CSharp;
+    using Rules;
     using System;
     using System.CodeDom.Compiler;
     using System.Collections.Generic;
@@ -174,9 +175,11 @@ namespace Twofold.Compilation
             try
             {
                 codeWriter = new StringWriter();
-                var csharpGenerator = new CSharpGenerator(templateParser, codeWriter, includedFiles);
+                var sourceMap = new SourceMap();
+                var csharpGenerator = new CSharpGenerator(templateParser, codeWriter, sourceMap, includedFiles);
                 csharpGenerator.Generate(sourceName, sourceText);
                 generatedCode = codeWriter.ToString();
+                System.Console.WriteLine(sourceMap);
             }
             finally
             {

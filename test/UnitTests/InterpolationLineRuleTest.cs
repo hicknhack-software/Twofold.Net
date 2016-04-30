@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Twofold.Compilation;
 using Twofold.Interface.Compilation;
 using UnitTests.Helper;
+using Twofold.Compilation.Rules;
 
 namespace UnitTests
 {
@@ -16,13 +17,13 @@ namespace UnitTests
         {
             var line = Tools.CreateFileLine(@"|", 0);
             var rule = new InterpolationLineRule();
-            List<AsbtractCodeFragment> fragments = rule.Parse(line, new NullMessageHandler());
+            List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
             Assert.AreEqual(3, fragments.Count);
             // ...
             // First elements are tested by InterpolationLine
             // ...
-            Assert.AreEqual(CodeFragmentTypes.TargetNewLine, fragments[2].Type);
+            Assert.AreEqual(RenderCommandTypes.TargetNewLine, fragments[2].Type);
             Assert.AreEqual("", fragments[2].Span.Text);
         }
     }

@@ -19,10 +19,17 @@
 
 namespace Twofold.Interface.Compilation
 {
-    public class TargetNewLine : AsbtractCodeFragment
+    /// <summary>
+    /// Adds a new line to the output.
+    /// </summary>
+    public class TargetNewLine : AsbtractRenderCommand
     {
-        public TargetNewLine(FileLine line, TextSpan span)
-            : base(CodeFragmentTypes.TargetNewLine, line, span)
-        { }
+        public readonly TextSpan NewLineSpan;
+
+        public TargetNewLine(FileLine line, TextSpan newLineSpan)
+            : base(RenderCommandTypes.TargetNewLine, line)
+        {
+            this.NewLineSpan = newLineSpan;
+        }
     }
 }

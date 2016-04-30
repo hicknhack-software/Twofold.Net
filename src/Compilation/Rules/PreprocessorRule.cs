@@ -17,7 +17,7 @@
  * limitations under the License.
  */
 
-namespace Twofold.Compilation
+namespace Twofold.Compilation.Rules
 {
     using Extensions;
     using Interface;
@@ -25,11 +25,14 @@ namespace Twofold.Compilation
     using System;
     using System.Collections.Generic;
 
+    /// <summary>
+    /// Rule which handles template preprocessor statement: "#<name> <args>?"
+    /// </summary>
     internal class PreprocessorRule : IParserRule
     {
-        public List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)
+        public List<AsbtractRenderCommand> Parse(FileLine line, IMessageHandler messageHandler)
         {
-            var fragments = new List<AsbtractCodeFragment>();
+            var fragments = new List<AsbtractRenderCommand>();
 
             while (true)
             {
@@ -74,8 +77,8 @@ namespace Twofold.Compilation
 
                 // Extract <Filename> from '"<Filename>"'
                 string pragmaArgument = line.Text.Substring(pragmaArgBegin + 1, (pragmaArgEnd - pragmaArgBegin - 1));
-                var textSpan = new TextSpan(line.Text, line.Begin, line.End);
-                fragments.Add(new OriginPragma(pragmaName, pragmaArgument, line, textSpan));
+                var pragmaSpan = new TextSpan(line.Text, line.Begin, line.End);
+                fragments.Add(new OriginPragma(line, pragmaSpan, pragmaName, pragmaArgument));
 
                 index = (pragmaArgEnd + 1);
 

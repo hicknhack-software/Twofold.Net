@@ -17,19 +17,17 @@
  * limitations under the License.
  */
 
-namespace Twofold.Compilation
+namespace Twofold.Interface.Compilation
 {
-    using Interface;
-    using Interface.Compilation;
-    using System.Collections.Generic;
-
-    internal class InterpolationLineRule : InterpolationRule
+    public enum RenderCommandTypes
     {
-        public override List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)
-        {
-            List<AsbtractCodeFragment> fragments = base.Parse(line, messageHandler);
-            fragments.Add(new TargetNewLine(line, new TextSpan(line.Text, line.End, line.End)));
-            return fragments;
-        }
+        OriginExpression,
+        OriginPragma,
+        OriginScript,
+        OriginText,
+        TargetNewLine,
+        TargetIndentation,
+        TargetPushIndentation,
+        TargetPopIndentation,
     }
 }

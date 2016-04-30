@@ -17,20 +17,17 @@
  * limitations under the License.
  */
 
-namespace Twofold.Compilation
+namespace Twofold.Interface.Compilation
 {
-    using Interface;
-    using Interface.Compilation;
-    using System.Collections.Generic;
-
-    internal class PassThroughRule : IParserRule
+    public abstract class AsbtractRenderCommand
     {
-        public List<AsbtractCodeFragment> Parse(FileLine line, IMessageHandler messageHandler)
+        public readonly RenderCommandTypes Type;
+        public readonly FileLine Line;
+
+        public AsbtractRenderCommand(RenderCommandTypes type, FileLine line)
         {
-            return new List<AsbtractCodeFragment>
-            {
-                new OriginScript(line, new TextSpan(line.Text, line.Begin, line.End))
-            };
+            this.Type = type;
+            this.Line = line;
         }
     }
 }

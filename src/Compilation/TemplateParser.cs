@@ -38,9 +38,9 @@ namespace Twofold.Compilation
             this.messageHandler = messageHandler;
         }
 
-        public List<AsbtractCodeFragment> Parse(string sourceName, string text)
+        public List<AsbtractRenderCommand> Parse(string sourceName, string text)
         {
-            var fragments = new List<AsbtractCodeFragment>();
+            var fragments = new List<AsbtractRenderCommand>();
 
             int index = 0;
             int nonSpaceIndex = 0;
@@ -52,7 +52,7 @@ namespace Twofold.Compilation
                 end = text.IndexOf(nonSpaceIndex, text.Length, CharExtensions.IsNewline);
 
                 IParserRule parserRule;
-                List<AsbtractCodeFragment> ruleFragments;
+                List<AsbtractRenderCommand> ruleFragments;
                 var textFilePostion = new TextFilePosition(sourceName, new TextPosition(line, 1));
                 var fileLine = new FileLine(text, index, nonSpaceIndex, end, textFilePostion);
                 if (parseRules.TryGetValue(text[nonSpaceIndex], out parserRule))

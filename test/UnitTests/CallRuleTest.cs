@@ -3,6 +3,7 @@ using UnitTests.Helper;
 using Twofold.Compilation;
 using Twofold.Interface.Compilation;
 using System.Collections.Generic;
+using Twofold.Compilation.Rules;
 
 namespace UnitTests
 {
@@ -14,17 +15,17 @@ namespace UnitTests
         {
             var line = Tools.CreateFileLine(@"=", 0);
             var rule = new CallRule();
-            List<AsbtractCodeFragment> fragments = rule.Parse(line, new NullMessageHandler());
+            List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
             Assert.AreEqual(3, fragments.Count);
 
-            Assert.AreEqual(CodeFragmentTypes.TargetPushIndentation, fragments[0].Type);
+            Assert.AreEqual(RenderCommandTypes.TargetPushIndentation, fragments[0].Type);
             Assert.AreEqual("", fragments[0].Span.Text);
 
-            Assert.AreEqual(CodeFragmentTypes.OriginScript, fragments[1].Type);
+            Assert.AreEqual(RenderCommandTypes.OriginScript, fragments[1].Type);
             Assert.AreEqual("", fragments[1].Span.Text);
 
-            Assert.AreEqual(CodeFragmentTypes.TargetPopIndentation, fragments[2].Type);
+            Assert.AreEqual(RenderCommandTypes.TargetPopIndentation, fragments[2].Type);
             Assert.AreEqual("", fragments[2].Span.Text);
         }
 
@@ -33,17 +34,17 @@ namespace UnitTests
         {
             var line = Tools.CreateFileLine(@"=A;", 0);
             var rule = new CallRule();
-            List<AsbtractCodeFragment> fragments = rule.Parse(line, new NullMessageHandler());
+            List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
             Assert.AreEqual(3, fragments.Count);
 
-            Assert.AreEqual(CodeFragmentTypes.TargetPushIndentation, fragments[0].Type);
+            Assert.AreEqual(RenderCommandTypes.TargetPushIndentation, fragments[0].Type);
             Assert.AreEqual("", fragments[0].Span.Text);
 
-            Assert.AreEqual(CodeFragmentTypes.OriginScript, fragments[1].Type);
+            Assert.AreEqual(RenderCommandTypes.OriginScript, fragments[1].Type);
             Assert.AreEqual("A;", fragments[1].Span.Text);
 
-            Assert.AreEqual(CodeFragmentTypes.TargetPopIndentation, fragments[2].Type);
+            Assert.AreEqual(RenderCommandTypes.TargetPopIndentation, fragments[2].Type);
             Assert.AreEqual("", fragments[2].Span.Text);
         }
 
@@ -52,17 +53,17 @@ namespace UnitTests
         {
             var line = Tools.CreateFileLine(@"=   A;", 0);
             var rule = new CallRule();
-            List<AsbtractCodeFragment> fragments = rule.Parse(line, new NullMessageHandler());
+            List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
             Assert.AreEqual(3, fragments.Count);
 
-            Assert.AreEqual(CodeFragmentTypes.TargetPushIndentation, fragments[0].Type);
+            Assert.AreEqual(RenderCommandTypes.TargetPushIndentation, fragments[0].Type);
             Assert.AreEqual("   ", fragments[0].Span.Text);
 
-            Assert.AreEqual(CodeFragmentTypes.OriginScript, fragments[1].Type);
+            Assert.AreEqual(RenderCommandTypes.OriginScript, fragments[1].Type);
             Assert.AreEqual("A;", fragments[1].Span.Text);
 
-            Assert.AreEqual(CodeFragmentTypes.TargetPopIndentation, fragments[2].Type);
+            Assert.AreEqual(RenderCommandTypes.TargetPopIndentation, fragments[2].Type);
             Assert.AreEqual("", fragments[2].Span.Text);
         }
     }

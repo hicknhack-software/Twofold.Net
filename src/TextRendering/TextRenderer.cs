@@ -111,13 +111,16 @@ namespace Twofold.TextRendering
                 if (lineBreakIndex == textSpan.End)
                 { // No line break found
                     this.textWriter.Write(index, textSpan.End, textSpan.OriginalText);
-                    index += (textSpan.End - index);
+                    var len = (textSpan.End - index);
+                    Column += len;
+                    index += len;
                 }
                 else
                 {  // Line break found
                     ++lineBreakIndex;
                     this.textWriter.Write(index, lineBreakIndex, textSpan.OriginalText);
-                    index += (lineBreakIndex - index);
+                    var len = (lineBreakIndex - index);
+                    index += len;
 
                     ++Line;
                     lineBlank = true;

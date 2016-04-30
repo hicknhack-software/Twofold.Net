@@ -19,16 +19,21 @@
 
 namespace Twofold.Interface.Compilation
 {
-    public class OriginPragma : AsbtractCodeFragment
+    /// <summary>
+    /// A pargma directive in the template.
+    /// </summary>
+    public class OriginPragma : AsbtractRenderCommand
     {
+        public readonly TextSpan PragmaSpan;
         public readonly string Name;
         public readonly string Argument;
 
-        public OriginPragma(string name, string argument, FileLine line, TextSpan span)
-            : base(CodeFragmentTypes.OriginPragma, line, span)
+        public OriginPragma(FileLine line, TextSpan pragmaSpan, string name, string argument)
+            : base(RenderCommandTypes.OriginPragma, line)
         {
-            Name = name;
-            Argument = argument;
+            this.PragmaSpan = pragmaSpan;
+            this.Name = name;
+            this.Argument = argument;
         }
     }
 }

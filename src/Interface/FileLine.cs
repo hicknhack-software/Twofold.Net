@@ -55,5 +55,25 @@ namespace Twofold.Interface
             End = end;
             Position = position;
         }
+
+        public TextFilePosition CreateFilePosition(TextSpan textSpan)
+        {
+            if (textSpan == null)
+            {
+                throw new ArgumentNullException(nameof(textSpan));
+            }
+
+            if (textSpan.Begin < this.Begin)
+            {
+                throw new ArgumentOutOfRangeException($"{nameof(textSpan.Begin)} of {nameof(textSpan)} is smaller than {nameof(FileLine)} {nameof(this.Begin)}!");
+            }
+
+            if (textSpan.End > this.End)
+            {
+                throw new ArgumentOutOfRangeException($"{nameof(textSpan.End)} of {nameof(textSpan)} is larger than {nameof(FileLine)} {nameof(this.End)}!");
+            }
+
+            return new TextFilePosition(this.Position.SourceName, new TextPosition(this.Position.Line, textSpan.Begin - this.Begin + 1));
+        }
     }
 }
