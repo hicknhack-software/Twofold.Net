@@ -21,21 +21,22 @@ namespace Twofold.Interface
 {
     using System;
     using System.Collections.Generic;
+    using Twofold.Compilation;
 
     public sealed class TemplateCompilerResult
     {
         public readonly CompiledTemplate @CompiledTemplate;
-        public readonly List<Tuple<string, string>> TargetCodes;
+        public readonly List<GeneratedCode> GeneratedCodes;
 
-        public TemplateCompilerResult(CompiledTemplate compiledTemplate, List<Tuple<string, string>> targetCodes)
+        public TemplateCompilerResult(CompiledTemplate compiledTemplate, List<GeneratedCode> generatedCodes)
         {
-            if (targetCodes == null)
+            if (generatedCodes == null)
             {
-                throw new ArgumentNullException(nameof(targetCodes));
+                throw new ArgumentNullException(nameof(generatedCodes));
             }
 
             this.CompiledTemplate = compiledTemplate;
-            this.TargetCodes = targetCodes;
+            this.GeneratedCodes = generatedCodes;
         }
     }
 }

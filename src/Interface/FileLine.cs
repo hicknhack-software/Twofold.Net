@@ -19,6 +19,7 @@
 
 namespace Twofold.Interface
 {
+    using Extensions;
     using SourceMapping;
     using System;
 

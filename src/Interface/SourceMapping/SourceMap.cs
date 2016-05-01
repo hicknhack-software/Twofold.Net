@@ -37,21 +37,21 @@ namespace Twofold.Interface.SourceMapping
 
             public override string ToString()
             {
-                return $"{this.Generated.ToString()}, {Source.ToString()}";
+                return $"{this.Generated.ToString()}, {this.Source.ToString()}";
             }
         }
 
-        List<Mapping> mappings = new List<Mapping>();
+        List<Mapping> Mappings = new List<Mapping>();
 
         public void AddMapping(TextPosition generated, TextFilePosition source)
         {
-            mappings.Add(new Mapping(generated, source));
+            this.Mappings.Add(new Mapping(generated, source));
         }
 
         public override string ToString()
         {
             var sb = new StringBuilder();
-            foreach (var mapping in mappings)
+            foreach (var mapping in this.Mappings)
             {
                 sb.AppendLine(mapping.ToString());
             }

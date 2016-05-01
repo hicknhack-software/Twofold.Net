@@ -35,6 +35,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interface\GeneratedCode.cs" />
     <Compile Include="Interface\SourceMapping\SourceMap.cs" />
     <Compile Include="Interface\TemplateCompilerResult.cs" />
     <Compile Include="TextRendering\TargetRenderer.cs" />

@@ -19,17 +19,15 @@
 
 namespace Twofold.Compilation
 {
+    using Extensions;
     using Interface.Compilation;
     using Interface.SourceMapping;
     using System.Collections.Generic;
-    using System.Globalization;
     using System.IO;
-    using System.Text;
     using TextRendering;
 
     internal sealed class CSharpGenerator : AbstractCodeGenerator
     {
-        private static readonly char[] HexDigit = "0123456789abcdef".ToCharArray();
         private readonly TextRenderer TextRenderer;
         private readonly List<string> IncludedFiles;
 
@@ -45,7 +43,7 @@ namespace Twofold.Compilation
             this.TextRenderer.Write("TargetRenderer.PartIndentation(\"", command.Line.CreateFilePosition(command.BeginSpan));
 
             //TODO: Interpolation 1:1
-            var escapedText = this.EscapeString(command.IndentationSpan.Text);
+            var escapedText = command.IndentationSpan.Text.Escape();
             var indentationPosition = command.Line.CreateFilePosition(command.IndentationSpan);
             this.TextRenderer.Write(escapedText, indentationPosition);
 
@@ -65,7 +63,7 @@ namespace Twofold.Compilation
             this.TextRenderer.Write("TargetRenderer.PushIndentation(\"", command.Line.CreateFilePosition(command.BeginSpan));
 
             //TODO: Interpolation 1:1
-            var escapedText = this.EscapeString(command.IndentationSpan.Text);
+            var escapedText = command.IndentationSpan.Text.Escape();
             var indentationPosition = command.Line.CreateFilePosition(command.IndentationSpan);
             this.TextRenderer.Write(escapedText, indentationPosition);
 
@@ -118,7 +116,7 @@ namespace Twofold.Compilation
             this.TextRenderer.Write("TargetRenderer.Write(() => \"", command.Line.CreateFilePosition(command.TextSpan));
 
             //TODO: Interpolation 1:1
-            var escapedText = this.EscapeString(command.TextSpan.Text);
+            var escapedText = command.TextSpan.Text.Escape();
             var textPosition = command.Line.CreateFilePosition(command.TextSpan);
             this.TextRenderer.Write(escapedText, textPosition);
 
@@ -144,7 +142,7 @@ namespace Twofold.Compilation
             }
 
             //TODO: Interpolation 1:1
-            this.TextRenderer.WriteLine(command.PragmaSpan, command.Line.CreateFilePosition(command.PragmaSpan));
+            this.TextRenderer.WriteLine(command.PragmaSpan.Text, command.Line.CreateFilePosition(command.PragmaSpan));
         }
 
         protected override void PreGeneration(string templatePath, string text)
@@ -155,64 +153,16 @@ namespace Twofold.Compilation
             {
                 this.TextRenderer.WriteLine(targetCodeUsing);
             }
-            this.TextRenderer.WriteLine($"#line 1 \"{templatePath}\"");
-        }
-
-        private string EscapeString(string text)
-        {
-            var sb = new StringBuilder(text.Length);
-            var len = text.Length;
-            for (int c = 0; c < len; ++c)
-            {
-                char ch = text[c];
-                switch (ch)
-                {
-                    case '\'': sb.Append(@"\'"); break;
-                    case '\"': sb.Append("\\\""); break;
-                    case '\\': sb.Append(@"\\"); break;
-                    case '\0': sb.Append(@"\0"); break;
-                    case '\a': sb.Append(@"\a"); break;
-                    case '\b': sb.Append(@"\b"); break;
-                    case '\f': sb.Append(@"\f"); break;
-                    case '\n': sb.Append(@"\n"); break;
-                    case '\r': sb.Append(@"\r"); break;
-                    case '\t': sb.Append(@"\t"); break;
-                    case '\v': sb.Append(@"\v"); break;
-                    default:
-                        {
-                            switch (char.GetUnicodeCategory(ch))
-                            {
-                                case UnicodeCategory.Control:
-                                    {
-                                        var c1 = HexDigit[(ch >> 12) & 0x0F];
-                                        var c2 = HexDigit[(ch >> 8) & 0x0F];
-                                        var c3 = HexDigit[(ch >> 4) & 0x0F];
-                                        var c4 = HexDigit[ch & 0x0F];
-                                        sb
-                                            .Append(@"\x")
-                                            .Append(c1)
-                                            .Append(c2)
-                                            .Append(c3)
-                                            .Append(c4);
-                                    }
-                                    break;
-
-                                default:
-                                    sb.Append(ch);
-                                    break;
-                            }
-                        }
-                        break;
-                }
-            }
-            return sb.ToString();
+            var escapedTemplatePath = templatePath.Escape();
+            this.TextRenderer.WriteLine($"#line 1 \"{escapedTemplatePath}\"");
         }
 
         private TextPosition TextRendererPosition() => new TextPosition(this.TextRenderer.Line, this.TextRenderer.Column);
 
         private string X(TextFilePosition position)
         {
-            return $"new TextFilePosition(\"{position.SourceName}\", new TextPosition({position.Line}, {position.Column}))";
+            var escapedSourceName = position.SourceName.Escape();
+            return $"new TextFilePosition(\"{escapedSourceName}\", new TextPosition({position.Line}, {position.Column}))";
         }
     }
 }

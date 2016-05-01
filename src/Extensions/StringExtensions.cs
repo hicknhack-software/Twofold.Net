@@ -20,7 +20,8 @@
 namespace Twofold.Extensions
 {
     using System;
-
+    using System.Globalization;
+    using System.Text;
     internal static class StringExtensions
     {
         /// <exception cref="ArgumentOutOfRangeException">begin is greater than end.</exception>
@@ -71,6 +72,57 @@ namespace Twofold.Extensions
                 ++index;
             }
             return end;
+        }
+
+        public static string Escape(this string text)
+        {
+            char[] HexDigit = "0123456789abcdef".ToCharArray();
+            var sb = new StringBuilder(text.Length);
+            var len = text.Length;
+            for (int c = 0; c < len; ++c)
+            {
+                char ch = text[c];
+                switch (ch)
+                {
+                    case '\'': sb.Append(@"\'"); break;
+                    case '\"': sb.Append("\\\""); break;
+                    case '\\': sb.Append(@"\\"); break;
+                    case '\0': sb.Append(@"\0"); break;
+                    case '\a': sb.Append(@"\a"); break;
+                    case '\b': sb.Append(@"\b"); break;
+                    case '\f': sb.Append(@"\f"); break;
+                    case '\n': sb.Append(@"\n"); break;
+                    case '\r': sb.Append(@"\r"); break;
+                    case '\t': sb.Append(@"\t"); break;
+                    case '\v': sb.Append(@"\v"); break;
+                    default:
+                        {
+                            switch (char.GetUnicodeCategory(ch))
+                            {
+                                case UnicodeCategory.Control:
+                                    {
+                                        var c1 = HexDigit[(ch >> 12) & 0x0F];
+                                        var c2 = HexDigit[(ch >> 8) & 0x0F];
+                                        var c3 = HexDigit[(ch >> 4) & 0x0F];
+                                        var c4 = HexDigit[ch & 0x0F];
+                                        sb
+                                            .Append(@"\x")
+                                            .Append(c1)
+                                            .Append(c2)
+                                            .Append(c3)
+                                            .Append(c4);
+                                    }
+                                    break;
+
+                                default:
+                                    sb.Append(ch);
+                                    break;
+                            }
+                        }
+                        break;
+                }
+            }
+            return sb.ToString();
         }
     }
 }

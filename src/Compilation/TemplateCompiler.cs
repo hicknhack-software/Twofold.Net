@@ -86,7 +86,7 @@ namespace Twofold.Compilation
             var templateNames = new Queue<string>();
             templateNames.Enqueue(templateName);
 
-            var generatedTargetCodes = new List<Tuple<string, string>>();
+            var generatedTargetCodes = new List<GeneratedCode>();
 
             string mainTemplatePath = null;
             bool mainTemplateFilenameSet = false;
@@ -123,11 +123,11 @@ namespace Twofold.Compilation
 
                 // Generate Twofold enhanced CSharp code from template
                 List<string> includedFiles;
-                string generatedCode = this.GenerateCode(template.Path, template.Text, out includedFiles);
+                GeneratedCode generatedCode = this.GenerateCode(template.Path, template.Text, out includedFiles);
                 if (generatedCode != null)
                 {
                     generatedFiles.Add(loadTemplateName);
-                    generatedTargetCodes.Add(Tuple.Create(template.Path, generatedCode));
+                    generatedTargetCodes.Add(generatedCode);
                     foreach (var includedFile in includedFiles)
                     {
                         if (generatedFiles.Contains(includedFile))
@@ -157,7 +157,7 @@ namespace Twofold.Compilation
             return new TemplateCompilerResult(compiledTemplate, generatedTargetCodes);
         }
 
-        private string GenerateCode(string templatePath, string sourceText, out List<string> includedFiles)
+        private GeneratedCode GenerateCode(string templatePath, string sourceText, out List<string> includedFiles)
         {
             if (templatePath == null)
             {
@@ -168,28 +168,26 @@ namespace Twofold.Compilation
                 throw new ArgumentNullException(nameof(sourceText), "text");
             }
 
-            TextWriter codeWriter = null;
+            TextWriter codeWriter = new StringWriter();
             includedFiles = new List<string>();
-            string generatedCode = null;
+            string generatedCode = string.Empty;
+            var sourceMap = new SourceMap();
 
             try
             {
-                codeWriter = new StringWriter();
-                var sourceMap = new SourceMap();
                 var csharpGenerator = new CSharpGenerator(this.TemplateParser, codeWriter, sourceMap, includedFiles);
                 csharpGenerator.Generate(templatePath, sourceText);
                 generatedCode = codeWriter.ToString();
-                Console.WriteLine(sourceMap);
             }
             finally
             {
                 codeWriter.Dispose();
             }
 
-            return generatedCode;
+            return new GeneratedCode(templatePath, generatedCode, sourceMap);
         }
 
-        private Assembly CompileCode(List<Tuple<string, string>> nameSourceTuples)
+        private Assembly CompileCode(List<GeneratedCode> generatedCodes)
         {
             // Prepare compiler
             var parameters = new CompilerParameters();
@@ -205,8 +203,8 @@ namespace Twofold.Compilation
             CompilerResults compilerResults;
             using (var codeProvider = new CSharpCodeProvider())
             {
-                var sources = nameSourceTuples.Select(nameCodeTuple => nameCodeTuple.Item2).ToArray();
-                compilerResults = codeProvider.CompileAssemblyFromSource(parameters, sources);
+                var codes = generatedCodes.Select(generatedCode => generatedCode.Code).ToArray();
+                compilerResults = codeProvider.CompileAssemblyFromSource(parameters, codes);
             }
 
             // Report errors

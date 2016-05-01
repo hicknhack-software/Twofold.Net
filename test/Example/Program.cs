@@ -63,12 +63,12 @@ namespace Example
             {
                 Directory.CreateDirectory("Generated");
             }
-            File.Delete("Generated\\TwofoldRenderCode.cs");
-            using (var fileStream = new FileStream("Generated\\TwofoldRenderCode.cs", FileMode.CreateNew))
+            File.Delete("Generated\\GeneratedCode.cs");
+            using (var fileStream = new FileStream("Generated\\GeneratedCode.cs", FileMode.CreateNew))
             using (var writer = new StreamWriter(fileStream))
-                foreach (var nameSourceTuple in compilerResult.TargetCodes)
+                foreach (var generatedCode in compilerResult.GeneratedCodes)
                 {
-                    writer.WriteLine($"{nameSourceTuple.Item2}");
+                    writer.WriteLine(generatedCode.Code);
                     writer.WriteLine();
                 }
 
@@ -115,7 +115,7 @@ namespace Example
                 throw new FileNotFoundException("", name);
             }
 
-            Template template = new Template(name, text);
+            Template template = new Template($"C:\\Projects\\Sourcecode\\{name}.cs", text);
             return template;
         }
         #endregion
