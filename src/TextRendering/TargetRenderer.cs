@@ -31,12 +31,10 @@ namespace Twofold.TextRendering
     public static class TargetRenderer
     {
         private static TextRenderer renderer;
-        private static SourceMap sourceMap;
 
-        internal static void SetTextWriter(TextWriter textWriter, SourceMap newSourceMap)
+        internal static void SetTextWriter(TextWriter textWriter, SourceMap sourceMap)
         {
-            TargetRenderer.renderer = new TextRenderer(textWriter);
-            TargetRenderer.sourceMap = newSourceMap;
+            TargetRenderer.renderer = new TextRenderer(textWriter, sourceMap);
         }
 
         /// <summary>
@@ -44,7 +42,7 @@ namespace Twofold.TextRendering
         /// the returned string to the text buffer.
         /// </summary>
         /// <param name="func">The function to execute.</param>
-        public static void Write(Func<string> func)
+        public static void Write(Func<string> func, TextFilePosition source)
         {
             if (TargetRenderer.renderer == null)
             {
@@ -52,14 +50,14 @@ namespace Twofold.TextRendering
             }
             string text = func();
             var textSpan = new TextSpan(text);
-            TargetRenderer.renderer.Write(textSpan);
+            TargetRenderer.renderer.Write(textSpan, source);
         }
 
         /// <summary>
         /// Executes the given function which must return void.
         /// </summary>
         /// <param name="action">The function to execute.</param>
-        public static void Write(Action action)
+        public static void Write(Action action, TextFilePosition source)
         {
             if (TargetRenderer.renderer == null)
             {
@@ -77,13 +75,13 @@ namespace Twofold.TextRendering
             TargetRenderer.renderer.WriteLine();
         }
 
-        public static void PushIndentation(string indentation)
+        public static void PushIndentation(string indentation, TextFilePosition source)
         {
             if (TargetRenderer.renderer == null)
             {
                 return;
             }
-            TargetRenderer.renderer.PushIndentation(indentation);
+            TargetRenderer.renderer.PushIndentation(indentation, source);
         }
 
         public static void PopIndentation()
@@ -95,13 +93,13 @@ namespace Twofold.TextRendering
             TargetRenderer.renderer.PopIndentation();
         }
 
-        public static void PartIndentation(string indentation)
+        public static void PartIndentation(string indentation, TextFilePosition source)
         {
             if (TargetRenderer.renderer == null)
             {
                 return;
             }
-            TargetRenderer.renderer.PartIndentation(indentation);
+            TargetRenderer.renderer.PartIndentation(indentation, source);
         }
 
         public static void PushPartIndentation()
@@ -120,16 +118,6 @@ namespace Twofold.TextRendering
                 return;
             }
             TargetRenderer.renderer.PopPartIndentation();
-        }
-
-        public static void AddMapping(TextFilePosition source)
-        {
-            if ((TargetRenderer.renderer == null) || (TargetRenderer.sourceMap == null))
-            {
-                return;
-            }
-            var generated = new TextPosition(TargetRenderer.renderer.Line, TargetRenderer.renderer.Column);
-            TargetRenderer.sourceMap.AddMapping(generated, source);
         }
     }
 }

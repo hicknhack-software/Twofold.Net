@@ -32,29 +32,55 @@ namespace Twofold.TextRendering
     /// </summary>
     internal class TextRenderer
     {
+        class IndentationItem
+        {
+            public readonly string Indentation;
+            public readonly TextFilePosition Source;
+
+            public IndentationItem(string indentation, TextFilePosition source)
+            {
+                if (indentation == null)
+                {
+                    throw new ArgumentNullException(nameof(indentation));
+                }
+                this.Indentation = indentation;
+
+                if (source == null)
+                {
+                    throw new ArgumentNullException(nameof(source));
+                }
+                this.Source = source;
+            }
+        }
+
         // Fields
-        private string newLine = Environment.NewLine;
-        private bool lineBlank = true;
-        private readonly Stack<Tuple<string, string>> IndentationQueue = new Stack<Tuple<string, string>>();
-        private string partIndentation = string.Empty;
-        private readonly TextWriter textWriter;
-        private readonly SourceMap sourceMap;
+        private string NewLine = Environment.NewLine;
+        private readonly Stack<IndentationItem> IndentationQueue = new Stack<IndentationItem>();
+        private IndentationItem partIndentation;
+        private readonly TextWriter TextWriter;
+        private readonly SourceMap SourceMap;
 
         /// <exception cref="ArgumentNullException">textWriter is null.</exception>
-        public TextRenderer(TextWriter textWriter)
-            : this(textWriter, Environment.NewLine)
+        public TextRenderer(TextWriter textWriter, SourceMap sourceMap)
+            : this(textWriter, sourceMap, Environment.NewLine)
         { }
 
         /// <exception cref="ArgumentNullException">textWriter is null.</exception>
         /// <exception cref="ArgumentNullException">newLine is null.</exception>
         /// <exception cref="ArgumentException">newLine is not \r or \r\n.</exception>
-        public TextRenderer(TextWriter textWriter, string newLine)
+        public TextRenderer(TextWriter textWriter, SourceMap sourceMap, string newLine)
         {
             if (textWriter == null)
             {
                 throw new ArgumentNullException(nameof(textWriter));
             }
-            this.textWriter = textWriter;
+            this.TextWriter = textWriter;
+
+            if (sourceMap == null)
+            {
+                throw new ArgumentNullException(nameof(sourceMap));
+            }
+            this.SourceMap = sourceMap;
 
             if (newLine == null)
             {
@@ -65,8 +91,7 @@ namespace Twofold.TextRendering
             {
                 throw new ArgumentException("New line must either be \r or \r\n.", nameof(newLine));
             }
-            this.newLine = newLine;
-            this.sourceMap = new SourceMap();
+            this.NewLine = newLine;
         }
 
         /// <summary>
@@ -74,8 +99,8 @@ namespace Twofold.TextRendering
         /// </summary>
         public bool IsLineBlank
         {
-            get { return lineBlank; }
-        }
+            get; private set;
+        } = true;
 
         /// <summary>
         /// Current line
@@ -92,6 +117,11 @@ namespace Twofold.TextRendering
         /// </summary>
         public void Write(TextSpan textSpan)
         {
+            this.Write(textSpan, new TextFilePosition());
+        }
+
+        public void Write(TextSpan textSpan, TextFilePosition source)
+        {
             // Skip empty spans
             if (textSpan.IsEmpty)
             {
@@ -101,51 +131,79 @@ namespace Twofold.TextRendering
             var index = textSpan.Begin;
             while (index < textSpan.End)
             {
-                if (lineBlank)
+                if (this.IsLineBlank)
                 {
-                    // Indentation is not added to Column, this is take care of in ResetColumn.
-                    string indentation = (IndentationQueue.Count > 0) ? IndentationQueue.Peek().Item2 : string.Empty;
-                    this.textWriter.Write(indentation);
-                    lineBlank = false;
+                    foreach (var indentationItem in this.IndentationQueue)
+                    {
+                        if (indentationItem.Indentation.Length > 0)
+                        {
+                            this.SourceMap.AddMapping(new TextPosition(this.Line, this.Column), indentationItem.Source);
+                            this.TextWriter.Write(indentationItem.Indentation);
+                            this.Column += indentationItem.Indentation.Length;
+                        }                        
+                    }
+                    this.IsLineBlank = false;
                 }
 
                 var lineBreakIndex = textSpan.OriginalText.IndexOf(index, textSpan.End, ch => ch == '\n');
                 if (lineBreakIndex == textSpan.End)
                 { // No line break found
-                    this.textWriter.Write(index, textSpan.End, textSpan.OriginalText);
                     var len = (textSpan.End - index);
+                    if (source.IsValid && (len > 0))
+                    {
+                        this.SourceMap.AddMapping(new TextPosition(this.Line, this.Column), source);
+                    }
+                    this.TextWriter.Write(index, textSpan.End, textSpan.OriginalText);
                     Column += len;
                     index += len;
                 }
                 else
                 {  // Line break found
                     ++lineBreakIndex;
-                    this.textWriter.Write(index, lineBreakIndex, textSpan.OriginalText);
                     var len = (lineBreakIndex - index);
+                    if (source.IsValid && (len > 0))
+                    {
+                        this.SourceMap.AddMapping(new TextPosition(this.Line, this.Column), source);
+                    }
+                    this.TextWriter.Write(index, lineBreakIndex, textSpan.OriginalText);
                     index += len;
-
                     ++Line;
-                    lineBlank = true;
-                    this.ResetColumn();
+                    this.IsLineBlank = true;
+                    this.Column = 1;
                 }
             }
         }
 
         public void Write(string text)
         {
+            this.Write(text, new TextFilePosition());
+        }
+
+        public void Write(string text, TextFilePosition source)
+        {
             var textSpan = new TextSpan(text);
-            this.Write(textSpan);
+            this.Write(textSpan, source);
         }
 
         public void WriteLine(TextSpan textSpan)
         {
-            this.Write(textSpan);
+            this.WriteLine(textSpan, new TextFilePosition());
+        }
+
+        public void WriteLine(TextSpan textSpan, TextFilePosition source)
+        {
+            this.Write(textSpan, source);
             this.WriteLine();
         }
 
         public void WriteLine(string text)
         {
-            this.Write(text);
+            this.WriteLine(text, new TextFilePosition());
+        }
+
+        public void WriteLine(string text, TextFilePosition source)
+        {
+            this.Write(text, source);
             this.WriteLine();
         }
 
@@ -154,33 +212,29 @@ namespace Twofold.TextRendering
         /// </summary>
         public void WriteLine()
         {
-            this.textWriter.Write(newLine);
+            this.TextWriter.Write(this.NewLine);
             ++Line;
-            lineBlank = true;
-            this.ResetColumn();
+            this.IsLineBlank = true;
+            this.Column = 1;
         }
 
         /// <summary>
         /// Pushes an indentation level.
         /// </summary>
         /// <param name="indentation">The indentation text.</param>
-        public void PushIndentation(string indentation)
+        public void PushIndentation(string indentation, TextFilePosition source)
         {
             if (indentation == null)
             {
                 throw new ArgumentNullException(nameof(indentation));
             }
 
-            string fullIndentation = indentation;
-            if (IndentationQueue.Count > 0)
+            if (source == null)
             {
-                fullIndentation = fullIndentation.Insert(0, IndentationQueue.Peek().Item2);
+                throw new ArgumentNullException(nameof(source));
             }
-            IndentationQueue.Push(Tuple.Create(indentation, fullIndentation));
-            if (lineBlank)
-            {
-                this.ResetColumn();
-            }
+
+            this.IndentationQueue.Push(new IndentationItem(indentation, source));
         }
 
         /// <summary>
@@ -188,14 +242,10 @@ namespace Twofold.TextRendering
         /// </summary>
         public void PopIndentation()
         {
-            IndentationQueue.Pop();
-            if (lineBlank)
-            {
-                this.ResetColumn();
-            }
+            this.IndentationQueue.Pop();
         }
 
-        public void PartIndentation(string indentation)
+        public void PartIndentation(string indentation, TextFilePosition source)
         {
             if (indentation == null)
             {
@@ -204,25 +254,27 @@ namespace Twofold.TextRendering
 
             if (IsLineBlank)
             {
-                partIndentation = indentation;
+                partIndentation = new IndentationItem(indentation, source);
             }
-            this.Write(indentation);
+            this.Write(indentation, source);
         }
 
         public void PushPartIndentation()
         {
-            this.PushIndentation(partIndentation);
+            if (partIndentation != null)
+            {
+                this.PushIndentation(partIndentation.Indentation, partIndentation.Source);
+            }
         }
 
         public void PopPartIndentation()
         {
-            partIndentation = IndentationQueue.Peek().Item1;
-            this.PopIndentation();
-        }
-
-        private void ResetColumn()
-        {
-            this.Column = 1 + ((this.IndentationQueue.Count > 0) ? this.IndentationQueue.Peek().Item2 : string.Empty).Length;
+            partIndentation = null;
+            if (this.IndentationQueue.Count > 0)
+            {
+                partIndentation = this.IndentationQueue.Peek();
+                this.PopIndentation();
+            }
         }
     }
 }

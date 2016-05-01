@@ -25,6 +25,9 @@ namespace Twofold.Interface.SourceMapping
     {
         public readonly string SourceName;
 
+        public TextFilePosition()
+        { }
+
         public TextFilePosition(string sourceName, TextPosition textPosition)
             : base(textPosition)
         {
@@ -33,6 +36,15 @@ namespace Twofold.Interface.SourceMapping
                 throw new ArgumentNullException(nameof(sourceName));
             }
             SourceName = sourceName;
+        }
+
+        public new bool IsValid
+        {
+            get
+            {
+                return string.IsNullOrEmpty(this.SourceName) == false
+                    && base.IsValid;
+            }
         }
 
         public override int GetHashCode()
