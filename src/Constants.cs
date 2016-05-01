@@ -35,6 +35,7 @@ namespace Twofold
 
         public static readonly string[] TargetCodeUsings = {
             "using Twofold.TextRendering;",
+            "using Twofold.Interface.SourceMapping;"
         };
     }
 }

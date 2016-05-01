@@ -82,9 +82,10 @@ namespace Twofold.Execution
 
             // Invoke main method
             var textWriter = new StringWriter();
+            var sourceMap = new SourceMap();
             try
             {
-                TargetRenderer.SetTextWriter(textWriter);
+                TargetRenderer.SetTextWriter(textWriter, sourceMap);
                 mainMethod.Invoke(null, new object[] { input });
             }
             catch (Exception ex)
@@ -92,7 +93,7 @@ namespace Twofold.Execution
                 messageHandler.Message(TraceLevel.Error, ex.ToString(), compiledTemplate.SourceName, new TextPosition());
             }
 
-            var target = new Target(compiledTemplate.SourceName, textWriter.ToString());
+            var target = new Target(compiledTemplate.SourceName, textWriter.ToString(), sourceMap);
             textWriter.Dispose();
             return target;
         }

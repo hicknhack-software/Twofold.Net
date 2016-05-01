@@ -13,12 +13,12 @@ namespace Example
 													|
 													|namespace Generated
 													|{
-													|	class #{classDescriptor.Name}
-													|	{
+													|    class #{classDescriptor.Name}
+													|    {
 			foreach(var method in classDescriptor.Methods) {
-													=		ShowMethod(method);
+													=        ShowMethod(method);
 			}
-													|	}
+													|    }
 													|}
         }
 

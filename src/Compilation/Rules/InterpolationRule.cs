@@ -22,6 +22,7 @@ namespace Twofold.Compilation.Rules
     using Extensions;
     using Interface;
     using Interface.Compilation;
+    using Interface.SourceMapping;
     using System.Collections.Generic;
     using System.Diagnostics;
 
@@ -73,7 +74,8 @@ namespace Twofold.Compilation.Rules
                             if (expressionEnd == line.End)
                             {
                                 end = line.End;
-                                messageHandler.Message(TraceLevel.Error, "Missing closing '}'.", line.Position.SourceName, line.Position);
+                                var errorPosition = new TextPosition(line.Position.Line, 1 + (line.End - line.Begin));
+                                messageHandler.Message(TraceLevel.Error, "Missing '}'.", line.Position.SourceName, errorPosition);
                                 break;
                             }
                             var expressionBeginSpan = new TextSpan(line.Text, index, expressionBegin + 1);
@@ -86,7 +88,7 @@ namespace Twofold.Compilation.Rules
 
                     default:
                         {
-                            index = end = (index + 1);
+                            index = end = (index + 2);
                             continue;
                         }
                 }

@@ -19,15 +19,19 @@
 
 namespace Twofold.Interface
 {
+    using SourceMapping;
+
     public class Target
     {
         public readonly string SourceName;
         public readonly string GeneratedText;
+        public readonly SourceMap SourceMap;
 
-        public Target(string sourceName, string generatedText)
+        public Target(string sourceName, string generatedText, SourceMap sourceMap)
         {
-            SourceName = sourceName;
-            GeneratedText = generatedText;
+            this.SourceName = sourceName;
+            this.GeneratedText = generatedText;
+            this.SourceMap = sourceMap;
         }
     }
 }

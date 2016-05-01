@@ -47,7 +47,13 @@ namespace Twofold.Compilation
             //if (fragment.Span.IsEmpty) {
             //    return;
             //}
-            
+
+            if (command.IndentationSpan.IsEmpty == false)
+            {
+                var indentationPosition = command.Line.CreateFilePosition(command.IndentationSpan);
+                this.TextRenderer.WriteLine($"TargetRenderer.AddMapping(new TextFilePosition(\"{indentationPosition.SourceName}\", new TextPosition({indentationPosition.Line}, {indentationPosition.Column})));");
+            }
+
             this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.BeginSpan));
             this.TextRenderer.Write("TargetRenderer.PartIndentation(\"");
 
@@ -74,6 +80,12 @@ namespace Twofold.Compilation
 
         protected override void Generate(TargetPushIndentation command)
         {
+            if (command.IndentationSpan.IsEmpty == false)
+            {
+                var indentationPosition = command.Line.CreateFilePosition(command.IndentationSpan);
+                this.TextRenderer.WriteLine($"TargetRenderer.AddMapping(new TextFilePosition(\"{indentationPosition.SourceName}\", new TextPosition({indentationPosition.Line}, {indentationPosition.Column})));");
+            }
+
             this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.BeginSpan));
             this.TextRenderer.Write("TargetRenderer.PushIndentation(\"");
 
@@ -114,15 +126,15 @@ namespace Twofold.Compilation
                 return;
             }
 
+            var expressionPosition = command.Line.CreateFilePosition(command.ExpressionSpan);
+            this.TextRenderer.WriteLine($"TargetRenderer.AddMapping(new TextFilePosition(\"{expressionPosition.SourceName}\", new TextPosition({expressionPosition.Line}, {expressionPosition.Column})));");
+
             this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.BeginSpan));
             this.TextRenderer.Write("TargetRenderer.PushPartIndentation();TargetRenderer.Write(() => ");
 
-            if (command.ExpressionSpan.IsEmpty == false)
-            {
-                //TODO: Interpolation 1:1
-                this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.ExpressionSpan));
-                this.TextRenderer.Write(command.ExpressionSpan.Text);
-            }
+            //TODO: Interpolation 1:1
+            this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.ExpressionSpan));
+            this.TextRenderer.Write(command.ExpressionSpan.Text);
 
             this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.EndSpan));
             this.TextRenderer.WriteLine(");TargetRenderer.PopPartIndentation();");
@@ -134,6 +146,12 @@ namespace Twofold.Compilation
             if (command.TextSpan.IsEmpty)
             {
                 return;
+            }
+
+            if(command.TextSpan.IsEmpty == false)
+            {
+                var textPosition = command.Line.CreateFilePosition(command.TextSpan);
+                this.TextRenderer.WriteLine($"TargetRenderer.AddMapping(new TextFilePosition(\"{textPosition.SourceName}\", new TextPosition({textPosition.Line}, {textPosition.Column})));");
             }
 
             this.SourceMap.AddMapping(this.TextRendererPosition(), command.Line.CreateFilePosition(command.TextSpan));
@@ -177,7 +195,6 @@ namespace Twofold.Compilation
         protected override void PreGeneration(string sourceName, string text)
         {
             this.TextRenderer.WriteLine($"// {sourceName}");
-            this.TextRenderer.WriteLine("////////////////////////////////////////////////////////////////////////////////");
 
             foreach (string targetCodeUsing in Constants.TargetCodeUsings)
             {

@@ -59,8 +59,12 @@ namespace Example
 
             TemplateCompilerResult compilerResult = engine.Compile("Main");
 
-            File.Delete("TwofoldRenderCode.cs");
-            using (var fileStream = new FileStream("TwofoldRenderCode.cs", FileMode.CreateNew))
+            if (Directory.Exists("Generated") == false)
+            {
+                Directory.CreateDirectory("Generated");
+            }
+            File.Delete("Generated\\TwofoldRenderCode.cs");
+            using (var fileStream = new FileStream("Generated\\TwofoldRenderCode.cs", FileMode.CreateNew))
             using (var writer = new StreamWriter(fileStream))
                 foreach (var nameSourceTuple in compilerResult.TargetCodes)
                 {
@@ -81,11 +85,21 @@ namespace Example
 
 
                 Target target = engine.Run(compilerResult.CompiledTemplate, classDescriptor);
-                Console.WriteLine("Generated code...");
-                Console.WriteLine("-------");
+                File.Delete("Generated\\Main.cs");
+                File.Delete("Generated\\Main.map");
                 if (target != null)
                 {
-                    Console.WriteLine(target.GeneratedText);
+                    using (var fileStream = new FileStream("Generated\\Main.cs", FileMode.CreateNew))
+                    using (var writer = new StreamWriter(fileStream))
+                    {
+                        writer.Write(target.GeneratedText);
+                    }
+
+                    using (var fileStream = new FileStream("Generated\\Main.map", FileMode.CreateNew))
+                    using (var writer = new StreamWriter(fileStream))
+                    {
+                        writer.Write(target.SourceMap);
+                    }
                 }
             }
 

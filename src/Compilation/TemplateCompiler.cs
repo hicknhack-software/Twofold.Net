@@ -179,7 +179,7 @@ namespace Twofold.Compilation
                 var csharpGenerator = new CSharpGenerator(templateParser, codeWriter, sourceMap, includedFiles);
                 csharpGenerator.Generate(sourceName, sourceText);
                 generatedCode = codeWriter.ToString();
-                System.Console.WriteLine(sourceMap);
+                Console.WriteLine(sourceMap);
             }
             finally
             {

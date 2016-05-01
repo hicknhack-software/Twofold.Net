@@ -9,7 +9,7 @@ namespace Example
 		public static void ShowMethod(MethodDescriptor method)
 		{
 													|#{method.ReturnType} #{method.Name}(#{ShowArguments(method.Arguments)}) {
-													|	#{method.Body}
+													|    #{method.Body}
 													|}
 		}
 

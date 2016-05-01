@@ -20,6 +20,7 @@
 namespace Twofold.TextRendering
 {
     using Interface;
+    using Interface.SourceMapping;
     using System;
     using System.IO;
 
@@ -30,10 +31,12 @@ namespace Twofold.TextRendering
     public static class TargetRenderer
     {
         private static TextRenderer renderer;
+        private static SourceMap sourceMap;
 
-        internal static void SetTextWriter(TextWriter textWriter)
+        internal static void SetTextWriter(TextWriter textWriter, SourceMap newSourceMap)
         {
             TargetRenderer.renderer = new TextRenderer(textWriter);
+            TargetRenderer.sourceMap = newSourceMap;
         }
 
         /// <summary>
@@ -43,7 +46,7 @@ namespace Twofold.TextRendering
         /// <param name="func">The function to execute.</param>
         public static void Write(Func<string> func)
         {
-            if(TargetRenderer.renderer == null)
+            if (TargetRenderer.renderer == null)
             {
                 return;
             }
@@ -117,6 +120,16 @@ namespace Twofold.TextRendering
                 return;
             }
             TargetRenderer.renderer.PopPartIndentation();
+        }
+
+        public static void AddMapping(TextFilePosition source)
+        {
+            if ((TargetRenderer.renderer == null) || (TargetRenderer.sourceMap == null))
+            {
+                return;
+            }
+            var generated = new TextPosition(TargetRenderer.renderer.Line, TargetRenderer.renderer.Column);
+            TargetRenderer.sourceMap.AddMapping(generated, source);
         }
     }
 }

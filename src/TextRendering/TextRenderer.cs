@@ -21,6 +21,7 @@ namespace Twofold.TextRendering
 {
     using Extensions;
     using Interface;
+    using Interface.SourceMapping;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -34,9 +35,10 @@ namespace Twofold.TextRendering
         // Fields
         private string newLine = Environment.NewLine;
         private bool lineBlank = true;
-        private readonly Stack<Tuple<string, string>> indentationQueue = new Stack<Tuple<string, string>>();
+        private readonly Stack<Tuple<string, string>> IndentationQueue = new Stack<Tuple<string, string>>();
         private string partIndentation = string.Empty;
         private readonly TextWriter textWriter;
+        private readonly SourceMap sourceMap;
 
         /// <exception cref="ArgumentNullException">textWriter is null.</exception>
         public TextRenderer(TextWriter textWriter)
@@ -48,7 +50,7 @@ namespace Twofold.TextRendering
         /// <exception cref="ArgumentException">newLine is not \r or \r\n.</exception>
         public TextRenderer(TextWriter textWriter, string newLine)
         {
-            if(textWriter == null)
+            if (textWriter == null)
             {
                 throw new ArgumentNullException(nameof(textWriter));
             }
@@ -58,12 +60,13 @@ namespace Twofold.TextRendering
             {
                 throw new ArgumentNullException(nameof(newLine));
             }
-            if (string.Compare(newLine, "\n", StringComparison.Ordinal) != 0 
+            if (string.Compare(newLine, "\n", StringComparison.Ordinal) != 0
                 && string.Compare(newLine, "\r\n", StringComparison.Ordinal) != 0)
             {
                 throw new ArgumentException("New line must either be \r or \r\n.", nameof(newLine));
             }
             this.newLine = newLine;
+            this.sourceMap = new SourceMap();
         }
 
         /// <summary>
@@ -95,15 +98,14 @@ namespace Twofold.TextRendering
                 return;
             }
 
-            string indentation = (indentationQueue.Count > 0) ? indentationQueue.Peek().Item2 : "";
-
             var index = textSpan.Begin;
             while (index < textSpan.End)
             {
                 if (lineBlank)
                 {
+                    // Indentation is not added to Column, this is take care of in ResetColumn.
+                    string indentation = (IndentationQueue.Count > 0) ? IndentationQueue.Peek().Item2 : string.Empty;
                     this.textWriter.Write(indentation);
-                    Column += indentation.Length;
                     lineBlank = false;
                 }
 
@@ -124,7 +126,7 @@ namespace Twofold.TextRendering
 
                     ++Line;
                     lineBlank = true;
-                    Column = 1;
+                    this.ResetColumn();
                 }
             }
         }
@@ -155,7 +157,7 @@ namespace Twofold.TextRendering
             this.textWriter.Write(newLine);
             ++Line;
             lineBlank = true;
-            Column = 1;
+            this.ResetColumn();
         }
 
         /// <summary>
@@ -170,11 +172,15 @@ namespace Twofold.TextRendering
             }
 
             string fullIndentation = indentation;
-            if (indentationQueue.Count > 0)
+            if (IndentationQueue.Count > 0)
             {
-                fullIndentation = fullIndentation.Insert(0, indentationQueue.Peek().Item2);
+                fullIndentation = fullIndentation.Insert(0, IndentationQueue.Peek().Item2);
             }
-            indentationQueue.Push(Tuple.Create(indentation, fullIndentation));
+            IndentationQueue.Push(Tuple.Create(indentation, fullIndentation));
+            if (lineBlank)
+            {
+                this.ResetColumn();
+            }
         }
 
         /// <summary>
@@ -182,7 +188,11 @@ namespace Twofold.TextRendering
         /// </summary>
         public void PopIndentation()
         {
-            indentationQueue.Pop();
+            IndentationQueue.Pop();
+            if (lineBlank)
+            {
+                this.ResetColumn();
+            }
         }
 
         public void PartIndentation(string indentation)
@@ -206,8 +216,13 @@ namespace Twofold.TextRendering
 
         public void PopPartIndentation()
         {
-            partIndentation = indentationQueue.Peek().Item1;
+            partIndentation = IndentationQueue.Peek().Item1;
             this.PopIndentation();
+        }
+
+        private void ResetColumn()
+        {
+            this.Column = 1 + ((this.IndentationQueue.Count > 0) ? this.IndentationQueue.Peek().Item2 : string.Empty).Length;
         }
     }
 }
