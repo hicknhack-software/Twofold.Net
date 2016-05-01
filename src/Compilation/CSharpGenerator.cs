@@ -147,15 +147,15 @@ namespace Twofold.Compilation
             this.TextRenderer.WriteLine(command.PragmaSpan, command.Line.CreateFilePosition(command.PragmaSpan));
         }
 
-        protected override void PreGeneration(string sourceName, string text)
+        protected override void PreGeneration(string templatePath, string text)
         {
-            this.TextRenderer.WriteLine($"// {sourceName}");
+            this.TextRenderer.WriteLine($"// {templatePath}");
 
             foreach (string targetCodeUsing in Constants.TargetCodeUsings)
             {
                 this.TextRenderer.WriteLine(targetCodeUsing);
             }
-            this.TextRenderer.WriteLine($"#line 1 \"{sourceName}\"");
+            this.TextRenderer.WriteLine($"#line 1 \"{templatePath}\"");
         }
 
         private string EscapeString(string text)

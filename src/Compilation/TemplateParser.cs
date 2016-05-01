@@ -27,15 +27,15 @@ namespace Twofold.Compilation
 
     internal sealed class TemplateParser : ITemplateParser
     {
-        private readonly Dictionary<char, IParserRule> parseRules;
-        private readonly IParserRule fallbackRule;
-        private readonly IMessageHandler messageHandler;
+        private readonly Dictionary<char, IParserRule> ParseRules;
+        private readonly IParserRule FallbackRule;
+        private readonly IMessageHandler MessageHandler;
 
         public TemplateParser(Dictionary<char, IParserRule> parseRules, IParserRule fallbackRule, IMessageHandler messageHandler)
         {
-            this.parseRules = parseRules;
-            this.fallbackRule = fallbackRule;
-            this.messageHandler = messageHandler;
+            this.ParseRules = parseRules;
+            this.FallbackRule = fallbackRule;
+            this.MessageHandler = messageHandler;
         }
 
         public List<AsbtractRenderCommand> Parse(string sourceName, string text)
@@ -55,13 +55,13 @@ namespace Twofold.Compilation
                 List<AsbtractRenderCommand> ruleFragments;
                 var textFilePostion = new TextFilePosition(sourceName, new TextPosition(line, 1));
                 var fileLine = new FileLine(text, index, nonSpaceIndex, end, textFilePostion);
-                if (parseRules.TryGetValue(text[nonSpaceIndex], out parserRule))
+                if (this.ParseRules.TryGetValue(text[nonSpaceIndex], out parserRule))
                 {
-                    ruleFragments = parserRule.Parse(fileLine, messageHandler);
+                    ruleFragments = parserRule.Parse(fileLine, this.MessageHandler);
                 }
                 else
                 {
-                    ruleFragments = fallbackRule.Parse(fileLine, messageHandler);
+                    ruleFragments = this.FallbackRule.Parse(fileLine, this.MessageHandler);
                 }
                 fragments.AddRange(ruleFragments);
 

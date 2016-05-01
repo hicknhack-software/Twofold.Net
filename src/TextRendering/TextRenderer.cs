@@ -55,7 +55,7 @@ namespace Twofold.TextRendering
 
         // Fields
         private string NewLine = Environment.NewLine;
-        private readonly Stack<IndentationItem> IndentationQueue = new Stack<IndentationItem>();
+        private readonly Stack<IndentationItem> IndentationQueue;
         private IndentationItem partIndentation;
         private readonly TextWriter TextWriter;
         private readonly SourceMap SourceMap;
@@ -92,6 +92,8 @@ namespace Twofold.TextRendering
                 throw new ArgumentException("New line must either be \r or \r\n.", nameof(newLine));
             }
             this.NewLine = newLine;
+
+            this.IndentationQueue = new Stack<IndentationItem>();
         }
 
         /// <summary>
@@ -140,7 +142,7 @@ namespace Twofold.TextRendering
                             this.SourceMap.AddMapping(new TextPosition(this.Line, this.Column), indentationItem.Source);
                             this.TextWriter.Write(indentationItem.Indentation);
                             this.Column += indentationItem.Indentation.Length;
-                        }                        
+                        }
                     }
                     this.IsLineBlank = false;
                 }

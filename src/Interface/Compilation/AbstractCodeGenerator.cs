@@ -24,18 +24,18 @@ namespace Twofold.Interface.Compilation
 
     public abstract class AbstractCodeGenerator
     {
-        private readonly ITemplateParser parser;
+        private readonly ITemplateParser Parser;
 
         public AbstractCodeGenerator(ITemplateParser parser)
         {
-            this.parser = parser;
+            this.Parser = parser;
         }
 
-        public void Generate(string sourceName, string text)
+        public void Generate(string templatePath, string text)
         {
-            this.PreGeneration(sourceName, text);
+            this.PreGeneration(templatePath, text);
 
-            List<AsbtractRenderCommand> commands = parser.Parse(sourceName, text);
+            List<AsbtractRenderCommand> commands = this.Parser.Parse(templatePath, text);
             foreach (var command in commands)
             {
                 switch (command.Type)
@@ -77,14 +77,14 @@ namespace Twofold.Interface.Compilation
                 }
             }
 
-            this.PostGeneration(sourceName, text);
+            this.PostGeneration(templatePath, text);
         }
 
-        protected virtual void PreGeneration(string sourceName, string text)
+        protected virtual void PreGeneration(string templatePath, string text)
         {
         }
 
-        protected virtual void PostGeneration(string sourceName, string text)
+        protected virtual void PostGeneration(string templatePath, string text)
         {
         }
 

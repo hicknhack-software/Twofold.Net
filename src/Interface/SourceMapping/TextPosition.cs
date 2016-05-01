@@ -45,8 +45,8 @@ namespace Twofold.Interface.SourceMapping
             {
                 throw new ArgumentOutOfRangeException(nameof(column), "Must be greater than zero.");
             }
-            Line = line;
-            Column = column;
+            this.Line = line;
+            this.Column = column;
         }
 
         /// <summary>
@@ -55,49 +55,50 @@ namespace Twofold.Interface.SourceMapping
         /// <param name="textPosition">The source TextPosition.</param>
         public TextPosition(TextPosition textPosition)
         {
-            line = textPosition.line;
-            column = textPosition.column;
+            this.line = textPosition.line;
+            this.column = textPosition.column;
         }
 
         public bool IsValid
         {
-            get { return (line != 0) && (column != 0); }
+            get { return (this.line != 0) && (this.column != 0); }
         }
 
         public int Line
         {
-            get { return line; }
+            get { return this.line; }
             private set
             {
                 if (value < 1)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(Line), "Must be greater than zero.");
+                    throw new ArgumentOutOfRangeException(nameof(this.Line), "Must be greater than zero.");
                 }
-                line = value;
+                this.line = value;
             }
         }
 
         public int Column
         {
-            get { return column; }
+            get { return this.column; }
             private set
             {
                 if (value < 1)
                 {
-                    throw new ArgumentOutOfRangeException(nameof(Column), "Must be greater than zero.");
+                    throw new ArgumentOutOfRangeException(nameof(this.Column), "Must be greater than zero.");
                 }
-                column = value;
+                this.column = value;
             }
         }
 
         public override int GetHashCode()
         {
-            return Line.GetHashCode() ^ Column.GetHashCode();
+            return this.Line.GetHashCode()
+                ^ this.Column.GetHashCode();
         }
 
         public override string ToString()
         {
-            return $"({line}, {column})";
+            return $"({this.line}, {this.column})";
         }
 
         #region IEquatable
@@ -116,8 +117,8 @@ namespace Twofold.Interface.SourceMapping
             {
                 return false;
             }
-            return line == other.line
-                && column == other.column
+            return this.line == other.line
+                && this.column == other.column
                 ;
         }
 
@@ -127,13 +128,13 @@ namespace Twofold.Interface.SourceMapping
 
         public int CompareTo(TextPosition other)
         {
-            int lineDiff = line - other.line;
+            int lineDiff = (this.line - other.line);
             if (0 != lineDiff)
             {
                 return lineDiff;
             }
 
-            int columnDiff = column - other.column;
+            int columnDiff = (this.column - other.column);
             if (0 != columnDiff)
             {
                 return columnDiff;

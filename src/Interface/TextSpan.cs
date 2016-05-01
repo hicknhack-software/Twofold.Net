@@ -49,10 +49,10 @@ namespace Twofold.Interface
             {
                 throw new ArgumentNullException(nameof(text));
             }
-            Begin = 0;
-            End = text.Length;
-            OriginalText = text;
-            Text = text;
+            this.Begin = 0;
+            this.End = text.Length;
+            this.OriginalText = text;
+            this.Text = text;
         }
 
         public TextSpan(string text, int begin, int end)
@@ -69,12 +69,15 @@ namespace Twofold.Interface
             {
                 throw new ArgumentOutOfRangeException(nameof(end), "end must be less equal string length.");
             }
-            Begin = begin;
-            End = end;
-            OriginalText = text;
-            Text = OriginalText.Substring(Begin, End - Begin);
+            this.Begin = begin;
+            this.End = end;
+            this.OriginalText = text;
+            this.Text = OriginalText.Substring(Begin, End - Begin);
         }
 
-        public bool IsEmpty { get { return (Begin == End); } }
+        public bool IsEmpty
+        {
+            get { return (Begin == End); }
+        }
     }
 }

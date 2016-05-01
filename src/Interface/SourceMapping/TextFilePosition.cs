@@ -35,7 +35,7 @@ namespace Twofold.Interface.SourceMapping
             {
                 throw new ArgumentNullException(nameof(sourceName));
             }
-            SourceName = sourceName;
+            this.SourceName = sourceName;
         }
 
         public new bool IsValid
@@ -49,12 +49,12 @@ namespace Twofold.Interface.SourceMapping
 
         public override int GetHashCode()
         {
-            return SourceName.GetHashCode() ^ base.GetHashCode();
+            return this.SourceName.GetHashCode() ^ base.GetHashCode();
         }
 
         public override string ToString()
         {
-            return $"{SourceName}: {base.ToString()}";
+            return $"{this.SourceName}: {base.ToString()}";
         }
 
         #region IEquatable
@@ -74,7 +74,7 @@ namespace Twofold.Interface.SourceMapping
                 return false;
             }
             return base.Equals((TextPosition)other)
-                && (string.Compare(SourceName, other.SourceName, StringComparison.Ordinal) == 0)
+                && (string.Compare(this.SourceName, other.SourceName, StringComparison.Ordinal) == 0)
                 ;
         }
 

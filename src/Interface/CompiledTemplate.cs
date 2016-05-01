@@ -43,9 +43,9 @@ namespace Twofold.Interface
                 throw new ArgumentException("Can't be null or empty.", nameof(mainTypeName));
             }
 
-            SourceName = sourceName;
-            Assembly = assembly;
-            MainTypeName = mainTypeName;
+            this.SourceName = sourceName;
+            this.Assembly = assembly;
+            this.MainTypeName = mainTypeName;
         }
     }
 }

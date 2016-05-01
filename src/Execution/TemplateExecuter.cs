@@ -29,11 +29,11 @@ namespace Twofold.Execution
 
     internal class TemplateExecuter
     {
-        private readonly IMessageHandler messageHandler;
+        private readonly IMessageHandler MessageHandler;
 
         public TemplateExecuter(IMessageHandler messageHandler)
         {
-            this.messageHandler = messageHandler;
+            this.MessageHandler = messageHandler;
         }
 
         public Target Execute<T>(CompiledTemplate compiledTemplate, T input)
@@ -47,14 +47,14 @@ namespace Twofold.Execution
             Type mainType = assembly.GetType(compiledTemplate.MainTypeName);
             if (mainType == null)
             {
-                messageHandler.Message(TraceLevel.Error, $"Can't find main type '{compiledTemplate.MainTypeName}'.", compiledTemplate.SourceName, new TextPosition());
+                this.MessageHandler.Message(TraceLevel.Error, $"Can't find main type '{compiledTemplate.MainTypeName}'.", compiledTemplate.SourceName, new TextPosition());
                 return null;
             }
 
             MethodInfo mainMethod = mainType.GetMethod(Constants.EntryMethodName, BindingFlags.Public | BindingFlags.Static);
             if (mainMethod == null)
             {
-                messageHandler.Message(TraceLevel.Error, $"Can't find main method '{Constants.EntryMethodName}'.", compiledTemplate.SourceName, new TextPosition());
+                this.MessageHandler.Message(TraceLevel.Error, $"Can't find main method '{Constants.EntryMethodName}'.", compiledTemplate.SourceName, new TextPosition());
                 return null;
             }
 
@@ -76,7 +76,7 @@ namespace Twofold.Execution
 
             if (parameterCountInvalid || parameterInvalid)
             {
-                messageHandler.Message(TraceLevel.Error, $"Template main method has invalid signature. Expected 'public static {Constants.EntryMethodName}({typeof(T)})'.", compiledTemplate.SourceName, new TextPosition());
+                this.MessageHandler.Message(TraceLevel.Error, $"Template main method has invalid signature. Expected 'public static {Constants.EntryMethodName}({typeof(T)})'.", compiledTemplate.SourceName, new TextPosition());
                 return null;
             }
 
@@ -90,7 +90,7 @@ namespace Twofold.Execution
             }
             catch (Exception ex)
             {
-                messageHandler.Message(TraceLevel.Error, ex.ToString(), compiledTemplate.SourceName, new TextPosition());
+                this.MessageHandler.Message(TraceLevel.Error, ex.ToString(), compiledTemplate.SourceName, new TextPosition());
             }
 
             var target = new Target(compiledTemplate.SourceName, textWriter.ToString(), sourceMap);

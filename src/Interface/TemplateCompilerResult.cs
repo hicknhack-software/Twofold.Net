@@ -34,8 +34,8 @@ namespace Twofold.Interface
                 throw new ArgumentNullException(nameof(targetCodes));
             }
 
-            CompiledTemplate = compiledTemplate;
-            TargetCodes = targetCodes;
+            this.CompiledTemplate = compiledTemplate;
+            this.TargetCodes = targetCodes;
         }
     }
 }

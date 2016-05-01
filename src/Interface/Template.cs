@@ -21,13 +21,13 @@ namespace Twofold.Interface
 {
     public class Template
     {
-        public readonly string SourceName;
+        public readonly string Path;
         public readonly string Text;
 
-        public Template(string sourceName, string text)
+        public Template(string path, string text)
         {
-            SourceName = sourceName;
-            Text = text;
+            this.Path = path;
+            this.Text = text;
         }
     }
 }

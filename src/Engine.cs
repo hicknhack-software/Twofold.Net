@@ -26,15 +26,16 @@ namespace Twofold
 
     public class Engine
     {
-        private readonly ITemplateLoader templateLoader;
-        private readonly IMessageHandler messageHandler;
-        private readonly List<string> referencedAssemblies = new List<string>();
+        private readonly ITemplateLoader TemplateLoader;
+        private readonly IMessageHandler MessageHandler;
+        private readonly List<string> ReferencedAssemblies;
 
         public Engine(ITemplateLoader templateLoader, IMessageHandler messageHandler, params string[] referencedAssemblies)
         {
-            this.templateLoader = templateLoader;
-            this.messageHandler = messageHandler;
-            this.referencedAssemblies.AddRange(referencedAssemblies);
+            this.TemplateLoader = templateLoader;
+            this.MessageHandler = messageHandler;
+            this.ReferencedAssemblies = new List<string>();
+            this.ReferencedAssemblies.AddRange(referencedAssemblies);
         }
 
         /// <summary>
@@ -44,7 +45,7 @@ namespace Twofold
         /// <returns>The compiled template or null if an error occured.</returns>
         public TemplateCompilerResult Compile(string templateName)
         {
-            var templateCompiler = new TemplateCompiler(templateLoader, messageHandler, referencedAssemblies);
+            var templateCompiler = new TemplateCompiler(this.TemplateLoader, this.MessageHandler, this.ReferencedAssemblies);
             return templateCompiler.Compile(templateName);
         }
 
@@ -58,7 +59,7 @@ namespace Twofold
         /// <exception cref="ArgumentNullException">If compiledTemplate is null.</exception>
         public Target Run<T>(CompiledTemplate compiledTemplate, T input)
         {
-            var templateExecuter = new TemplateExecuter(messageHandler);
+            var templateExecuter = new TemplateExecuter(this.MessageHandler);
             Target target = templateExecuter.Execute(compiledTemplate, input);
             return target;
         }

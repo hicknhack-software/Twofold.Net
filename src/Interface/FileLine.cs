@@ -49,11 +49,11 @@ namespace Twofold.Interface
                 throw new ArgumentOutOfRangeException(nameof(end), "end must be less equal string length.");
             }
 
-            Text = text;
-            Begin = begin;
-            BeginNonSpace = beginNonSpace;
-            End = end;
-            Position = position;
+            this.Text = text;
+            this.Begin = begin;
+            this.BeginNonSpace = beginNonSpace;
+            this.End = end;
+            this.Position = position;
         }
 
         public TextFilePosition CreateFilePosition(TextSpan textSpan)
