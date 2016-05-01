@@ -19,15 +19,19 @@
 
 namespace Twofold.Interface.Compilation
 {
-    public enum RenderCommandTypes
+    /// <summary>
+    /// Adds template text 1:1 to the output.
+    /// </summary>
+    public class ScriptCommand : AsbtractRenderCommand
     {
-        OriginExpression,
-        OriginPragma,
-        OriginScript,
-        OriginText,
-        TargetNewLine,
-        TargetIndentation,
-        TargetPushIndentation,
-        TargetPopIndentation,
+        public readonly TextSpan ScriptSpan;
+        public readonly TextSpan EndSpan;
+
+        public ScriptCommand(FileLine line, TextSpan scriptSpan, TextSpan endSpan)
+            : base(RenderCommands.Script, line)
+        {
+            this.ScriptSpan = scriptSpan;
+            this.EndSpan = endSpan;
+        }
     }
 }

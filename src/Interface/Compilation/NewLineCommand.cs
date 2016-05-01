@@ -19,16 +19,17 @@
 
 namespace Twofold.Interface.Compilation
 {
-    public class OriginText : AsbtractRenderCommand
+    /// <summary>
+    /// Adds a new line to the output.
+    /// </summary>
+    public class NewLineCommand : AsbtractRenderCommand
     {
-        public readonly TextSpan TextSpan;
-        public readonly TextSpan EndSpan;
+        public readonly TextSpan NewLineSpan;
 
-        public OriginText(FileLine line, TextSpan textSpan, TextSpan endSpan)
-            : base(RenderCommandTypes.OriginText, line)
+        public NewLineCommand(FileLine line, TextSpan newLineSpan)
+            : base(RenderCommands.NewLine, line)
         {
-            this.TextSpan = textSpan;
-            this.EndSpan = endSpan;
+            this.NewLineSpan = newLineSpan;
         }
     }
 }

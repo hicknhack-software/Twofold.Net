@@ -32,7 +32,7 @@ namespace Twofold.Compilation.Rules
     {
         public List<AsbtractRenderCommand> Parse(FileLine line, IMessageHandler messageHandler)
         {
-            var fragments = new List<AsbtractRenderCommand>();
+            var commands = new List<AsbtractRenderCommand>();
 
             while (true)
             {
@@ -78,7 +78,7 @@ namespace Twofold.Compilation.Rules
                 // Extract <Filename> from '"<Filename>"'
                 string pragmaArgument = line.Text.Substring(pragmaArgBegin + 1, (pragmaArgEnd - pragmaArgBegin - 1));
                 var pragmaSpan = new TextSpan(line.Text, line.Begin, line.End);
-                fragments.Add(new OriginPragma(line, pragmaSpan, pragmaName, pragmaArgument));
+                commands.Add(new PragmaCommand(line, pragmaSpan, pragmaName, pragmaArgument));
 
                 index = (pragmaArgEnd + 1);
 
@@ -86,12 +86,12 @@ namespace Twofold.Compilation.Rules
             }
 
             // No pragma detected, pass line through
-            if (fragments.Count == 0)
+            if (commands.Count == 0)
             {
-                fragments.Add(new OriginScript(line, new TextSpan(line.Text, line.Begin, line.End)));
+                commands.Add(new ScriptCommand(line, new TextSpan(line.Text, line.Begin, line.End), new TextSpan(line.Text, line.End, line.End)));
             }
 
-            return fragments;
+            return commands;
         }
 
         private int MatchNextToken(string text, int begin, int end, out string token)

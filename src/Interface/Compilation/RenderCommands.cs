@@ -19,14 +19,16 @@
 
 namespace Twofold.Interface.Compilation
 {
-    public class TargetPopIndentation : AsbtractRenderCommand
+    public enum RenderCommands
     {
-        public readonly TextSpan IndentationSpan;
-
-        public TargetPopIndentation(FileLine line, TextSpan indentationSpan)
-            : base(RenderCommandTypes.TargetPopIndentation, line)
-        {
-            this.IndentationSpan = indentationSpan;
-        }
+        Expression,
+        Pragma,
+        Script,
+        Text,
+        NewLine,
+        LocalIndentation,
+        PushIndentation,
+        PopIndentation,
+        Statement,
     }
 }

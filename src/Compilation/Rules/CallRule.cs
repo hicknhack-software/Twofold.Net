@@ -22,7 +22,6 @@ namespace Twofold.Compilation.Rules
     using Extensions;
     using Interface;
     using Interface.Compilation;
-    using Interface.SourceMapping;
     using System.Collections.Generic;
 
     /// <summary>
@@ -32,24 +31,25 @@ namespace Twofold.Compilation.Rules
     {
         public List<AsbtractRenderCommand> Parse(FileLine line, IMessageHandler messageHandler)
         {
-            List<AsbtractRenderCommand> fragments = new List<AsbtractRenderCommand>();
+            List<AsbtractRenderCommand> commands = new List<AsbtractRenderCommand>();
 
             //
             var beginSpan = new TextSpan(line.Text, line.BeginNonSpace, line.BeginNonSpace + 1); //skip matched character
             var scriptBegin = line.Text.IndexOfNot(beginSpan.End, line.End, CharExtensions.IsSpace);
             var indentationSpan = new TextSpan(line.Text, beginSpan.End, scriptBegin);
             var endSpan = new TextSpan(line.Text, indentationSpan.End, indentationSpan.End);
-            fragments.Add(new TargetPushIndentation(line, beginSpan, indentationSpan, endSpan));
+            commands.Add(new PushIndentationCommand(line, beginSpan, indentationSpan, endSpan));
 
             //
-            var scriptSpan = new TextSpan(line.Text, indentationSpan.End, line.End);
-            fragments.Add(new OriginScript(line, scriptSpan));
+            var statementSpan = new TextSpan(line.Text, indentationSpan.End, line.End);
+            var statementEndSpan = new TextSpan(line.Text, statementSpan.End, statementSpan.End);
+            commands.Add(new StatementCommand(line, statementSpan, statementEndSpan));
 
             //
             var popIndentationSpan = new TextSpan(line.Text, line.End, line.End);
-            fragments.Add(new TargetPopIndentation(line, popIndentationSpan));
+            commands.Add(new PopIndentationCommand(line, popIndentationSpan));
 
-            return fragments;
+            return commands;
         }
     }
 }

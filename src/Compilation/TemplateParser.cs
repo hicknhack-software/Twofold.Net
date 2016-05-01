@@ -40,7 +40,7 @@ namespace Twofold.Compilation
 
         public List<AsbtractRenderCommand> Parse(string sourceName, string text)
         {
-            var fragments = new List<AsbtractRenderCommand>();
+            var commands = new List<AsbtractRenderCommand>();
 
             int index = 0;
             int nonSpaceIndex = 0;
@@ -52,18 +52,18 @@ namespace Twofold.Compilation
                 end = text.IndexOf(nonSpaceIndex, text.Length, CharExtensions.IsNewline);
 
                 IParserRule parserRule;
-                List<AsbtractRenderCommand> ruleFragments;
+                List<AsbtractRenderCommand> ruleCommands;
                 var textFilePostion = new TextFilePosition(sourceName, new TextPosition(line, 1));
                 var fileLine = new FileLine(text, index, nonSpaceIndex, end, textFilePostion);
                 if (this.ParseRules.TryGetValue(text[nonSpaceIndex], out parserRule))
                 {
-                    ruleFragments = parserRule.Parse(fileLine, this.MessageHandler);
+                    ruleCommands = parserRule.Parse(fileLine, this.MessageHandler);
                 }
                 else
                 {
-                    ruleFragments = this.FallbackRule.Parse(fileLine, this.MessageHandler);
+                    ruleCommands = this.FallbackRule.Parse(fileLine, this.MessageHandler);
                 }
-                fragments.AddRange(ruleFragments);
+                commands.AddRange(ruleCommands);
 
                 if (end == text.Length)
                 {
@@ -75,7 +75,7 @@ namespace Twofold.Compilation
 
                 ++line;
             }
-            return fragments;
+            return commands;
         }
     }
 }

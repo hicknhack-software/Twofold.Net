@@ -30,9 +30,9 @@ namespace Twofold.Compilation.Rules
     {
         public override List<AsbtractRenderCommand> Parse(FileLine line, IMessageHandler messageHandler)
         {
-            List<AsbtractRenderCommand> fragments = base.Parse(line, messageHandler);
-            fragments.Add(new TargetNewLine(line, new TextSpan(line.Text, line.End, line.End)));
-            return fragments;
+            List<AsbtractRenderCommand> commands = base.Parse(line, messageHandler);
+            commands.Add(new NewLineCommand(line, new TextSpan(line.Text, line.End, line.End)));
+            return commands;
         }
     }
 }

@@ -247,7 +247,7 @@ namespace Twofold.TextRendering
             this.IndentationQueue.Pop();
         }
 
-        public void PartIndentation(string indentation, TextFilePosition source)
+        public void LocalIndentation(string indentation, TextFilePosition source)
         {
             if (indentation == null)
             {
@@ -261,7 +261,7 @@ namespace Twofold.TextRendering
             this.Write(indentation, source);
         }
 
-        public void PushPartIndentation()
+        public void PushLocalIndentation()
         {
             if (partIndentation != null)
             {
@@ -269,7 +269,7 @@ namespace Twofold.TextRendering
             }
         }
 
-        public void PopPartIndentation()
+        public void PopLocalIndentation()
         {
             partIndentation = null;
             if (this.IndentationQueue.Count > 0)
@@ -277,6 +277,14 @@ namespace Twofold.TextRendering
                 partIndentation = this.IndentationQueue.Peek();
                 this.PopIndentation();
             }
+        }
+
+        public void PushCaller(TextFilePosition source)
+        {
+        }
+
+        public void PopCaller()
+        {
         }
     }
 }

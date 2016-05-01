@@ -17,19 +17,19 @@
  * limitations under the License.
  */
 
-namespace Twofold.Interface.Compilation
+namespace Twofold.Interface
 {
-    public class OriginExpression : AsbtractRenderCommand
+    using Compilation;
+
+    public class StatementCommand : AsbtractRenderCommand
     {
-        public readonly TextSpan BeginSpan;
-        public readonly TextSpan ExpressionSpan;
+        public readonly TextSpan StatementSpan;
         public readonly TextSpan EndSpan;
 
-        public OriginExpression(FileLine line, TextSpan beginSpan, TextSpan expressionSpan, TextSpan endSpan)
-            : base(RenderCommandTypes.OriginExpression, line)
+        public StatementCommand(FileLine line, TextSpan statementSpan, TextSpan endSpan)
+            : base(RenderCommands.Statement, line)
         {
-            this.BeginSpan = beginSpan;
-            this.ExpressionSpan = expressionSpan;
+            this.StatementSpan = statementSpan;
             this.EndSpan = endSpan;
         }
     }

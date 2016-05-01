@@ -19,17 +19,18 @@
 
 namespace Twofold.Interface.Compilation
 {
-    /// <summary>
-    /// Adds template text 1:1 to the output.
-    /// </summary>
-    public class OriginScript : AsbtractRenderCommand
+    public class ExpressionCommand : AsbtractRenderCommand
     {
-        public readonly TextSpan ScriptSpan;
+        public readonly TextSpan BeginSpan;
+        public readonly TextSpan ExpressionSpan;
+        public readonly TextSpan EndSpan;
 
-        public OriginScript(FileLine line, TextSpan scriptSpan)
-            : base(RenderCommandTypes.OriginScript, line)
+        public ExpressionCommand(FileLine line, TextSpan beginSpan, TextSpan expressionSpan, TextSpan endSpan)
+            : base(RenderCommands.Expression, line)
         {
-            this.ScriptSpan = scriptSpan;
+            this.BeginSpan = beginSpan;
+            this.ExpressionSpan = expressionSpan;
+            this.EndSpan = endSpan;
         }
     }
 }

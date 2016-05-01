@@ -22,14 +22,14 @@ namespace Twofold.Interface.Compilation
     /// <summary>
     /// Adds an indentation
     /// </summary>
-    public class TargetIndentation : AsbtractRenderCommand
+    public class LocalIndentationCommand : AsbtractRenderCommand
     {
         public readonly TextSpan BeginSpan;
         public readonly TextSpan IndentationSpan;
         public readonly TextSpan EndSpan;
 
-        public TargetIndentation(FileLine line, TextSpan beginSpan, TextSpan indentationSpan, TextSpan endSpan)
-            : base(RenderCommandTypes.TargetIndentation, line)
+        public LocalIndentationCommand(FileLine line, TextSpan beginSpan, TextSpan indentationSpan, TextSpan endSpan)
+            : base(RenderCommands.LocalIndentation, line)
         {
             this.BeginSpan = beginSpan;
             this.IndentationSpan = indentationSpan;

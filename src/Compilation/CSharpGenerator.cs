@@ -25,6 +25,8 @@ namespace Twofold.Compilation
     using System.Collections.Generic;
     using System.IO;
     using TextRendering;
+    using System;
+    using Interface;
 
     internal sealed class CSharpGenerator : AbstractCodeGenerator
     {
@@ -38,93 +40,106 @@ namespace Twofold.Compilation
             this.IncludedFiles = includedFiles;
         }
 
-        protected override void Generate(TargetIndentation command)
+        protected override void Generate(LocalIndentationCommand command)
         {
-            this.TextRenderer.Write("TargetRenderer.PartIndentation(\"", command.Line.CreateFilePosition(command.BeginSpan));
+            this.TextRenderer.Write("TargetRenderer.LocalIndentation(\"", command.Line.CreateFilePosition(command.BeginSpan));
 
-            //TODO: Interpolation 1:1
             var escapedText = command.IndentationSpan.Text.Escape();
             var indentationPosition = command.Line.CreateFilePosition(command.IndentationSpan);
-            this.TextRenderer.Write(escapedText, indentationPosition);
+            this.TextRenderer.Write(escapedText, indentationPosition); //TODO: Interpolation 1:1
 
             this.TextRenderer.WriteLine($"\", {this.X(indentationPosition)});", command.Line.CreateFilePosition(command.EndSpan));
 
             this.TextRenderer.WriteLine();
         }
 
-        protected override void Generate(TargetPopIndentation command)
+        protected override void Generate(PushIndentationCommand command)
+        {
+            this.TextRenderer.Write("TargetRenderer.PushIndentation(\"", command.Line.CreateFilePosition(command.BeginSpan));
+
+            var escapedText = command.IndentationSpan.Text.Escape();
+            var indentationPosition = command.Line.CreateFilePosition(command.IndentationSpan);
+            this.TextRenderer.Write(escapedText, indentationPosition);  //TODO: Interpolation 1:1
+
+            this.TextRenderer.WriteLine($"\", {this.X(indentationPosition)});", command.Line.CreateFilePosition(command.EndSpan));
+            this.TextRenderer.WriteLine();
+        }
+
+        protected override void Generate(PopIndentationCommand command)
         {
             this.TextRenderer.WriteLine("TargetRenderer.PopIndentation();", command.Line.CreateFilePosition(command.IndentationSpan));
             this.TextRenderer.WriteLine();
         }
 
-        protected override void Generate(TargetPushIndentation command)
-        {
-            this.TextRenderer.Write("TargetRenderer.PushIndentation(\"", command.Line.CreateFilePosition(command.BeginSpan));
-
-            //TODO: Interpolation 1:1
-            var escapedText = command.IndentationSpan.Text.Escape();
-            var indentationPosition = command.Line.CreateFilePosition(command.IndentationSpan);
-            this.TextRenderer.Write(escapedText, indentationPosition);
-
-
-            this.TextRenderer.WriteLine($"\", {this.X(indentationPosition)});", command.Line.CreateFilePosition(command.EndSpan));
-            this.TextRenderer.WriteLine();
-        }
-
-        protected override void Generate(TargetNewLine command)
+        protected override void Generate(NewLineCommand command)
         {
             this.TextRenderer.WriteLine("TargetRenderer.WriteLine();", command.Line.CreateFilePosition(command.NewLineSpan));
             this.TextRenderer.WriteLine();
         }
 
-        protected override void Generate(OriginScript command)
+        protected override void Generate(StatementCommand command)
+        {
+            if (command.StatementSpan.IsEmpty)
+            {
+                return;
+            }
+
+            var scriptPosition = command.Line.CreateFilePosition(command.StatementSpan);
+            this.TextRenderer.WriteLine($"TargetRenderer.PushCaller({this.X(scriptPosition)});", scriptPosition);
+
+            this.TextRenderer.WriteLine(command.StatementSpan, scriptPosition); //TODO: Interpolation 1:1
+
+            var endPosition = command.Line.CreateFilePosition(command.EndSpan);
+            this.TextRenderer.WriteLine($"TargetRenderer.PopCaller();", endPosition);
+        }
+
+        protected override void Generate(ScriptCommand command)
         {
             if (command.ScriptSpan.IsEmpty)
             {
                 return;
             }
 
-            //TODO: Interpolation 1:1
-            this.TextRenderer.WriteLine(command.ScriptSpan, command.Line.CreateFilePosition(command.ScriptSpan));
+            var scriptPosition = command.Line.CreateFilePosition(command.ScriptSpan);
+            this.TextRenderer.WriteLine(command.ScriptSpan, scriptPosition); //TODO: Interpolation 1:1
         }
 
-        protected override void Generate(OriginExpression command)
+        protected override void Generate(ExpressionCommand command)
         {
             if (command.ExpressionSpan.IsEmpty)
             {
                 return;
             }
 
-            this.TextRenderer.Write("TargetRenderer.PushPartIndentation();TargetRenderer.Write(() => ", command.Line.CreateFilePosition(command.BeginSpan));
+            this.TextRenderer.Write("TargetRenderer.PushLocalIndentation();");
 
-            //TODO: Interpolation 1:1
-            this.TextRenderer.Write(command.ExpressionSpan.Text, command.Line.CreateFilePosition(command.ExpressionSpan));
-
+            this.TextRenderer.Write("TargetRenderer.Execute(() => ", command.Line.CreateFilePosition(command.BeginSpan));
+            this.TextRenderer.Write(command.ExpressionSpan.Text, command.Line.CreateFilePosition(command.ExpressionSpan)); //TODO: Interpolation 1:1
             var expressionPosition = command.Line.CreateFilePosition(command.ExpressionSpan);
-            this.TextRenderer.WriteLine($", {this.X(expressionPosition)});TargetRenderer.PopPartIndentation();", command.Line.CreateFilePosition(command.EndSpan));
+            this.TextRenderer.Write($", {this.X(expressionPosition)});");
+
+            this.TextRenderer.WriteLine("TargetRenderer.PopLocalIndentation();", command.Line.CreateFilePosition(command.EndSpan));
             this.TextRenderer.WriteLine();
         }
 
-        protected override void Generate(OriginText command)
+        protected override void Generate(TextCommand command)
         {
             if (command.TextSpan.IsEmpty)
             {
                 return;
             }
 
-            this.TextRenderer.Write("TargetRenderer.Write(() => \"", command.Line.CreateFilePosition(command.TextSpan));
+            this.TextRenderer.Write("TargetRenderer.Execute(() => \"", command.Line.CreateFilePosition(command.TextSpan));
 
-            //TODO: Interpolation 1:1
             var escapedText = command.TextSpan.Text.Escape();
             var textPosition = command.Line.CreateFilePosition(command.TextSpan);
-            this.TextRenderer.Write(escapedText, textPosition);
+            this.TextRenderer.Write(escapedText, textPosition); //TODO: Interpolation 1:1
 
             this.TextRenderer.WriteLine($"\", {this.X(textPosition)});", command.Line.CreateFilePosition(command.EndSpan));
             this.TextRenderer.WriteLine();
         }
 
-        protected override void Generate(OriginPragma command)
+        protected override void Generate(PragmaCommand command)
         {
             switch (command.Name)
             {
@@ -141,8 +156,7 @@ namespace Twofold.Compilation
                     break;
             }
 
-            //TODO: Interpolation 1:1
-            this.TextRenderer.WriteLine(command.PragmaSpan.Text, command.Line.CreateFilePosition(command.PragmaSpan));
+            this.TextRenderer.WriteLine(command.PragmaSpan.Text, command.Line.CreateFilePosition(command.PragmaSpan));  //TODO: Interpolation 1:1
         }
 
         protected override void PreGeneration(string templatePath, string text)

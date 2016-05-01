@@ -21,10 +21,10 @@ namespace Twofold.Interface.Compilation
 {
     public abstract class AsbtractRenderCommand
     {
-        public readonly RenderCommandTypes Type;
+        public readonly RenderCommands Type;
         public readonly FileLine Line;
 
-        public AsbtractRenderCommand(RenderCommandTypes type, FileLine line)
+        public AsbtractRenderCommand(RenderCommands type, FileLine line)
         {
             this.Type = type;
             this.Line = line;

@@ -42,13 +42,16 @@ namespace Twofold.TextRendering
         /// the returned string to the text buffer.
         /// </summary>
         /// <param name="func">The function to execute.</param>
-        public static void Write(Func<string> func, TextFilePosition source)
+        public static void Execute(Func<string> func, TextFilePosition source)
         {
             if (TargetRenderer.renderer == null)
             {
                 return;
             }
+            TargetRenderer.renderer.PushCaller(source);
             string text = func();
+            TargetRenderer.renderer.PopCaller();
+
             var textSpan = new TextSpan(text);
             TargetRenderer.renderer.Write(textSpan, source);
         }
@@ -57,13 +60,15 @@ namespace Twofold.TextRendering
         /// Executes the given function which must return void.
         /// </summary>
         /// <param name="action">The function to execute.</param>
-        public static void Write(Action action, TextFilePosition source)
+        public static void Execute(Action action, TextFilePosition source)
         {
             if (TargetRenderer.renderer == null)
             {
                 return;
             }
+            TargetRenderer.renderer.PushCaller(source);
             action();
+            TargetRenderer.renderer.PopCaller();
         }
 
         public static void WriteLine()
@@ -93,31 +98,49 @@ namespace Twofold.TextRendering
             TargetRenderer.renderer.PopIndentation();
         }
 
-        public static void PartIndentation(string indentation, TextFilePosition source)
+        public static void LocalIndentation(string indentation, TextFilePosition source)
         {
             if (TargetRenderer.renderer == null)
             {
                 return;
             }
-            TargetRenderer.renderer.PartIndentation(indentation, source);
+            TargetRenderer.renderer.LocalIndentation(indentation, source);
         }
 
-        public static void PushPartIndentation()
+        public static void PushLocalIndentation()
         {
             if (TargetRenderer.renderer == null)
             {
                 return;
             }
-            TargetRenderer.renderer.PushPartIndentation();
+            TargetRenderer.renderer.PushLocalIndentation();
         }
 
-        public static void PopPartIndentation()
+        public static void PopLocalIndentation()
         {
             if (TargetRenderer.renderer == null)
             {
                 return;
             }
-            TargetRenderer.renderer.PopPartIndentation();
+            TargetRenderer.renderer.PopLocalIndentation();
+        }
+
+        public static void PushCaller(TextFilePosition source)
+        {
+            if (TargetRenderer.renderer == null)
+            {
+                return;
+            }
+            TargetRenderer.renderer.PushCaller(source);
+        }
+
+        public static void PopCaller()
+        {
+            if (TargetRenderer.renderer == null)
+            {
+                return;
+            }
+            TargetRenderer.renderer.PopCaller();
         }
     }
 }

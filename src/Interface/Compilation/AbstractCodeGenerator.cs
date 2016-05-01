@@ -40,36 +40,40 @@ namespace Twofold.Interface.Compilation
             {
                 switch (command.Type)
                 {
-                    case RenderCommandTypes.OriginExpression:
-                        this.Generate((OriginExpression)command);
+                    case RenderCommands.Expression:
+                        this.Generate((ExpressionCommand)command);
                         break;
 
-                    case RenderCommandTypes.OriginPragma:
-                        this.Generate((OriginPragma)command);
+                    case RenderCommands.Pragma:
+                        this.Generate((PragmaCommand)command);
                         break;
 
-                    case RenderCommandTypes.OriginScript:
-                        this.Generate((OriginScript)command);
+                    case RenderCommands.Script:
+                        this.Generate((ScriptCommand)command);
                         break;
 
-                    case RenderCommandTypes.OriginText:
-                        this.Generate((OriginText)command);
+                    case RenderCommands.Text:
+                        this.Generate((TextCommand)command);
                         break;
 
-                    case RenderCommandTypes.TargetIndentation:
-                        this.Generate((TargetIndentation)command);
+                    case RenderCommands.LocalIndentation:
+                        this.Generate((LocalIndentationCommand)command);
                         break;
 
-                    case RenderCommandTypes.TargetNewLine:
-                        this.Generate((TargetNewLine)command);
+                    case RenderCommands.NewLine:
+                        this.Generate((NewLineCommand)command);
                         break;
 
-                    case RenderCommandTypes.TargetPopIndentation:
-                        this.Generate((TargetPopIndentation)command);
+                    case RenderCommands.PopIndentation:
+                        this.Generate((PopIndentationCommand)command);
                         break;
 
-                    case RenderCommandTypes.TargetPushIndentation:
-                        this.Generate((TargetPushIndentation)command);
+                    case RenderCommands.PushIndentation:
+                        this.Generate((PushIndentationCommand)command);
+                        break;
+
+                    case RenderCommands.Statement:
+                        this.Generate((StatementCommand)command);
                         break;
 
                     default:
@@ -88,20 +92,22 @@ namespace Twofold.Interface.Compilation
         {
         }
 
-        protected abstract void Generate(OriginText command);
+        protected abstract void Generate(TextCommand command);
 
-        protected abstract void Generate(OriginExpression command);
+        protected abstract void Generate(ExpressionCommand command);
 
-        protected abstract void Generate(OriginPragma command);
+        protected abstract void Generate(PragmaCommand command);
 
-        protected abstract void Generate(OriginScript command);
+        protected abstract void Generate(ScriptCommand command);
 
-        protected abstract void Generate(TargetNewLine command);
+        protected abstract void Generate(NewLineCommand command);
 
-        protected abstract void Generate(TargetIndentation command);
+        protected abstract void Generate(LocalIndentationCommand command);
 
-        protected abstract void Generate(TargetPushIndentation command);
+        protected abstract void Generate(PushIndentationCommand command);
 
-        protected abstract void Generate(TargetPopIndentation command);
+        protected abstract void Generate(PopIndentationCommand command);
+
+        protected abstract void Generate(StatementCommand command);
     }
 }

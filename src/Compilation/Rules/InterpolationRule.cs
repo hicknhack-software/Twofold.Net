@@ -33,13 +33,13 @@ namespace Twofold.Compilation.Rules
     {
         public virtual List<AsbtractRenderCommand> Parse(FileLine line, IMessageHandler messageHandler)
         {
-            var fragments = new List<AsbtractRenderCommand>();
+            var commands = new List<AsbtractRenderCommand>();
 
             var beginSpan = new TextSpan(line.Text, line.BeginNonSpace, line.BeginNonSpace + 1); //skip matched character
             var index = line.Text.IndexOfNot(beginSpan.End, line.End, CharExtensions.IsSpace);
             var indentationSpan = new TextSpan(line.Text, beginSpan.End, index);
             var endSpan = new TextSpan(line.Text, indentationSpan.End, indentationSpan.End);
-            fragments.Add(new TargetIndentation(line, beginSpan, indentationSpan, endSpan));
+            commands.Add(new LocalIndentationCommand(line, beginSpan, indentationSpan, endSpan));
 
             var end = index;
             while (index < line.End)
@@ -60,14 +60,14 @@ namespace Twofold.Compilation.Rules
                     case '#':
                         {
                             var escapeBegin = (index + 1); //skip #
-                            fragments.Add(new OriginText(line, new TextSpan(line.Text, escapeBegin, escapeBegin + 1), new TextSpan(line.Text, escapeBegin + 1, escapeBegin + 1)));
+                            commands.Add(new TextCommand(line, new TextSpan(line.Text, escapeBegin, escapeBegin + 1), new TextSpan(line.Text, escapeBegin + 1, escapeBegin + 1)));
                             index = end = (escapeBegin + 1);
                             continue;
                         }
 
                     case '{':
                         {
-                            fragments.Add(new OriginText(line, new TextSpan(line.Text, end, index), new TextSpan(line.Text, index, index)));
+                            commands.Add(new TextCommand(line, new TextSpan(line.Text, end, index), new TextSpan(line.Text, index, index)));
 
                             var expressionBegin = (index + 1);
                             var expressionEnd = BraceCounter.MatchBraces(line.Text, expressionBegin, line.End);
@@ -81,7 +81,7 @@ namespace Twofold.Compilation.Rules
                             var expressionBeginSpan = new TextSpan(line.Text, index, expressionBegin + 1);
                             var expressionSpan = new TextSpan(line.Text, expressionBeginSpan.End, expressionEnd);
                             var expressionEndSpan = new TextSpan(line.Text, expressionSpan.End, expressionEnd + 1);
-                            fragments.Add(new OriginExpression(line, expressionBeginSpan, expressionSpan, expressionEndSpan));
+                            commands.Add(new ExpressionCommand(line, expressionBeginSpan, expressionSpan, expressionEndSpan));
                             index = end = (expressionEnd + 1);
                             continue;
                         }
@@ -93,8 +93,8 @@ namespace Twofold.Compilation.Rules
                         }
                 }
             }
-            fragments.Add(new OriginText(line, new TextSpan(line.Text, end, line.End), new TextSpan(line.Text, line.End, line.End)));
-            return fragments;
+            commands.Add(new TextCommand(line, new TextSpan(line.Text, end, line.End), new TextSpan(line.Text, line.End, line.End)));
+            return commands;
         }
     }
 }

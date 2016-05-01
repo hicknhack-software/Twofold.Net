@@ -17,23 +17,23 @@
  * limitations under the License.
  */
 
-namespace Twofold.Compilation.Rules
+namespace Twofold.Interface.Compilation
 {
-    using Interface;
-    using Interface.Compilation;
-    using System.Collections.Generic;
-
     /// <summary>
-    /// Rule which transfers template code directly to output.
+    /// A pargma directive in the template.
     /// </summary>
-    internal class PassThroughRule : IParserRule
+    public class PragmaCommand : AsbtractRenderCommand
     {
-        public List<AsbtractRenderCommand> Parse(FileLine line, IMessageHandler messageHandler)
+        public readonly TextSpan PragmaSpan;
+        public readonly string Name;
+        public readonly string Argument;
+
+        public PragmaCommand(FileLine line, TextSpan pragmaSpan, string name, string argument)
+            : base(RenderCommands.Pragma, line)
         {
-            return new List<AsbtractRenderCommand>
-            {
-                new ScriptCommand(line, new TextSpan(line.Text, line.Begin, line.End), new TextSpan(line.Text, line.End, line.End))
-            };
+            this.PragmaSpan = pragmaSpan;
+            this.Name = name;
+            this.Argument = argument;
         }
     }
 }

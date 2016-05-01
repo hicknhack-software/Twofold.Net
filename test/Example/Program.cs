@@ -59,22 +59,36 @@ namespace Example
 
             TemplateCompilerResult compilerResult = engine.Compile("Main");
 
-            if (Directory.Exists("Generated") == false)
+            if (Directory.Exists("Generated"))
             {
-                Directory.CreateDirectory("Generated");
+                Directory.Delete("Generated", true);
             }
-            File.Delete("Generated\\GeneratedCode.cs");
-            using (var fileStream = new FileStream("Generated\\GeneratedCode.cs", FileMode.CreateNew))
-            using (var writer = new StreamWriter(fileStream))
-                foreach (var generatedCode in compilerResult.GeneratedCodes)
+            Directory.CreateDirectory("Generated");
+
+            foreach (var generatedCode in compilerResult.GeneratedCodes)
+            {
+                string filename = generatedCode.TemplatePath;
+                int i = filename.LastIndexOf("\\", StringComparison.Ordinal);
+                if (i > 0)
                 {
-                    writer.WriteLine(generatedCode.Code);
-                    writer.WriteLine();
+                    filename = filename.Substring(i + 1);
                 }
+
+                using (var fileStream = new FileStream($"Generated\\{filename}", FileMode.CreateNew))
+                using (var writer = new StreamWriter(fileStream))
+                {
+                    writer.Write(generatedCode.Code);
+                }
+
+                using (var fileStream = new FileStream($"Generated\\{filename}.map", FileMode.CreateNew))
+                using (var writer = new StreamWriter(fileStream))
+                {
+                    writer.Write(generatedCode.SourceMap);
+                }
+            }
 
             if (compilerResult.CompiledTemplate != null)
             {
-
                 var classDescriptor = new ClassDescriptor("TwofoldGenerated", new List<MethodDescriptor>
                 {
                     new MethodDescriptor("void", "hello", new List<ArgumentDescriptor>
@@ -85,17 +99,17 @@ namespace Example
 
 
                 Target target = engine.Run(compilerResult.CompiledTemplate, classDescriptor);
-                File.Delete("Generated\\Main.cs");
-                File.Delete("Generated\\Main.map");
+                File.Delete("Generated\\Output.cs");
+                File.Delete("Generated\\Output.cs.map");
                 if (target != null)
                 {
-                    using (var fileStream = new FileStream("Generated\\Main.cs", FileMode.CreateNew))
+                    using (var fileStream = new FileStream("Generated\\Output.cs", FileMode.CreateNew))
                     using (var writer = new StreamWriter(fileStream))
                     {
                         writer.Write(target.GeneratedText);
                     }
 
-                    using (var fileStream = new FileStream("Generated\\Main.map", FileMode.CreateNew))
+                    using (var fileStream = new FileStream("Generated\\Output.cs.map", FileMode.CreateNew))
                     using (var writer = new StreamWriter(fileStream))
                     {
                         writer.Write(target.SourceMap);

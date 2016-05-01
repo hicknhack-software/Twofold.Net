@@ -19,21 +19,14 @@
 
 namespace Twofold.Interface.Compilation
 {
-    /// <summary>
-    /// A pargma directive in the template.
-    /// </summary>
-    public class OriginPragma : AsbtractRenderCommand
+    public class PopIndentationCommand : AsbtractRenderCommand
     {
-        public readonly TextSpan PragmaSpan;
-        public readonly string Name;
-        public readonly string Argument;
+        public readonly TextSpan IndentationSpan;
 
-        public OriginPragma(FileLine line, TextSpan pragmaSpan, string name, string argument)
-            : base(RenderCommandTypes.OriginPragma, line)
+        public PopIndentationCommand(FileLine line, TextSpan indentationSpan)
+            : base(RenderCommands.PopIndentation, line)
         {
-            this.PragmaSpan = pragmaSpan;
-            this.Name = name;
-            this.Argument = argument;
+            this.IndentationSpan = indentationSpan;
         }
     }
 }
