@@ -36,8 +36,9 @@ namespace Twofold.TextRendering
         {
             public readonly string Indentation;
             public readonly TextFilePosition Source;
+            public readonly int CallerIndex;
 
-            public IndentationItem(string indentation, TextFilePosition source)
+            public IndentationItem(string indentation, TextFilePosition source, int callerIndex)
             {
                 if (indentation == null)
                 {
@@ -50,12 +51,15 @@ namespace Twofold.TextRendering
                     throw new ArgumentNullException(nameof(source));
                 }
                 this.Source = source;
+
+                this.CallerIndex = callerIndex;
             }
         }
 
         // Fields
         private string NewLine = Environment.NewLine;
-        private readonly Stack<IndentationItem> IndentationQueue;
+        private readonly Stack<IndentationItem> IndentationStack;
+        private readonly Stack<int> CallerIndexStack;
         private IndentationItem partIndentation;
         private readonly TextWriter TextWriter;
         private readonly SourceMap SourceMap;
@@ -93,7 +97,8 @@ namespace Twofold.TextRendering
             }
             this.NewLine = newLine;
 
-            this.IndentationQueue = new Stack<IndentationItem>();
+            this.IndentationStack = new Stack<IndentationItem>();
+            this.CallerIndexStack = new Stack<int>();
         }
 
         /// <summary>
@@ -135,11 +140,12 @@ namespace Twofold.TextRendering
             {
                 if (this.IsLineBlank)
                 {
-                    foreach (var indentationItem in this.IndentationQueue)
+                    foreach (var indentationItem in this.IndentationStack)
                     {
                         if (indentationItem.Indentation.Length > 0)
                         {
-                            this.SourceMap.AddMapping(new TextPosition(this.Line, this.Column), indentationItem.Source);
+                            var mapping = new SourceMap.Mapping(new TextPosition(this.Line, this.Column), indentationItem.Source, indentationItem.CallerIndex);
+                            this.SourceMap.AddMapping(mapping);
                             this.TextWriter.Write(indentationItem.Indentation);
                             this.Column += indentationItem.Indentation.Length;
                         }
@@ -147,13 +153,15 @@ namespace Twofold.TextRendering
                     this.IsLineBlank = false;
                 }
 
+                var callerIndex = (this.CallerIndexStack.Count == 0) ? -1 : this.CallerIndexStack.Peek();
                 var lineBreakIndex = textSpan.OriginalText.IndexOf(index, textSpan.End, ch => ch == '\n');
                 if (lineBreakIndex == textSpan.End)
                 { // No line break found
                     var len = (textSpan.End - index);
                     if (source.IsValid && (len > 0))
                     {
-                        this.SourceMap.AddMapping(new TextPosition(this.Line, this.Column), source);
+                        var mapping = new SourceMap.Mapping(new TextPosition(this.Line, this.Column), source, callerIndex);
+                        this.SourceMap.AddMapping(mapping);
                     }
                     this.TextWriter.Write(index, textSpan.End, textSpan.OriginalText);
                     Column += len;
@@ -165,7 +173,8 @@ namespace Twofold.TextRendering
                     var len = (lineBreakIndex - index);
                     if (source.IsValid && (len > 0))
                     {
-                        this.SourceMap.AddMapping(new TextPosition(this.Line, this.Column), source);
+                        var mapping = new SourceMap.Mapping(new TextPosition(this.Line, this.Column), source, callerIndex);
+                        this.SourceMap.AddMapping(mapping);
                     }
                     this.TextWriter.Write(index, lineBreakIndex, textSpan.OriginalText);
                     index += len;
@@ -236,7 +245,8 @@ namespace Twofold.TextRendering
                 throw new ArgumentNullException(nameof(source));
             }
 
-            this.IndentationQueue.Push(new IndentationItem(indentation, source));
+            var callerIndex = (this.CallerIndexStack.Count == 0) ? -1 : this.CallerIndexStack.Peek();
+            this.IndentationStack.Push(new IndentationItem(indentation, source, callerIndex));
         }
 
         /// <summary>
@@ -244,7 +254,7 @@ namespace Twofold.TextRendering
         /// </summary>
         public void PopIndentation()
         {
-            this.IndentationQueue.Pop();
+            this.IndentationStack.Pop();
         }
 
         public void LocalIndentation(string indentation, TextFilePosition source)
@@ -256,7 +266,8 @@ namespace Twofold.TextRendering
 
             if (IsLineBlank)
             {
-                partIndentation = new IndentationItem(indentation, source);
+                var callerIndex = (this.CallerIndexStack.Count == 0) ? -1 : this.CallerIndexStack.Peek();
+                partIndentation = new IndentationItem(indentation, source, callerIndex);
             }
             this.Write(indentation, source);
         }
@@ -272,19 +283,23 @@ namespace Twofold.TextRendering
         public void PopLocalIndentation()
         {
             partIndentation = null;
-            if (this.IndentationQueue.Count > 0)
+            if (this.IndentationStack.Count > 0)
             {
-                partIndentation = this.IndentationQueue.Peek();
+                partIndentation = this.IndentationStack.Peek();
                 this.PopIndentation();
             }
         }
 
         public void PushCaller(TextFilePosition source)
         {
+            var parentIndex = (this.CallerIndexStack.Count == 0) ? -1 : this.CallerIndexStack.Peek();
+            int callerIndex = this.SourceMap.AddCaller(source, parentIndex);
+            this.CallerIndexStack.Push(callerIndex);
         }
 
         public void PopCaller()
         {
+            this.CallerIndexStack.Pop();
         }
     }
 }
