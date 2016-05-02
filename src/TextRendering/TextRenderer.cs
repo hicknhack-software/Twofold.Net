@@ -223,6 +223,17 @@ namespace Twofold.TextRendering
         /// </summary>
         public void WriteLine()
         {
+            this.WriteLine(new TextFilePosition());
+        }
+
+        public void WriteLine(TextFilePosition source)
+        {
+            if(source.IsValid)
+            {
+                var callerIndex = (this.CallerIndexStack.Count == 0) ? -1 : this.CallerIndexStack.Peek();
+                var mapping = new SourceMap.Mapping(new TextPosition(this.Line, this.Column), source, callerIndex);
+                this.SourceMap.AddMapping(mapping);
+            }
             this.TextWriter.Write(this.NewLine);
             ++Line;
             this.IsLineBlank = true;

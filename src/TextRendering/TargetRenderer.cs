@@ -71,13 +71,13 @@ namespace Twofold.TextRendering
             TargetRenderer.renderer.PopCaller();
         }
 
-        public static void WriteLine()
+        public static void WriteLine(TextFilePosition source)
         {
             if (TargetRenderer.renderer == null)
             {
                 return;
             }
-            TargetRenderer.renderer.WriteLine();
+            TargetRenderer.renderer.WriteLine(source);
         }
 
         public static void PushIndentation(string indentation, TextFilePosition source)

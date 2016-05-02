@@ -73,7 +73,8 @@ namespace Twofold.Compilation
 
         protected override void Generate(NewLineCommand command)
         {
-            this.TextRenderer.WriteLine("TargetRenderer.WriteLine();", command.Line.CreateFilePosition(command.NewLineSpan));
+            var newLinePosition = command.Line.CreateFilePosition(command.NewLineSpan);
+            this.TextRenderer.WriteLine($"TargetRenderer.WriteLine({this.X(newLinePosition)});", command.Line.CreateFilePosition(command.NewLineSpan));
             this.TextRenderer.WriteLine();
         }
 
