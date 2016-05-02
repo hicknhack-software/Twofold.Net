@@ -25,7 +25,6 @@ namespace Twofold.Compilation
     using System.Collections.Generic;
     using System.IO;
     using TextRendering;
-    using System;
     using Interface;
 
     internal sealed class CSharpGenerator : AbstractCodeGenerator
@@ -112,12 +111,12 @@ namespace Twofold.Compilation
                 return;
             }
 
-            this.TextRenderer.Write("TargetRenderer.PushLocalIndentation();");
+            this.TextRenderer.Write("TargetRenderer.PushLocalIndentation();", command.Line.CreateFilePosition(command.BeginSpan));
 
             this.TextRenderer.Write("TargetRenderer.Execute(() => ", command.Line.CreateFilePosition(command.BeginSpan));
             this.TextRenderer.Write(command.ExpressionSpan.Text, command.Line.CreateFilePosition(command.ExpressionSpan)); //TODO: Interpolation 1:1
             var expressionPosition = command.Line.CreateFilePosition(command.ExpressionSpan);
-            this.TextRenderer.Write($", {this.X(expressionPosition)});");
+            this.TextRenderer.Write($", {this.X(expressionPosition)});", command.Line.CreateFilePosition(command.EndSpan));
 
             this.TextRenderer.WriteLine("TargetRenderer.PopLocalIndentation();", command.Line.CreateFilePosition(command.EndSpan));
             this.TextRenderer.WriteLine();

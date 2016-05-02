@@ -119,14 +119,6 @@ namespace Twofold.TextRendering
         /// </summary>
         public int Column { get; private set; } = 1;
 
-        /// <summary>
-        /// Append text.
-        /// </summary>
-        public void Write(TextSpan textSpan)
-        {
-            this.Write(textSpan, new TextFilePosition());
-        }
-
         public void Write(TextSpan textSpan, TextFilePosition source)
         {
             // Skip empty spans
@@ -185,20 +177,10 @@ namespace Twofold.TextRendering
             }
         }
 
-        public void Write(string text)
-        {
-            this.Write(text, new TextFilePosition());
-        }
-
         public void Write(string text, TextFilePosition source)
         {
             var textSpan = new TextSpan(text);
             this.Write(textSpan, source);
-        }
-
-        public void WriteLine(TextSpan textSpan)
-        {
-            this.WriteLine(textSpan, new TextFilePosition());
         }
 
         public void WriteLine(TextSpan textSpan, TextFilePosition source)

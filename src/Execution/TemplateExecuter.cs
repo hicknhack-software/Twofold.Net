@@ -90,6 +90,8 @@ namespace Twofold.Execution
             }
             catch (Exception ex)
             {
+                var stackTrace = new StackTrace(ex, true);
+                //TODO: Report stacktrace
                 this.MessageHandler.Message(TraceLevel.Error, ex.ToString(), compiledTemplate.SourceName, new TextPosition());
             }
 

@@ -37,6 +37,7 @@
   <ItemGroup>
     <Compile Include="Interface\GeneratedCode.cs" />
     <Compile Include="Interface\SourceMapping\SourceMap.cs" />
+    <Compile Include="Interface\SourceTextSpan.cs" />
     <Compile Include="Interface\StatementCommand.cs" />
     <Compile Include="Interface\TemplateCompilerResult.cs" />
     <Compile Include="TextRendering\TargetRenderer.cs" />
