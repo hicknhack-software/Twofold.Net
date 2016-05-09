@@ -21,6 +21,7 @@ namespace Twofold.Interface.SourceMapping
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Text;
 
     public class Mapping
@@ -44,6 +45,64 @@ namespace Twofold.Interface.SourceMapping
 
         private List<MappingEntry> Mappings = new List<MappingEntry>();
         private List<Caller> Callers = new List<Caller>();
+
+        public List<TextFilePosition> CallerStack(TextPosition generated)
+        {
+            if (generated == null)
+            {
+                throw new ArgumentNullException(nameof(generated));
+            }
+
+            if (generated.IsValid == false)
+            {
+                throw new ArgumentException("Is invalid.", nameof(generated));
+            }
+
+            var callerStack = new List<TextFilePosition>();
+            MappingEntry entry = this.FindEntryByGenerated(generated);
+            if (entry.IsValid == false)
+            {
+                return callerStack;
+            }
+
+            callerStack.Add(entry.Source);
+            int callerIndex = entry.CallerIndex;
+            while (callerIndex != -1)
+            {
+                Caller caller = this.Callers[callerIndex];
+                callerStack.Add(caller.Source);
+                callerIndex = caller.ParentIndex;
+            }
+            return callerStack;
+        }
+
+        public TextFilePosition FindSourceByGenerated(TextPosition generated)
+        {
+            if (generated == null)
+            {
+                throw new ArgumentNullException(nameof(generated));
+            }
+
+            if (generated.IsValid == false)
+            {
+                throw new ArgumentException("Is invalid.", nameof(generated));
+            }
+
+            MappingEntry entry = this.FindEntryByGenerated(generated);
+            if (entry.IsValid == false)
+            {
+                return new TextFilePosition();
+            }
+
+            if ((entry.Features & EntryFeatures.ColumnInterpolation) == 0)
+            {
+                return entry.Source;
+            }
+
+            int line = (entry.Generated.Line - generated.Line) + entry.Source.Line;
+            int column = (entry.Generated.Column - generated.Column) + entry.Source.Column;
+            return new TextFilePosition(entry.Source.SourceName, line, column);
+        }
 
         public void Add(MappingEntry entry)
         {
@@ -87,5 +146,7 @@ namespace Twofold.Interface.SourceMapping
 
             return sb.ToString();
         }
+
+        private MappingEntry FindEntryByGenerated(TextPosition generated) => this.Mappings.LastOrDefault(e => e.Generated.CompareTo(generated) <= 0);
     }
 }

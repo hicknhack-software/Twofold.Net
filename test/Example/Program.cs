@@ -115,6 +115,13 @@ namespace Example
                         writer.Write(target.SourceMap);
                     }
                 }
+
+                var pos = new TextPosition(7, 34);
+                Debug.WriteLine($"Callstack for {pos}:");
+                foreach(var e in target.SourceMap.CallerStack(pos))
+                {
+                    Debug.WriteLine($"{e.SourceName} ({e.Line}, {e.Column})");
+                }
             }
 
             Console.ReadKey();

@@ -17,6 +17,8 @@
  * limitations under the License.
  */
 
+using System;
+
 namespace Twofold.Interface.SourceMapping
 {
     public class MappingEntry
@@ -26,12 +28,31 @@ namespace Twofold.Interface.SourceMapping
         public readonly int CallerIndex;
         public readonly EntryFeatures Features;
 
+        public MappingEntry()
+            : this(new TextPosition(), new TextFilePosition(), -1, EntryFeatures.None)
+        { }
+
         public MappingEntry(TextPosition generated, TextFilePosition source, int callerIndex, EntryFeatures features)
         {
+            if (generated == null)
+            {
+                throw new ArgumentNullException(nameof(generated));
+            }
             this.Generated = generated;
+
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
             this.Source = source;
-            this.Features = features;
+
             this.CallerIndex = callerIndex;
+            this.Features = features;
+        }
+
+        public bool IsValid
+        {
+            get { return this.Generated.IsValid; }
         }
 
         public override string ToString()
