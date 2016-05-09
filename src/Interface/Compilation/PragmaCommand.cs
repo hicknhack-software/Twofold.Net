@@ -24,14 +24,16 @@ namespace Twofold.Interface.Compilation
     /// </summary>
     public class PragmaCommand : AsbtractRenderCommand
     {
-        public readonly TextSpan PragmaSpan;
+        public readonly SourceTextSpan Pragma;
+        public readonly SourceTextSpan End;
         public readonly string Name;
         public readonly string Argument;
 
-        public PragmaCommand(FileLine line, TextSpan pragmaSpan, string name, string argument)
-            : base(RenderCommands.Pragma, line)
+        public PragmaCommand(SourceTextSpan pragma, SourceTextSpan end, string name, string argument)
+            : base(RenderCommands.Pragma)
         {
-            this.PragmaSpan = pragmaSpan;
+            this.Pragma = pragma;
+            this.End = end;
             this.Name = name;
             this.Argument = argument;
         }

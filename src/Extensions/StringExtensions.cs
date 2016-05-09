@@ -22,6 +22,7 @@ namespace Twofold.Extensions
     using System;
     using System.Globalization;
     using System.Text;
+
     internal static class StringExtensions
     {
         /// <exception cref="ArgumentOutOfRangeException">begin is greater than end.</exception>

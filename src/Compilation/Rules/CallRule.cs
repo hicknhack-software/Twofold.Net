@@ -31,23 +31,27 @@ namespace Twofold.Compilation.Rules
     {
         public List<AsbtractRenderCommand> Parse(FileLine line, IMessageHandler messageHandler)
         {
-            List<AsbtractRenderCommand> commands = new List<AsbtractRenderCommand>();
+            var commands = new List<AsbtractRenderCommand>();
 
             //
-            var beginSpan = new TextSpan(line.Text, line.BeginNonSpace, line.BeginNonSpace + 1); //skip matched character
+            var beginSpan = line.CreateSourceTextSpan(line.BeginNonSpace, line.BeginNonSpace + 1); //skip matched character
             var scriptBegin = line.Text.IndexOfNot(beginSpan.End, line.End, CharExtensions.IsSpace);
-            var indentationSpan = new TextSpan(line.Text, beginSpan.End, scriptBegin);
-            var endSpan = new TextSpan(line.Text, indentationSpan.End, indentationSpan.End);
-            commands.Add(new PushIndentationCommand(line, beginSpan, indentationSpan, endSpan));
+            var indentationSpan = line.CreateSourceTextSpan(beginSpan.End, scriptBegin);
+            if (indentationSpan.IsEmpty)
+            {
+                return commands;
+            }
+            var endSpan = line.CreateSourceTextSpan(indentationSpan.End, indentationSpan.End);
+            commands.Add(new PushIndentationCommand(beginSpan, indentationSpan, endSpan));
 
             //
-            var statementSpan = new TextSpan(line.Text, indentationSpan.End, line.End);
-            var statementEndSpan = new TextSpan(line.Text, statementSpan.End, statementSpan.End);
-            commands.Add(new StatementCommand(line, statementSpan, statementEndSpan));
+            var statementSpan = line.CreateSourceTextSpan(indentationSpan.End, line.End);
+            var statementEndSpan = line.CreateSourceTextSpan(statementSpan.End, statementSpan.End);
+            commands.Add(new StatementCommand(statementSpan, statementEndSpan));
 
             //
-            var popIndentationSpan = new TextSpan(line.Text, line.End, line.End);
-            commands.Add(new PopIndentationCommand(line, popIndentationSpan));
+            var popIndentationSpan = line.CreateSourceTextSpan(line.End, line.End);
+            commands.Add(new PopIndentationCommand(popIndentationSpan));
 
             return commands;
         }

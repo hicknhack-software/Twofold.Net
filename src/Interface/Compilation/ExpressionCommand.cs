@@ -21,16 +21,16 @@ namespace Twofold.Interface.Compilation
 {
     public class ExpressionCommand : AsbtractRenderCommand
     {
-        public readonly TextSpan BeginSpan;
-        public readonly TextSpan ExpressionSpan;
-        public readonly TextSpan EndSpan;
+        public readonly SourceTextSpan Begin;
+        public readonly SourceTextSpan Expression;
+        public readonly SourceTextSpan End;
 
-        public ExpressionCommand(FileLine line, TextSpan beginSpan, TextSpan expressionSpan, TextSpan endSpan)
-            : base(RenderCommands.Expression, line)
+        public ExpressionCommand(SourceTextSpan begin, SourceTextSpan expression, SourceTextSpan end)
+            : base(RenderCommands.Expression)
         {
-            this.BeginSpan = beginSpan;
-            this.ExpressionSpan = expressionSpan;
-            this.EndSpan = endSpan;
+            this.Begin = begin;
+            this.Expression = expression;
+            this.End = end;
         }
     }
 }

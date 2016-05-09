@@ -21,16 +21,16 @@ namespace Twofold.Interface.Compilation
 {
     public class PushIndentationCommand : AsbtractRenderCommand
     {
-        public readonly TextSpan BeginSpan;
-        public readonly TextSpan IndentationSpan;
-        public readonly TextSpan EndSpan;
+        public readonly SourceTextSpan Begin;
+        public readonly SourceTextSpan Indentation;
+        public readonly SourceTextSpan End;
 
-        public PushIndentationCommand(FileLine line, TextSpan beginSpan, TextSpan indentationSpan, TextSpan endSpan)
-            : base(RenderCommands.PushIndentation, line)
+        public PushIndentationCommand(SourceTextSpan begin, SourceTextSpan indentation, SourceTextSpan end)
+            : base(RenderCommands.PushIndentation)
         {
-            this.BeginSpan = beginSpan;
-            this.IndentationSpan = indentationSpan;
-            this.EndSpan = endSpan;
+            this.Begin = begin;
+            this.Indentation = indentation;
+            this.End = end;
         }
     }
 }

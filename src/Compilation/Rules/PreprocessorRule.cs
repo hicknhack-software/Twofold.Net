@@ -77,8 +77,12 @@ namespace Twofold.Compilation.Rules
 
                 // Extract <Filename> from '"<Filename>"'
                 string pragmaArgument = line.Text.Substring(pragmaArgBegin + 1, (pragmaArgEnd - pragmaArgBegin - 1));
-                var pragmaSpan = new TextSpan(line.Text, line.Begin, line.End);
-                commands.Add(new PragmaCommand(line, pragmaSpan, pragmaName, pragmaArgument));
+                var pragmaSpan = line.CreateSourceTextSpan(line.Begin, line.End);
+                if (pragmaSpan.IsEmpty == false)
+                {
+                    var endSpan = line.CreateSourceTextSpan(line.End, line.End);
+                    commands.Add(new PragmaCommand(pragmaSpan, endSpan, pragmaName, pragmaArgument));
+                }
 
                 index = (pragmaArgEnd + 1);
 
@@ -88,7 +92,12 @@ namespace Twofold.Compilation.Rules
             // No pragma detected, pass line through
             if (commands.Count == 0)
             {
-                commands.Add(new ScriptCommand(line, new TextSpan(line.Text, line.Begin, line.End), new TextSpan(line.Text, line.End, line.End)));
+                var scriptSpan = line.CreateSourceTextSpan(line.Begin, line.End);
+                if(scriptSpan.IsEmpty == false)
+                {
+                    var scriptEndSpan = line.CreateSourceTextSpan(line.End, line.End);
+                    commands.Add(new ScriptCommand(scriptSpan, scriptEndSpan));
+                }
             }
 
             return commands;

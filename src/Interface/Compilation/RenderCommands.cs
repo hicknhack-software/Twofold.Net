@@ -26,7 +26,6 @@ namespace Twofold.Interface.Compilation
         Script,
         Text,
         NewLine,
-        LocalIndentation,
         PushIndentation,
         PopIndentation,
         Statement,

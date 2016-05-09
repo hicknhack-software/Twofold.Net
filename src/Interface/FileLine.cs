@@ -19,7 +19,6 @@
 
 namespace Twofold.Interface
 {
-    using Extensions;
     using SourceMapping;
     using System;
 
@@ -39,15 +38,15 @@ namespace Twofold.Interface
             }
             if (begin > beginNonSpace)
             {
-                throw new ArgumentOutOfRangeException(nameof(begin), "Must be less equal than beginNonSpace.");
+                throw new ArgumentOutOfRangeException(nameof(begin), $"Must be less equal than {nameof(beginNonSpace)}.");
             }
             if (beginNonSpace > end)
             {
-                throw new ArgumentOutOfRangeException(nameof(beginNonSpace), "Must be less equal than end.");
+                throw new ArgumentOutOfRangeException(nameof(beginNonSpace), $"Must be less equal than {nameof(end)}.");
             }
             if (end > text.Length)
             {
-                throw new ArgumentOutOfRangeException(nameof(end), "end must be less equal string length.");
+                throw new ArgumentOutOfRangeException(nameof(end), $"Must be less equal {nameof(text)} length.");
             }
 
             this.Text = text;
@@ -57,24 +56,26 @@ namespace Twofold.Interface
             this.Position = position;
         }
 
-        public TextFilePosition CreateFilePosition(TextSpan textSpan)
+        public SourceTextSpan CreateSourceTextSpan(int begin, int end)
         {
-            if (textSpan == null)
+            if (begin > end)
             {
-                throw new ArgumentNullException(nameof(textSpan));
+                throw new ArgumentOutOfRangeException(nameof(begin), $"Must be less equal than {nameof(end)}.");
             }
 
-            if (textSpan.Begin < this.Begin)
+            if (begin < this.Begin)
             {
-                throw new ArgumentOutOfRangeException($"{nameof(textSpan.Begin)} of {nameof(textSpan)} is smaller than {nameof(FileLine)} {nameof(this.Begin)}!");
+                throw new ArgumentOutOfRangeException($"{nameof(begin)} is smaller than {nameof(FileLine)} {nameof(this.Begin)}!");
             }
 
-            if (textSpan.End > this.End)
+            if (end > this.End)
             {
-                throw new ArgumentOutOfRangeException($"{nameof(textSpan.End)} of {nameof(textSpan)} is larger than {nameof(FileLine)} {nameof(this.End)}!");
+                throw new ArgumentOutOfRangeException($"{nameof(end)} is greater than {nameof(FileLine)} {nameof(this.End)}!");
             }
 
-            return new TextFilePosition(this.Position.SourceName, new TextPosition(this.Position.Line, textSpan.Begin - this.Begin + 1));
+            var position = new TextPosition(this.Position.Line, begin - this.Begin + 1);
+            var filePosition = new TextFilePosition(this.Position.SourceName, position);
+            return new SourceTextSpan(this.Text, begin, end, filePosition);
         }
     }
 }

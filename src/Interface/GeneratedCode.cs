@@ -19,16 +19,16 @@
 
 namespace Twofold.Compilation
 {
-    using System;
     using Interface.SourceMapping;
+    using System;
 
     public sealed class GeneratedCode
     {
         public readonly string TemplatePath;
         public readonly string Code;
-        public readonly SourceMap SourceMap;
+        public readonly Mapping SourceMap;
 
-        public GeneratedCode(string templatePath, string code, SourceMap sourceMap)
+        public GeneratedCode(string templatePath, string code, Mapping sourceMap)
         {
             if (templatePath == null)
             {

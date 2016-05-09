@@ -17,23 +17,26 @@
  * limitations under the License.
  */
 
-namespace Twofold.Interface.Compilation
+namespace Twofold.Interface.SourceMapping
 {
-    /// <summary>
-    /// Adds an indentation
-    /// </summary>
-    public class LocalIndentationCommand : AsbtractRenderCommand
+    public class MappingEntry
     {
-        public readonly TextSpan BeginSpan;
-        public readonly TextSpan IndentationSpan;
-        public readonly TextSpan EndSpan;
+        public readonly TextPosition Generated;
+        public readonly TextFilePosition Source;
+        public readonly int CallerIndex;
+        public readonly EntryFeatures Features;
 
-        public LocalIndentationCommand(FileLine line, TextSpan beginSpan, TextSpan indentationSpan, TextSpan endSpan)
-            : base(RenderCommands.LocalIndentation, line)
+        public MappingEntry(TextPosition generated, TextFilePosition source, int callerIndex, EntryFeatures features)
         {
-            this.BeginSpan = beginSpan;
-            this.IndentationSpan = indentationSpan;
-            this.EndSpan = endSpan;
+            this.Generated = generated;
+            this.Source = source;
+            this.Features = features;
+            this.CallerIndex = callerIndex;
+        }
+
+        public override string ToString()
+        {
+            return $"{this.Generated.ToString()}, {this.Source.ToString()} [CallerIndex: {this.CallerIndex}]";
         }
     }
 }

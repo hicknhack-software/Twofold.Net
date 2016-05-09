@@ -36,48 +36,44 @@ namespace Twofold.Interface.Compilation
             this.PreGeneration(templatePath, text);
 
             List<AsbtractRenderCommand> commands = this.Parser.Parse(templatePath, text);
-            foreach (var command in commands)
+            foreach (var cmd in commands)
             {
-                switch (command.Type)
+                switch (cmd.Type)
                 {
                     case RenderCommands.Expression:
-                        this.Generate((ExpressionCommand)command);
+                        this.Generate((ExpressionCommand)cmd);
                         break;
 
                     case RenderCommands.Pragma:
-                        this.Generate((PragmaCommand)command);
+                        this.Generate((PragmaCommand)cmd);
                         break;
 
                     case RenderCommands.Script:
-                        this.Generate((ScriptCommand)command);
+                        this.Generate((ScriptCommand)cmd);
                         break;
 
                     case RenderCommands.Text:
-                        this.Generate((TextCommand)command);
-                        break;
-
-                    case RenderCommands.LocalIndentation:
-                        this.Generate((LocalIndentationCommand)command);
+                        this.Generate((TextCommand)cmd);
                         break;
 
                     case RenderCommands.NewLine:
-                        this.Generate((NewLineCommand)command);
+                        this.Generate((NewLineCommand)cmd);
                         break;
 
                     case RenderCommands.PopIndentation:
-                        this.Generate((PopIndentationCommand)command);
+                        this.Generate((PopIndentationCommand)cmd);
                         break;
 
                     case RenderCommands.PushIndentation:
-                        this.Generate((PushIndentationCommand)command);
+                        this.Generate((PushIndentationCommand)cmd);
                         break;
 
                     case RenderCommands.Statement:
-                        this.Generate((StatementCommand)command);
+                        this.Generate((StatementCommand)cmd);
                         break;
 
                     default:
-                        throw new NotSupportedException($"CodeFragmentType '{command.Type.ToString()}' is not supported.");
+                        throw new NotSupportedException($"CodeFragmentType '{cmd.Type.ToString()}' is not supported.");
                 }
             }
 
@@ -92,22 +88,20 @@ namespace Twofold.Interface.Compilation
         {
         }
 
-        protected abstract void Generate(TextCommand command);
+        protected abstract void Generate(TextCommand cmd);
 
-        protected abstract void Generate(ExpressionCommand command);
+        protected abstract void Generate(ExpressionCommand cmd);
 
-        protected abstract void Generate(PragmaCommand command);
+        protected abstract void Generate(PragmaCommand cmd);
 
-        protected abstract void Generate(ScriptCommand command);
+        protected abstract void Generate(ScriptCommand cmd);
 
-        protected abstract void Generate(NewLineCommand command);
+        protected abstract void Generate(NewLineCommand cmd);
 
-        protected abstract void Generate(LocalIndentationCommand command);
+        protected abstract void Generate(PushIndentationCommand cmd);
 
-        protected abstract void Generate(PushIndentationCommand command);
+        protected abstract void Generate(PopIndentationCommand cmd);
 
-        protected abstract void Generate(PopIndentationCommand command);
-
-        protected abstract void Generate(StatementCommand command);
+        protected abstract void Generate(StatementCommand cmd);
     }
 }

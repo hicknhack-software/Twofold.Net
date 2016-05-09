@@ -19,9 +19,10 @@
 
 namespace Twofold.Interface
 {
+    using SourceMapping;
     using System;
 
-    public class TextSpan
+    public class SourceTextSpan
     {
         /// <summary>
         /// Begin of the text span in the OriginalText.
@@ -43,7 +44,9 @@ namespace Twofold.Interface
         /// </summary>
         public readonly string Text;
 
-        public TextSpan(string text)
+        public readonly TextFilePosition Position;
+
+        public SourceTextSpan(string text, TextFilePosition position)
         {
             if (text == null)
             {
@@ -53,9 +56,15 @@ namespace Twofold.Interface
             this.End = text.Length;
             this.OriginalText = text;
             this.Text = text;
+
+            if (position == null)
+            {
+                throw new ArgumentNullException(nameof(position));
+            }
+            this.Position = position;
         }
 
-        public TextSpan(string text, int begin, int end)
+        public SourceTextSpan(string text, int begin, int end, TextFilePosition position)
         {
             if (text == null)
             {
@@ -73,11 +82,22 @@ namespace Twofold.Interface
             this.End = end;
             this.OriginalText = text;
             this.Text = OriginalText.Substring(Begin, End - Begin);
+
+            if (position == null)
+            {
+                throw new ArgumentNullException(nameof(position));
+            }
+            this.Position = position;
         }
 
         public bool IsEmpty
         {
             get { return (Begin == End); }
+        }
+
+        public int Length
+        {
+            get { return (this.End - this.Begin); }
         }
     }
 }

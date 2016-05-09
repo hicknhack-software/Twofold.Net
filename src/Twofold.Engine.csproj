@@ -36,11 +36,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interface\GeneratedCode.cs" />
-    <Compile Include="Interface\SourceMapping\SourceMap.cs" />
-    <Compile Include="Interface\SourceTextSpan.cs" />
+    <Compile Include="Interface\SourceMapping\EntryFeatures.cs" />
+    <Compile Include="Interface\SourceMapping\Mapping.cs" />
+    <Compile Include="Interface\SourceMapping\MappingEntry.cs" />
     <Compile Include="Interface\StatementCommand.cs" />
     <Compile Include="Interface\TemplateCompilerResult.cs" />
-    <Compile Include="TextRendering\TargetRenderer.cs" />
+    <Compile Include="TextRendering\TemplateRenderer.cs" />
     <Compile Include="TextRendering\TextRenderer.cs" />
     <Compile Include="Interface\Compilation\AbstractCodeGenerator.cs" />
     <Compile Include="Interface\Compilation\AsbtractRenderCommand.cs" />
@@ -49,7 +50,6 @@
     <Compile Include="Interface\Compilation\PragmaCommand.cs" />
     <Compile Include="Interface\Compilation\ScriptCommand.cs" />
     <Compile Include="Interface\Compilation\TextCommand.cs" />
-    <Compile Include="Interface\Compilation\LocalIndentationCommand.cs" />
     <Compile Include="Interface\Compilation\NewLineCommand.cs" />
     <Compile Include="Interface\Compilation\PopIndentationCommand.cs" />
     <Compile Include="Interface\Compilation\PushIndentationCommand.cs" />
@@ -57,7 +57,7 @@
     <Compile Include="Interface\Compilation\ITemplateParser.cs" />
     <Compile Include="Interface\SourceMapping\TextFilePosition.cs" />
     <Compile Include="Interface\SourceMapping\TextPosition.cs" />
-    <Compile Include="Interface\TextSpan.cs" />
+    <Compile Include="Interface\SourceTextSpan.cs" />
     <Compile Include="Compilation\Rules\PreprocessorRule.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Engine.cs" />
@@ -66,7 +66,6 @@
     <Compile Include="Interface\FileLine.cs" />
     <Compile Include="Execution\TemplateExecuter.cs" />
     <Compile Include="Extensions\CharExtensions.cs" />
-    <Compile Include="Extensions\TextWriterExtensions.cs" />
     <Compile Include="Compilation\BraceCounter.cs" />
     <Compile Include="Compilation\Rules\CallRule.cs" />
     <Compile Include="Compilation\Rules\InterpolationLineRule.cs" />

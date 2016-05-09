@@ -21,14 +21,14 @@ namespace Twofold.Interface.Compilation
 {
     public class TextCommand : AsbtractRenderCommand
     {
-        public readonly TextSpan TextSpan;
-        public readonly TextSpan EndSpan;
+        public readonly SourceTextSpan Text;
+        public readonly SourceTextSpan End;
 
-        public TextCommand(FileLine line, TextSpan textSpan, TextSpan endSpan)
-            : base(RenderCommands.Text, line)
+        public TextCommand(SourceTextSpan text, SourceTextSpan end)
+            : base(RenderCommands.Text)
         {
-            this.TextSpan = textSpan;
-            this.EndSpan = endSpan;
+            this.Text = text;
+            this.End = end;
         }
     }
 }

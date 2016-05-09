@@ -28,6 +28,10 @@ namespace Twofold.Interface.SourceMapping
         public TextFilePosition()
         { }
 
+        public TextFilePosition(string sourceName, int line, int column)
+            : this(sourceName, new TextPosition(line, column))
+        { }
+
         public TextFilePosition(string sourceName, TextPosition textPosition)
             : base(textPosition)
         {

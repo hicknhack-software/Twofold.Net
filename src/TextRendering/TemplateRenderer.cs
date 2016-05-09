@@ -19,7 +19,6 @@
 
 namespace Twofold.TextRendering
 {
-    using Interface;
     using Interface.SourceMapping;
     using System;
     using System.IO;
@@ -28,13 +27,13 @@ namespace Twofold.TextRendering
     /// This is the renderer which will be exposed to the generated
     /// CSharp target code.
     /// </summary>
-    public static class TargetRenderer
+    public static class TemplateRenderer
     {
         private static TextRenderer renderer;
 
-        internal static void SetTextWriter(TextWriter textWriter, SourceMap sourceMap)
+        internal static void SetTextWriter(TextWriter textWriter, Mapping sourceMap)
         {
-            TargetRenderer.renderer = new TextRenderer(textWriter, sourceMap);
+            TemplateRenderer.renderer = new TextRenderer(textWriter, sourceMap);
         }
 
         /// <summary>
@@ -42,105 +41,81 @@ namespace Twofold.TextRendering
         /// the returned string to the text buffer.
         /// </summary>
         /// <param name="func">The function to execute.</param>
-        public static void Execute(Func<string> func, TextFilePosition source)
+        public static void Write(Func<string> func, TextFilePosition source, EntryFeatures features)
         {
-            if (TargetRenderer.renderer == null)
+            if (TemplateRenderer.renderer == null)
             {
                 return;
             }
-            TargetRenderer.renderer.PushCaller(source);
+            TemplateRenderer.renderer.PushCaller(source);
             string text = func();
-            TargetRenderer.renderer.PopCaller();
+            TemplateRenderer.renderer.PopCaller();
 
-            var textSpan = new TextSpan(text);
-            TargetRenderer.renderer.Write(textSpan, source);
+            TemplateRenderer.renderer.Write(text, source, features);
         }
 
         /// <summary>
         /// Executes the given function which must return void.
         /// </summary>
         /// <param name="action">The function to execute.</param>
-        public static void Execute(Action action, TextFilePosition source)
+        public static void Write(Action action, TextFilePosition source, EntryFeatures features)
         {
-            if (TargetRenderer.renderer == null)
+            if (TemplateRenderer.renderer == null)
             {
                 return;
             }
-            TargetRenderer.renderer.PushCaller(source);
+            TemplateRenderer.renderer.PushCaller(source);
             action();
-            TargetRenderer.renderer.PopCaller();
+            TemplateRenderer.renderer.PopCaller();
+
+#pragma warning disable CS1717 // Assignment made to same variable
+            features = features;
+#pragma warning restore CS1717 // Assignment made to same variable
         }
 
         public static void WriteLine(TextFilePosition source)
         {
-            if (TargetRenderer.renderer == null)
+            if (TemplateRenderer.renderer == null)
             {
                 return;
             }
-            TargetRenderer.renderer.WriteLine(source);
+            TemplateRenderer.renderer.WriteLine(source);
         }
 
-        public static void PushIndentation(string indentation, TextFilePosition source)
+        public static void PushIndentation(string indentation, TextFilePosition source, EntryFeatures features)
         {
-            if (TargetRenderer.renderer == null)
+            if (TemplateRenderer.renderer == null)
             {
                 return;
             }
-            TargetRenderer.renderer.PushIndentation(indentation, source);
+            TemplateRenderer.renderer.PushIndentation(indentation, source, features);
         }
 
         public static void PopIndentation()
         {
-            if (TargetRenderer.renderer == null)
+            if (TemplateRenderer.renderer == null)
             {
                 return;
             }
-            TargetRenderer.renderer.PopIndentation();
-        }
-
-        public static void LocalIndentation(string indentation, TextFilePosition source)
-        {
-            if (TargetRenderer.renderer == null)
-            {
-                return;
-            }
-            TargetRenderer.renderer.LocalIndentation(indentation, source);
-        }
-
-        public static void PushLocalIndentation()
-        {
-            if (TargetRenderer.renderer == null)
-            {
-                return;
-            }
-            TargetRenderer.renderer.PushLocalIndentation();
-        }
-
-        public static void PopLocalIndentation()
-        {
-            if (TargetRenderer.renderer == null)
-            {
-                return;
-            }
-            TargetRenderer.renderer.PopLocalIndentation();
+            TemplateRenderer.renderer.PopIndentation();
         }
 
         public static void PushCaller(TextFilePosition source)
         {
-            if (TargetRenderer.renderer == null)
+            if (TemplateRenderer.renderer == null)
             {
                 return;
             }
-            TargetRenderer.renderer.PushCaller(source);
+            TemplateRenderer.renderer.PushCaller(source);
         }
 
         public static void PopCaller()
         {
-            if (TargetRenderer.renderer == null)
+            if (TemplateRenderer.renderer == null)
             {
                 return;
             }
-            TargetRenderer.renderer.PopCaller();
+            TemplateRenderer.renderer.PopCaller();
         }
     }
 }

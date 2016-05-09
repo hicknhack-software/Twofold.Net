@@ -34,8 +34,9 @@ namespace Twofold
         public const string EntryMethodName = "TwofoldMain";
 
         public static readonly string[] TargetCodeUsings = {
-            "using Twofold.TextRendering;",
-            "using Twofold.Interface.SourceMapping;"
+            "using _Template = Twofold.TextRendering.TemplateRenderer;",
+            "using _Source = Twofold.Interface.SourceMapping.TextFilePosition;",
+            "using _Features = Twofold.Interface.SourceMapping.EntryFeatures;",
         };
     }
 }

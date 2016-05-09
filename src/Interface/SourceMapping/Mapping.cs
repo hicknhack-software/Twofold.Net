@@ -19,30 +19,12 @@
 
 namespace Twofold.Interface.SourceMapping
 {
+    using System;
     using System.Collections.Generic;
     using System.Text;
 
-    public class SourceMap
+    public class Mapping
     {
-        public class Mapping
-        {
-            public readonly TextPosition Generated;
-            public readonly TextFilePosition Source;
-            public readonly int CallerIndex;
-
-            public Mapping(TextPosition generated, TextFilePosition source, int callerIndex)
-            {
-                this.Generated = generated;
-                this.Source = source;
-                this.CallerIndex = callerIndex;
-            }
-
-            public override string ToString()
-            {
-                return $"{this.Generated.ToString()}, {this.Source.ToString()} [CallerIndex: {this.CallerIndex}]";
-            }
-        }
-
         public class Caller
         {
             public readonly TextFilePosition Source;
@@ -60,16 +42,26 @@ namespace Twofold.Interface.SourceMapping
             }
         }
 
-        List<Mapping> Mappings = new List<Mapping>();
-        List<Caller> Callers = new List<Caller>();
+        private List<MappingEntry> Mappings = new List<MappingEntry>();
+        private List<Caller> Callers = new List<Caller>();
 
-        public void AddMapping(Mapping mapping)
+        public void Add(MappingEntry entry)
         {
-            this.Mappings.Add(mapping);
+            if (entry == null)
+            {
+                throw new ArgumentNullException(nameof(entry));
+            }
+
+            this.Mappings.Add(entry);
         }
 
         public int AddCaller(TextFilePosition source, int parentIndex)
         {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+
             this.Callers.Add(new Caller(source, parentIndex));
             return (this.Callers.Count - 1);
         }

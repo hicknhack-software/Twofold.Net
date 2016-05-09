@@ -24,12 +24,12 @@ namespace Twofold.Interface.Compilation
     /// </summary>
     public class NewLineCommand : AsbtractRenderCommand
     {
-        public readonly TextSpan NewLineSpan;
+        public readonly SourceTextSpan NewLine;
 
-        public NewLineCommand(FileLine line, TextSpan newLineSpan)
-            : base(RenderCommands.NewLine, line)
+        public NewLineCommand(SourceTextSpan newLine)
+            : base(RenderCommands.NewLine)
         {
-            this.NewLineSpan = newLineSpan;
+            this.NewLine = newLine;
         }
     }
 }

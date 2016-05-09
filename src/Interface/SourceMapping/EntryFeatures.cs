@@ -17,15 +17,14 @@
  * limitations under the License.
  */
 
-namespace Twofold.Interface.Compilation
+namespace Twofold.Interface.SourceMapping
 {
-    public abstract class AsbtractRenderCommand
-    {
-        public readonly RenderCommands Type;
+    using System;
 
-        public AsbtractRenderCommand(RenderCommands type)
-        {
-            this.Type = type;
-        }
+    [Flags]
+    public enum EntryFeatures
+    {
+        None = 0,
+        ColumnInterpolation = (1 << 0),
     }
 }

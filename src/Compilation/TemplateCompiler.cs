@@ -171,11 +171,11 @@ namespace Twofold.Compilation
             TextWriter codeWriter = new StringWriter();
             includedFiles = new List<string>();
             string generatedCode = string.Empty;
-            var sourceMap = new SourceMap();
+            var mapping = new Mapping();
 
             try
             {
-                var csharpGenerator = new CSharpGenerator(this.TemplateParser, codeWriter, sourceMap, includedFiles);
+                var csharpGenerator = new CSharpGenerator(this.TemplateParser, codeWriter, mapping, includedFiles);
                 csharpGenerator.Generate(templatePath, sourceText);
                 generatedCode = codeWriter.ToString();
             }
@@ -184,7 +184,7 @@ namespace Twofold.Compilation
                 codeWriter.Dispose();
             }
 
-            return new GeneratedCode(templatePath, generatedCode, sourceMap);
+            return new GeneratedCode(templatePath, generatedCode, mapping);
         }
 
         private Assembly CompileCode(List<GeneratedCode> generatedCodes)
