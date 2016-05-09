@@ -116,6 +116,8 @@ namespace Twofold.Compilation
             }
             var escapedTemplatePath = templatePath.Escape();
             this.TextRenderer.WriteLine($"#line 1 \"{escapedTemplatePath}\"");
+
+            this.TextRenderer.ResetPosition();
         }
 
         private string SourceExpression(TextFilePosition position)

@@ -20,32 +20,54 @@
 namespace Twofold.Interface
 {
     using System;
+    using System.Collections.Generic;
     using System.Reflection;
+    using Twofold.Compilation;
 
     public class CompiledTemplate
     {
         public readonly Assembly @Assembly;
         public readonly string SourceName;
         public readonly string MainTypeName;
+        public readonly List<GeneratedCode> GeneratedCodes;
 
-        public CompiledTemplate(string sourceName, Assembly assembly, string mainTypeName)
+        public CompiledTemplate()
         {
-            if (string.IsNullOrEmpty(sourceName))
+            this.SourceName = string.Empty;
+            this.MainTypeName = string.Empty;
+            this.GeneratedCodes = new List<GeneratedCode>();
+        }
+
+        public CompiledTemplate(string sourceName, Assembly assembly, string mainTypeName, List<GeneratedCode> generatedCodes)
+        {
+            if (sourceName == null)
             {
-                throw new ArgumentException("Can't be null or empty.", nameof(sourceName));
+                throw new ArgumentNullException(nameof(sourceName));
             }
+            this.SourceName = sourceName;
+
             if (assembly == null)
             {
                 throw new ArgumentNullException(nameof(assembly));
             }
-            if (string.IsNullOrEmpty(mainTypeName))
-            {
-                throw new ArgumentException("Can't be null or empty.", nameof(mainTypeName));
-            }
-
-            this.SourceName = sourceName;
             this.Assembly = assembly;
+
+            if (mainTypeName == null)
+            {
+                throw new ArgumentNullException(nameof(mainTypeName));
+            }
             this.MainTypeName = mainTypeName;
+
+            if (generatedCodes == null)
+            {
+                throw new ArgumentNullException(nameof(generatedCodes));
+            }
+            this.GeneratedCodes = generatedCodes;
+        }
+
+        public bool IsValid
+        {
+            get { return this.Assembly != null; }
         }
     }
 }

@@ -39,8 +39,7 @@
     <Compile Include="Interface\SourceMapping\EntryFeatures.cs" />
     <Compile Include="Interface\SourceMapping\Mapping.cs" />
     <Compile Include="Interface\SourceMapping\MappingEntry.cs" />
-    <Compile Include="Interface\StatementCommand.cs" />
-    <Compile Include="Interface\TemplateCompilerResult.cs" />
+    <Compile Include="Interface\Compilation\StatementCommand.cs" />
     <Compile Include="TextRendering\TemplateRenderer.cs" />
     <Compile Include="TextRendering\TextRenderer.cs" />
     <Compile Include="Interface\Compilation\AbstractCodeGenerator.cs" />

@@ -76,7 +76,7 @@ namespace Twofold.Compilation
         /// <param name="templateName">Name of template which will be resolved by ITemplateLoader.</param>
         /// <returns>Compiled template or null in case of an error.</returns>
         /// <exception cref="ArgumentException">If templateName is null or empty.</exception>
-        public TemplateCompilerResult Compile(string templateName)
+        public CompiledTemplate Compile(string templateName)
         {
             if (string.IsNullOrEmpty(templateName))
             {
@@ -143,18 +143,17 @@ namespace Twofold.Compilation
             Assembly assembly = this.CompileCode(generatedTargetCodes);
             if (assembly == null)
             {
-                return new TemplateCompilerResult(null, generatedTargetCodes);
+                return new CompiledTemplate(mainTemplatePath, null, string.Empty, generatedTargetCodes);
             }
 
             // Check Twofold CSharp assembly for entry points/types
             string mainTypeName = this.DetectMainType(mainTemplatePath, assembly);
             if (string.IsNullOrEmpty(mainTypeName))
             {
-                return new TemplateCompilerResult(null, generatedTargetCodes);
+                return new CompiledTemplate(mainTemplatePath, null, string.Empty, generatedTargetCodes);
             }
 
-            var compiledTemplate = new CompiledTemplate(mainTemplatePath, assembly, mainTypeName);
-            return new TemplateCompilerResult(compiledTemplate, generatedTargetCodes);
+            return new CompiledTemplate(mainTemplatePath, assembly, mainTypeName, generatedTargetCodes);
         }
 
         private GeneratedCode GenerateCode(string templatePath, string sourceText, out List<string> includedFiles)
@@ -193,7 +192,7 @@ namespace Twofold.Compilation
             var parameters = new CompilerParameters();
             parameters.GenerateInMemory = true;
             parameters.TreatWarningsAsErrors = true;
-            parameters.IncludeDebugInformation = false;
+            parameters.IncludeDebugInformation = true;
             parameters.CompilerOptions = string.Join(" ", Constants.CompilerOptions);
             parameters.ReferencedAssemblies.AddRange(Constants.CompilerAssemblies);
             parameters.ReferencedAssemblies.AddRange(this.ReferencedAssemblies.ToArray());
@@ -210,14 +209,29 @@ namespace Twofold.Compilation
             // Report errors
             foreach (CompilerError compilerError in compilerResults.Errors)
             {
+                string filename = compilerError.FileName;
                 var textPosition = new TextPosition();
                 if (compilerError.Line != 0 && compilerError.Column != 0)
                 {
-                    textPosition = new TextPosition(compilerError.Line, compilerError.Column);
+                    GeneratedCode generatedCode = generatedCodes.FirstOrDefault(gcode => string.Compare(gcode.TemplatePath, compilerError.FileName, StringComparison.OrdinalIgnoreCase) == 0);
+                    if (generatedCode != null)
+                    {
+                        var errorPosition = new TextPosition(compilerError.Line, compilerError.Column);
+                        TextFilePosition source = generatedCode.SourceMap.FindSourceByGenerated(errorPosition);
+                        if (source.IsValid)
+                        {
+                            textPosition = new TextPosition(source.Line, source.Column);
+                        }
+                    }
+                    else
+                    {
+                        textPosition = new TextPosition(compilerError.Line, compilerError.Column);
+                    }
+
                 }
 
                 TraceLevel traceLevel = compilerError.IsWarning ? TraceLevel.Warning : TraceLevel.Error;
-                this.MessageHandler.Message(traceLevel, $"{compilerError.ErrorNumber}: {compilerError.ErrorText}", compilerError.FileName, textPosition);
+                this.MessageHandler.Message(traceLevel, $"{compilerError.ErrorNumber}: {compilerError.ErrorText}", filename, textPosition);
             }
 
             if (compilerResults.Errors.Count > 0)

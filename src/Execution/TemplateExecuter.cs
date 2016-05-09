@@ -19,12 +19,16 @@
 
 namespace Twofold.Execution
 {
+    using Compilation;
     using Interface;
     using Interface.SourceMapping;
     using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
+    using System.Linq;
     using System.Reflection;
+    using System.Text;
     using TextRendering;
 
     internal class TemplateExecuter
@@ -41,6 +45,11 @@ namespace Twofold.Execution
             if (compiledTemplate == null)
             {
                 throw new ArgumentNullException(nameof(compiledTemplate));
+            }
+
+            if (compiledTemplate.IsValid == false)
+            {
+                throw new ArgumentException("Not valid", nameof(compiledTemplate));
             }
 
             Assembly assembly = compiledTemplate.Assembly;
@@ -90,14 +99,81 @@ namespace Twofold.Execution
             }
             catch (Exception ex)
             {
-                var stackTrace = new StackTrace(ex, true);
-                //TODO: Report stacktrace
-                this.MessageHandler.Message(TraceLevel.Error, ex.ToString(), compiledTemplate.SourceName, new TextPosition());
+                Exception templateException = ex.InnerException;
+                this.PrintException(templateException, compiledTemplate.GeneratedCodes);
             }
 
             var target = new Target(compiledTemplate.SourceName, textWriter.ToString(), mapping);
             textWriter.Dispose();
             return target;
         }
+
+        private void PrintException(Exception ex, List<GeneratedCode> generatedCodes)
+        {
+            var sb = new StringBuilder();
+            sb.Append($"{ex.GetType().FullName}: ").AppendLine(ex.Message);
+
+            var stackTrace = new StackTrace(ex, true);
+            for (int i = 0; i < stackTrace.FrameCount; ++i)
+            {
+                //
+                sb.Append("   at");
+
+                //
+                StackFrame frame = stackTrace.GetFrame(i);
+                MethodBase method = frame.GetMethod();
+                Type declaringType = method.DeclaringType;
+                if (declaringType != null)
+                {
+                    sb.Append(" ").Append(declaringType.FullName).Append(".");
+                }
+                sb.Append(method.Name);
+
+                //
+                int line = frame.GetFileLineNumber();
+                int column = frame.GetFileColumnNumber();
+                string filename = frame.GetFileName();
+                GeneratedCode generatedCode = generatedCodes.FirstOrDefault(gcode => string.Compare(gcode.TemplatePath, filename, StringComparison.OrdinalIgnoreCase) == 0);
+                var positionSB = new StringBuilder();
+                bool foundSource = false;
+                if ((generatedCode != null) && (line != 0))
+                {
+                    bool changedColumn = false;
+                    if (column == 0)
+                    {
+                        column = 1;
+                        changedColumn = true;
+                    }
+
+                    var position = new TextPosition(line, column);
+                    TextFilePosition source = generatedCode.SourceMap.FindSourceByGenerated(position);
+                    if (source.IsValid)
+                    {
+                        filename = source.SourceName;
+                        positionSB.Append(" (").Append(source.Line);
+                        if (changedColumn == false)
+                        {
+                            positionSB.Append(", ").Append(source.Column);
+                        }
+                        positionSB.Append(")");
+                        foundSource = true;
+                    }
+                }
+
+                if(foundSource == false)
+                {
+                    positionSB.Append(" (").Append(line);
+                    if (column != 0)
+                    {
+                        positionSB.Append(", ").Append(column);
+                    }
+                    positionSB.Append(")");
+                }
+
+                sb.Append(" in ").Append(filename).AppendLine(positionSB.ToString());
+            }
+            this.MessageHandler.Message(TraceLevel.Error, sb.ToString(), string.Empty, new TextPosition());
+        }
+
     }
 }

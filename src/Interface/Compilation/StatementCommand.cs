@@ -17,26 +17,18 @@
  * limitations under the License.
  */
 
-namespace Twofold.Interface
+namespace Twofold.Interface.Compilation
 {
-    using System;
-    using System.Collections.Generic;
-    using Twofold.Compilation;
-
-    public sealed class TemplateCompilerResult
+    public class StatementCommand : AsbtractRenderCommand
     {
-        public readonly CompiledTemplate @CompiledTemplate;
-        public readonly List<GeneratedCode> GeneratedCodes;
+        public readonly SourceTextSpan Statement;
+        public readonly SourceTextSpan End;
 
-        public TemplateCompilerResult(CompiledTemplate compiledTemplate, List<GeneratedCode> generatedCodes)
+        public StatementCommand(SourceTextSpan statement, SourceTextSpan end)
+            : base(RenderCommands.Statement)
         {
-            if (generatedCodes == null)
-            {
-                throw new ArgumentNullException(nameof(generatedCodes));
-            }
-
-            this.CompiledTemplate = compiledTemplate;
-            this.GeneratedCodes = generatedCodes;
+            this.Statement = statement;
+            this.End = end;
         }
     }
 }

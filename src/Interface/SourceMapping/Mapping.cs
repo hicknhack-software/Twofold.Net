@@ -99,8 +99,8 @@ namespace Twofold.Interface.SourceMapping
                 return entry.Source;
             }
 
-            int line = (entry.Generated.Line - generated.Line) + entry.Source.Line;
-            int column = (entry.Generated.Column - generated.Column) + entry.Source.Column;
+            int line = Math.Abs(entry.Generated.Line - generated.Line) + entry.Source.Line;
+            int column = Math.Abs(entry.Generated.Column - generated.Column) + entry.Source.Column;
             return new TextFilePosition(entry.Source.SourceName, line, column);
         }
 

@@ -40,6 +40,7 @@ namespace Example
 
     public class ClassDescriptor
     {
+        public string s;
         public readonly string Name;
         public readonly List<MethodDescriptor> Methods;
 
@@ -57,7 +58,7 @@ namespace Example
             Program app = new Program();
             Engine engine = new Engine(app, app, Assembly.GetExecutingAssembly().Location);
 
-            TemplateCompilerResult compilerResult = engine.Compile("Main");
+            CompiledTemplate compiledTemplate = engine.Compile("Main");
 
             if (Directory.Exists("Generated"))
             {
@@ -65,7 +66,7 @@ namespace Example
             }
             Directory.CreateDirectory("Generated");
 
-            foreach (var generatedCode in compilerResult.GeneratedCodes)
+            foreach (var generatedCode in compiledTemplate.GeneratedCodes)
             {
                 string filename = generatedCode.TemplatePath;
                 int i = filename.LastIndexOf("\\", StringComparison.Ordinal);
@@ -87,7 +88,7 @@ namespace Example
                 }
             }
 
-            if (compilerResult.CompiledTemplate != null)
+            if (compiledTemplate.IsValid)
             {
                 var classDescriptor = new ClassDescriptor("TwofoldGenerated", new List<MethodDescriptor>
                 {
@@ -98,7 +99,7 @@ namespace Example
                 });
 
 
-                Target target = engine.Run(compilerResult.CompiledTemplate, classDescriptor);
+                Target target = engine.Run(compiledTemplate, classDescriptor);
                 File.Delete("Generated\\Output.cs");
                 File.Delete("Generated\\Output.cs.map");
                 if (target != null)
@@ -118,7 +119,7 @@ namespace Example
 
                 var pos = new TextPosition(7, 34);
                 Debug.WriteLine($"Callstack for {pos}:");
-                foreach(var e in target.SourceMap.CallerStack(pos))
+                foreach (var e in target.SourceMap.CallerStack(pos))
                 {
                     Debug.WriteLine($"{e.SourceName} ({e.Line}, {e.Column})");
                 }
@@ -146,6 +147,7 @@ namespace Example
         {
             if (string.IsNullOrEmpty(source))
             {
+                Console.WriteLine($"Twofold: {level.ToString()}: {text}");
                 Trace.WriteLine($"Twofold: {level.ToString()}: {text}");
                 return;
             }
@@ -155,6 +157,7 @@ namespace Example
             {
                 positionText = position.ToString();
             }
+            Console.WriteLine($"{source}{positionText}: {level.ToString()}: {text}");
             Trace.WriteLine($"{source}{positionText}: {level.ToString()}: {text}");
         }
         #endregion

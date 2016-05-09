@@ -99,6 +99,7 @@ namespace Twofold.TextRendering
 
             this.IndentationStack = new Stack<IndentationItem>();
             this.CallerIndexStack = new Stack<int>();
+            this.ResetPosition();
         }
 
         /// <summary>
@@ -107,17 +108,23 @@ namespace Twofold.TextRendering
         public bool IsLineBlank
         {
             get; private set;
-        } = true;
+        }
 
         /// <summary>
         /// Current line
         /// </summary>
-        public int Line { get; private set; } = 1;
+        public int Line
+        {
+            get; private set;
+        }
 
         /// <summary>
         /// Current column. 0 means invalid Column.
         /// </summary>
-        public int Column { get; private set; } = 1;
+        public int Column
+        {
+            get; private set;
+        }
 
         public void Write(string text, TextFilePosition source, EntryFeatures features = EntryFeatures.None)
         {
@@ -240,6 +247,13 @@ namespace Twofold.TextRendering
         public void PopCaller()
         {
             this.CallerIndexStack.Pop();
+        }
+
+        public void ResetPosition()
+        {
+            this.IsLineBlank = true;
+            this.Line = 1;
+            this.Column = 1;
         }
 
         private TextPosition Position() => new TextPosition(this.Line, this.Column);
