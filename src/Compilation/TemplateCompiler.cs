@@ -143,14 +143,14 @@ namespace Twofold.Compilation
             Assembly assembly = this.CompileCode(generatedTargetCodes);
             if (assembly == null)
             {
-                return new CompiledTemplate();
+                return new CompiledTemplate(mainTemplatePath, generatedTargetCodes);
             }
 
             // Check Twofold CSharp assembly for entry points/types
             string mainTypeName = this.DetectMainType(mainTemplatePath, assembly);
             if (string.IsNullOrEmpty(mainTypeName))
             {
-                return new CompiledTemplate();
+                return new CompiledTemplate(mainTemplatePath, generatedTargetCodes);
             }
 
             return new CompiledTemplate(mainTemplatePath, assembly, mainTypeName, generatedTargetCodes);

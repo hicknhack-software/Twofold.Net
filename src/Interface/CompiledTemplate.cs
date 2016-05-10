@@ -31,11 +31,21 @@ namespace Twofold.Interface
         public readonly string MainTypeName;
         public readonly List<GeneratedCode> GeneratedCodes;
 
-        public CompiledTemplate()
+        public CompiledTemplate(string sourceName, List<GeneratedCode> generatedCodes)
         {
-            this.SourceName = string.Empty;
+            if (sourceName == null)
+            {
+                throw new ArgumentNullException(nameof(sourceName));
+            }
+            this.SourceName = sourceName;
+
             this.MainTypeName = string.Empty;
-            this.GeneratedCodes = new List<GeneratedCode>();
+
+            if (generatedCodes == null)
+            {
+                throw new ArgumentNullException(nameof(generatedCodes));
+            }
+            this.GeneratedCodes = generatedCodes;
         }
 
         public CompiledTemplate(string sourceName, Assembly assembly, string mainTypeName, List<GeneratedCode> generatedCodes)
