@@ -66,30 +66,30 @@ namespace Example
             }
             Directory.CreateDirectory("Generated");
 
-            foreach (var generatedCode in compiledTemplate.GeneratedCodes)
-            {
-                string filename = generatedCode.TemplatePath;
-                int i = filename.LastIndexOf("\\", StringComparison.Ordinal);
-                if (i > 0)
-                {
-                    filename = filename.Substring(i + 1);
-                }
-
-                using (var fileStream = new FileStream($"Generated\\{filename}", FileMode.CreateNew))
-                using (var writer = new StreamWriter(fileStream))
-                {
-                    writer.Write(generatedCode.Code);
-                }
-
-                using (var fileStream = new FileStream($"Generated\\{filename}.map", FileMode.CreateNew))
-                using (var writer = new StreamWriter(fileStream))
-                {
-                    writer.Write(generatedCode.SourceMap);
-                }
-            }
-
             if (compiledTemplate.IsValid)
             {
+                foreach (var generatedCode in compiledTemplate.GeneratedCodes)
+                {
+                    string filename = generatedCode.TemplatePath;
+                    int i = filename.LastIndexOf("\\", StringComparison.Ordinal);
+                    if (i > 0)
+                    {
+                        filename = filename.Substring(i + 1);
+                    }
+
+                    using (var fileStream = new FileStream($"Generated\\{filename}", FileMode.CreateNew))
+                    using (var writer = new StreamWriter(fileStream))
+                    {
+                        writer.Write(generatedCode.Code);
+                    }
+
+                    using (var fileStream = new FileStream($"Generated\\{filename}.map", FileMode.CreateNew))
+                    using (var writer = new StreamWriter(fileStream))
+                    {
+                        writer.Write(generatedCode.SourceMap);
+                    }
+                }
+
                 var classDescriptor = new ClassDescriptor("TwofoldGenerated", new List<MethodDescriptor>
                 {
                     new MethodDescriptor("void", "hello", new List<ArgumentDescriptor>
