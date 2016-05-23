@@ -37,12 +37,11 @@ namespace Twofold.Compilation.Rules
             var beginSpan = line.CreateSourceTextSpan(line.BeginNonSpace, line.BeginNonSpace + 1); //skip matched character
             var scriptBegin = line.Text.IndexOfNot(beginSpan.End, line.End, CharExtensions.IsSpace);
             var indentationSpan = line.CreateSourceTextSpan(beginSpan.End, scriptBegin);
-            if (indentationSpan.IsEmpty)
+            if (indentationSpan.IsEmpty == false)
             {
-                return commands;
+                var endSpan = line.CreateSourceTextSpan(indentationSpan.End, indentationSpan.End);
+                commands.Add(new PushIndentationCommand(beginSpan, indentationSpan, endSpan));
             }
-            var endSpan = line.CreateSourceTextSpan(indentationSpan.End, indentationSpan.End);
-            commands.Add(new PushIndentationCommand(beginSpan, indentationSpan, endSpan));
 
             //
             var statementSpan = line.CreateSourceTextSpan(indentationSpan.End, line.End);
@@ -50,8 +49,11 @@ namespace Twofold.Compilation.Rules
             commands.Add(new StatementCommand(statementSpan, statementEndSpan));
 
             //
-            var popIndentationSpan = line.CreateSourceTextSpan(line.End, line.End);
-            commands.Add(new PopIndentationCommand(popIndentationSpan));
+            if (indentationSpan.IsEmpty == false)
+            {
+                var popIndentationSpan = line.CreateSourceTextSpan(line.End, line.End);
+                commands.Add(new PopIndentationCommand(popIndentationSpan));
+            }
 
             return commands;
         }
