@@ -6,7 +6,6 @@ namespace Example
 {
     public partial class ExampleRenderer
     {
-
         public static void TwofoldMain(ClassDescriptor classDescriptor)
         {
 													|using System;
@@ -21,6 +20,5 @@ namespace Example
 													|    }
 													|}
         }
-
     }
 }

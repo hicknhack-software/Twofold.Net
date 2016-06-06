@@ -58,6 +58,7 @@ namespace Twofold.TextRendering
 
         // Fields
         private readonly Stack<IndentationItem> IndentationStack;
+        private readonly Stack<bool> PopIndendationStack;
 
         private readonly Stack<int> CallerIndexStack;
         //private IndentationItem partIndentation;
@@ -98,6 +99,7 @@ namespace Twofold.TextRendering
             this.TextWriter.NewLine = newLine;
 
             this.IndentationStack = new Stack<IndentationItem>();
+            this.PopIndendationStack = new Stack<bool>();
             this.CallerIndexStack = new Stack<int>();
             this.ResetPosition();
         }
@@ -225,8 +227,19 @@ namespace Twofold.TextRendering
                 throw new ArgumentNullException(nameof(source));
             }
 
-            var callerIndex = (this.CallerIndexStack.Count == 0) ? -1 : this.CallerIndexStack.Peek();
-            this.IndentationStack.Push(new IndentationItem(indentation, source, callerIndex, features));
+            if (this.IsLineBlank)
+            {
+                var callerIndex = (this.CallerIndexStack.Count == 0) ? -1 : this.CallerIndexStack.Peek();
+                this.IndentationStack.Push(new IndentationItem(indentation, source, callerIndex, features));
+                this.PopIndendationStack.Push(true);
+            }
+            else
+            {
+                // Compensation for InterpolationRule Indentation in case current line isn't blank anymore.
+                // Uses helper stack to track if the current indentation must be really popped.
+                this.Write(indentation, source, EntryFeatures.ColumnInterpolation);
+                this.PopIndendationStack.Push(false);
+            }
         }
 
         /// <summary>
@@ -234,7 +247,10 @@ namespace Twofold.TextRendering
         /// </summary>
         public void PopIndentation()
         {
-            this.IndentationStack.Pop();
+            if (this.PopIndendationStack.Pop())
+            {
+                this.IndentationStack.Pop();
+            }
         }
 
         public void PushCaller(TextFilePosition source)

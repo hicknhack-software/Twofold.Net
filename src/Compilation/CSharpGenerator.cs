@@ -74,7 +74,7 @@ namespace Twofold.Compilation
         {
             this.TextRenderer.Write("_Template.Write(() => ", cmd.Begin.Position);
             this.TextRenderer.Write(cmd.Expression.Text, cmd.Expression.Position, EntryFeatures.ColumnInterpolation);
-            this.TextRenderer.Write($", {this.SourceExpression(cmd.Expression.Position)}, {this.FeatureExpression(EntryFeatures.ColumnInterpolation)});", cmd.End.Position);
+            this.TextRenderer.WriteLine($", {this.SourceExpression(cmd.Expression.Position)}, {this.FeatureExpression(EntryFeatures.ColumnInterpolation)});", cmd.End.Position);
         }
 
         protected override void Generate(TextCommand cmd)

@@ -41,7 +41,6 @@ namespace Twofold.Compilation.Rules
             if (indentationSpan.IsEmpty == false)
             {
                 var endSpan = line.CreateSourceTextSpan(indentationSpan.End, indentationSpan.End);
-                //commands.Add(new LocalIndentationCommand(beginSpan, indentationSpan, endSpan));
                 commands.Add(new PushIndentationCommand(beginSpan, indentationSpan, endSpan));
             }
 
