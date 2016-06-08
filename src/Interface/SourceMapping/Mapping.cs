@@ -145,6 +145,10 @@ namespace Twofold.Interface.SourceMapping
             }
 
             // Build mappings
+            var mappings = new StringBuilder();
+            var indices = new StringBuilder();
+            var columnInterpolation = new StringBuilder();
+
             bool newLine = true;
             int prevOriginalLine = 1;
             int prevOriginalColumn = 1;
@@ -154,13 +158,16 @@ namespace Twofold.Interface.SourceMapping
 
             int prevSourcesIndex = 0;
 
-            var sb = new StringBuilder();
+            int prevCallerIndex = 0;
+
             foreach (var mappingEntry in Mappings)
             {
                 int lineDiff = (mappingEntry.Generated.Line - prevGeneratedLine);
                 for (int i = 0; i < lineDiff; ++i)
                 {
-                    sb.Append(";");
+                    mappings.Append(";");
+                    indices.Append(";");
+                    columnInterpolation.Append(";");
                 }
                 if (lineDiff > 0)
                 {
@@ -171,34 +178,91 @@ namespace Twofold.Interface.SourceMapping
 
                 if (lineDiff == 0 && newLine == false)
                 {
-                    sb.Append(",");
+                    mappings.Append(",");
+                    indices.Append(",");
+                    columnInterpolation.Append(",");
                 }
 
                 // Field 1: "zero-based starting column of the line in the generated code"
                 int generatedColumn = mappingEntry.Generated.Column;
-                VLQ.Encode(sb, generatedColumn - prevGeneratedColumn);
+                VLQ.Encode(mappings, generatedColumn - prevGeneratedColumn);
                 prevGeneratedColumn = generatedColumn;
 
                 // Field 2: "zero-based index into the sources list"
                 int sourceIndex = sourcesIndex[mappingEntry.Original.Name];
-                VLQ.Encode(sb, sourceIndex - prevSourcesIndex);
+                VLQ.Encode(mappings, sourceIndex - prevSourcesIndex);
                 prevSourcesIndex = sourceIndex;
 
                 // Field 3: "zero-based starting line in the original source"
                 int originalLine = mappingEntry.Original.Line;
-                VLQ.Encode(sb, originalLine - prevOriginalLine);
+                VLQ.Encode(mappings, originalLine - prevOriginalLine);
                 prevOriginalLine = originalLine;
 
                 // Field 4: "zero-based starting column of the line in the source"
                 int originalColumn = mappingEntry.Original.Column;
-                VLQ.Encode(sb, originalColumn - prevOriginalColumn);
+                VLQ.Encode(mappings, originalColumn - prevOriginalColumn);
                 prevOriginalColumn = originalColumn;
+
+                //
+                //
+
+                int callerIndex = mappingEntry.CallerIndex;
+                if (callerIndex != -1)
+                {
+                    VLQ.Encode(indices, callerIndex - prevCallerIndex);
+                    prevCallerIndex = callerIndex;
+                }
+
+                //
+                //
+                if((mappingEntry.Features & EntryFeatures.ColumnInterpolation) != 0)
+                {
+                    VLQ.Encode(columnInterpolation, 1);
+                }
 
                 newLine = false;
             }
 
+            // Build Callstack
+            var callers = new StringBuilder();
+            prevSourcesIndex = 0;
+            prevOriginalLine = 1;
+            prevOriginalColumn = 1;
+            int prevParentIndex = 0;
+            foreach (var caller in Callers)
+            {
+                if (callers.Length > 0)
+                {
+                    callers.Append(";");
+                }
 
-            var graph = new SourceMapGraph { File = file, Sources = sources, Mappings = sb.ToString() };
+                // Field 1: "zero-based index into the sources list"
+                int sourceIndex = sourcesIndex[caller.Original.Name];
+                VLQ.Encode(callers, sourceIndex - prevSourcesIndex);
+                prevSourcesIndex = sourceIndex;
+
+                // Field 2: "zero-based starting line in the original source"
+                int originalLine = caller.Original.Line;
+                VLQ.Encode(callers, originalLine - prevOriginalLine);
+                prevOriginalLine = originalLine;
+
+                // Field 3: "zero-based starting column of the line in the source"
+                int originalColumn = caller.Original.Column;
+                VLQ.Encode(callers, originalColumn - prevOriginalColumn);
+                prevOriginalColumn = originalColumn;
+
+                // Field 4: "zero-based index of parent caller"
+                int parentIndex = caller.ParentIndex;
+                if (parentIndex != -1)
+                {
+                    VLQ.Encode(callers, parentIndex - prevParentIndex);
+                    prevParentIndex = parentIndex;
+                }
+            }
+
+
+            var callstack = new CallstackExtension { Callers = callers.ToString(), Indices = indices.ToString() };
+            var graph = new SourceMapGraph { File = file, Sources = sources, Mappings = mappings.ToString(), Callstack = callstack, ColumnInterpolation = columnInterpolation.ToString() };
             var serializer = new DataContractJsonSerializer(typeof(SourceMapGraph));
             serializer.WriteObject(stream, graph);
         }
@@ -251,11 +315,21 @@ namespace Twofold.Interface.SourceMapping
             [DataMember(Name = "mappings", Order = 6)]
             public string Mappings = string.Empty;
 
-            [DataMember(Name = "x_de_hicknhack_software_interpolation", Order = 7)]
-            public string Interpolation = string.Empty;
+            [DataMember(Name = "x_de_hicknhack_software_column_interpolation", Order = 7)]
+            public string ColumnInterpolation = string.Empty;
 
             [DataMember(Name = "x_de_hicknhack_software_callstack", Order = 8)]
-            public string Callstack = string.Empty;
+            public CallstackExtension Callstack = new CallstackExtension();
+        }
+
+        [DataContract]
+        public class CallstackExtension
+        {
+            [DataMember(Name = "callers", Order = 0)]
+            public string Callers = string.Empty;
+
+            [DataMember(Name = "indices", Order = 1)]
+            public string Indices = string.Empty;
         }
     }
 }
