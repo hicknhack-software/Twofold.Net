@@ -56,14 +56,14 @@ namespace Twofold.Execution
             Type mainType = assembly.GetType(compiledTemplate.MainTypeName);
             if (mainType == null)
             {
-                this.MessageHandler.Message(TraceLevel.Error, $"Can't find main type '{compiledTemplate.MainTypeName}'.", compiledTemplate.SourceName, new TextPosition());
+                this.MessageHandler.Message(TraceLevel.Error, $"Can't find main type '{compiledTemplate.MainTypeName}'.", compiledTemplate.OriginalName, new TextPosition());
                 return null;
             }
 
             MethodInfo mainMethod = mainType.GetMethod(Constants.EntryMethodName, BindingFlags.Public | BindingFlags.Static);
             if (mainMethod == null)
             {
-                this.MessageHandler.Message(TraceLevel.Error, $"Can't find main method '{Constants.EntryMethodName}'.", compiledTemplate.SourceName, new TextPosition());
+                this.MessageHandler.Message(TraceLevel.Error, $"Can't find main method '{Constants.EntryMethodName}'.", compiledTemplate.OriginalName, new TextPosition());
                 return null;
             }
 
@@ -85,7 +85,7 @@ namespace Twofold.Execution
 
             if (parameterCountInvalid || parameterInvalid)
             {
-                this.MessageHandler.Message(TraceLevel.Error, $"Template main method has invalid signature. Expected 'public static {Constants.EntryMethodName}({typeof(T)})'.", compiledTemplate.SourceName, new TextPosition());
+                this.MessageHandler.Message(TraceLevel.Error, $"Template main method has invalid signature. Expected 'public static {Constants.EntryMethodName}({typeof(T)})'.", compiledTemplate.OriginalName, new TextPosition());
                 return null;
             }
 
@@ -103,7 +103,7 @@ namespace Twofold.Execution
                 this.PrintException(templateException, compiledTemplate.GeneratedCodes);
             }
 
-            var target = new Target(compiledTemplate.SourceName, textWriter.ToString(), mapping);
+            var target = new Target(compiledTemplate.OriginalName, textWriter.ToString(), mapping);
             textWriter.Dispose();
             return target;
         }
@@ -135,7 +135,7 @@ namespace Twofold.Execution
                 string filename = frame.GetFileName();
                 GeneratedCode generatedCode = generatedCodes.FirstOrDefault(gcode => string.Compare(gcode.TemplatePath, filename, StringComparison.OrdinalIgnoreCase) == 0);
                 var positionSB = new StringBuilder();
-                bool foundSource = false;
+                bool foundOriginal = false;
                 if ((generatedCode != null) && (line != 0))
                 {
                     bool changedColumn = false;
@@ -146,21 +146,21 @@ namespace Twofold.Execution
                     }
 
                     var position = new TextPosition(line, column);
-                    TextFilePosition source = generatedCode.SourceMap.FindSourceByGenerated(position);
-                    if (source.IsValid)
+                    TextFilePosition original = generatedCode.SourceMap.FindOriginalByGenerated(position);
+                    if (original.IsValid)
                     {
-                        filename = source.SourceName;
-                        positionSB.Append(" (").Append(source.Line);
+                        filename = original.Name;
+                        positionSB.Append(" (").Append(original.Line);
                         if (changedColumn == false)
                         {
-                            positionSB.Append(", ").Append(source.Column);
+                            positionSB.Append(", ").Append(original.Column);
                         }
                         positionSB.Append(")");
-                        foundSource = true;
+                        foundOriginal = true;
                     }
                 }
 
-                if(foundSource == false)
+                if(foundOriginal == false)
                 {
                     positionSB.Append(" (").Append(line);
                     if (column != 0)

@@ -24,7 +24,7 @@ namespace Twofold.Interface.SourceMapping
     public class MappingEntry
     {
         public readonly TextPosition Generated;
-        public readonly TextFilePosition Source;
+        public readonly TextFilePosition Original;
         public readonly int CallerIndex;
         public readonly EntryFeatures Features;
 
@@ -32,7 +32,7 @@ namespace Twofold.Interface.SourceMapping
             : this(new TextPosition(), new TextFilePosition(), -1, EntryFeatures.None)
         { }
 
-        public MappingEntry(TextPosition generated, TextFilePosition source, int callerIndex, EntryFeatures features)
+        public MappingEntry(TextPosition generated, TextFilePosition original, int callerIndex, EntryFeatures features)
         {
             if (generated == null)
             {
@@ -40,11 +40,11 @@ namespace Twofold.Interface.SourceMapping
             }
             this.Generated = generated;
 
-            if (source == null)
+            if (original == null)
             {
-                throw new ArgumentNullException(nameof(source));
+                throw new ArgumentNullException(nameof(original));
             }
-            this.Source = source;
+            this.Original = original;
 
             this.CallerIndex = callerIndex;
             this.Features = features;
@@ -57,7 +57,7 @@ namespace Twofold.Interface.SourceMapping
 
         public override string ToString()
         {
-            return $"{this.Generated.ToString()}, {this.Source.ToString()} [CallerIndex: {this.CallerIndex}]";
+            return $"{this.Generated.ToString()}, {this.Original.ToString()} [CallerIndex: {this.CallerIndex}]";
         }
     }
 }

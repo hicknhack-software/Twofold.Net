@@ -23,42 +23,42 @@ namespace Twofold.Interface.SourceMapping
 
     public class TextFilePosition : TextPosition, IEquatable<TextFilePosition>
     {
-        public readonly string SourceName;
+        public readonly string Name;
 
         public TextFilePosition()
         { }
 
-        public TextFilePosition(string sourceName, int line, int column)
-            : this(sourceName, new TextPosition(line, column))
+        public TextFilePosition(string name, int line, int column)
+            : this(name, new TextPosition(line, column))
         { }
 
-        public TextFilePosition(string sourceName, TextPosition textPosition)
+        public TextFilePosition(string name, TextPosition textPosition)
             : base(textPosition)
         {
-            if (sourceName == null)
+            if (name == null)
             {
-                throw new ArgumentNullException(nameof(sourceName));
+                throw new ArgumentNullException(nameof(name));
             }
-            this.SourceName = sourceName;
+            this.Name = name;
         }
 
         public new bool IsValid
         {
             get
             {
-                return string.IsNullOrEmpty(this.SourceName) == false
+                return string.IsNullOrEmpty(this.Name) == false
                     && base.IsValid;
             }
         }
 
         public override int GetHashCode()
         {
-            return this.SourceName.GetHashCode() ^ base.GetHashCode();
+            return this.Name.GetHashCode() ^ base.GetHashCode();
         }
 
         public override string ToString()
         {
-            return $"{this.SourceName}: {base.ToString()}";
+            return $"{this.Name}: {base.ToString()}";
         }
 
         #region IEquatable
@@ -78,7 +78,7 @@ namespace Twofold.Interface.SourceMapping
                 return false;
             }
             return base.Equals((TextPosition)other)
-                && (string.Compare(this.SourceName, other.SourceName, StringComparison.Ordinal) == 0)
+                && (string.Compare(this.Name, other.Name, StringComparison.Ordinal) == 0)
                 ;
         }
 

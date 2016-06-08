@@ -20,7 +20,6 @@
 namespace Twofold.Compilation
 {
     using Extensions;
-    using Interface;
     using Interface.Compilation;
     using Interface.SourceMapping;
     using System.Collections.Generic;
@@ -122,7 +121,7 @@ namespace Twofold.Compilation
 
         private string SourceExpression(TextFilePosition position)
         {
-            var escapedSourceName = position.SourceName.Escape();
+            var escapedSourceName = position.Name.Escape();
             return $"new _Source(\"{escapedSourceName}\", {position.Line}, {position.Column})";
         }
 

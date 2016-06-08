@@ -156,15 +156,15 @@ namespace Twofold.Compilation
             return new CompiledTemplate(mainTemplatePath, assembly, mainTypeName, generatedTargetCodes);
         }
 
-        private GeneratedCode GenerateCode(string templatePath, string sourceText, out List<string> includedFiles)
+        private GeneratedCode GenerateCode(string templatePath, string originalText, out List<string> includedFiles)
         {
             if (templatePath == null)
             {
                 throw new ArgumentNullException(nameof(templatePath));
             }
-            if (sourceText == null)
+            if (originalText == null)
             {
-                throw new ArgumentNullException(nameof(sourceText), "text");
+                throw new ArgumentNullException(nameof(originalText), "text");
             }
 
             TextWriter codeWriter = new StringWriter();
@@ -175,7 +175,7 @@ namespace Twofold.Compilation
             try
             {
                 var csharpGenerator = new CSharpGenerator(this.TemplateParser, codeWriter, mapping, includedFiles);
-                csharpGenerator.Generate(templatePath, sourceText);
+                csharpGenerator.Generate(templatePath, originalText);
                 generatedCode = codeWriter.ToString();
             }
             finally
@@ -217,10 +217,10 @@ namespace Twofold.Compilation
                     if (generatedCode != null)
                     {
                         var errorPosition = new TextPosition(compilerError.Line, compilerError.Column);
-                        TextFilePosition source = generatedCode.SourceMap.FindSourceByGenerated(errorPosition);
-                        if (source.IsValid)
+                        TextFilePosition original = generatedCode.SourceMap.FindOriginalByGenerated(errorPosition);
+                        if (original.IsValid)
                         {
-                            textPosition = new TextPosition(source.Line, source.Column);
+                            textPosition = new TextPosition(original.Line, original.Column);
                         }
                     }
                     else

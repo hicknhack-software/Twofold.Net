@@ -33,7 +33,7 @@ namespace Twofold.TextRendering
         private class IndentationItem
         {
             public readonly string Indentation;
-            public readonly TextFilePosition Source;
+            public readonly TextFilePosition Original;
             public readonly int CallerIndex;
             public readonly EntryFeatures Features;
 
@@ -49,7 +49,7 @@ namespace Twofold.TextRendering
                 {
                     throw new ArgumentNullException(nameof(position));
                 }
-                this.Source = position;
+                this.Original = position;
 
                 this.CallerIndex = callerIndex;
                 this.Features = features;
@@ -128,7 +128,7 @@ namespace Twofold.TextRendering
             get; private set;
         }
 
-        public void Write(string text, TextFilePosition source, EntryFeatures features = EntryFeatures.None)
+        public void Write(string text, TextFilePosition original, EntryFeatures features = EntryFeatures.None)
         {
             // Skip empty spans
             if (string.IsNullOrEmpty(text))
@@ -145,7 +145,7 @@ namespace Twofold.TextRendering
                     {
                         if (indentationItem.Indentation.Length > 0)
                         {
-                            var entry = new MappingEntry(this.Position(), indentationItem.Source, indentationItem.CallerIndex, indentationItem.Features);
+                            var entry = new MappingEntry(this.Position(), indentationItem.Original, indentationItem.CallerIndex, indentationItem.Features);
                             this.Mapping.Add(entry);
                             this.TextWriter.Write(indentationItem.Indentation);
                             this.Column += indentationItem.Indentation.Length;
@@ -159,9 +159,9 @@ namespace Twofold.TextRendering
                 if (lineBreakIndex == -1)
                 { // No line break found
                     var len = (text.Length - index);
-                    if (source.IsValid && (len > 0))
+                    if (original.IsValid && (len > 0))
                     {
-                        var entry = new MappingEntry(this.Position(), source, callerIndex, features);
+                        var entry = new MappingEntry(this.Position(), original, callerIndex, features);
                         this.Mapping.Add(entry);
                     }
                     this.TextWriter.Write(text.Substring(index, text.Length - index));
@@ -172,9 +172,9 @@ namespace Twofold.TextRendering
                 {  // Line break found
                     ++lineBreakIndex;
                     var len = (lineBreakIndex - index);
-                    if (source.IsValid && (len > 0))
+                    if (original.IsValid && (len > 0))
                     {
-                        var entry = new MappingEntry(this.Position(), source, callerIndex, features);
+                        var entry = new MappingEntry(this.Position(), original, callerIndex, features);
                         this.Mapping.Add(entry);
                     }
                     this.TextWriter.Write(text.Substring(index, text.Length - lineBreakIndex));
@@ -191,12 +191,12 @@ namespace Twofold.TextRendering
             this.WriteLine(text, new TextFilePosition());
         }
 
-        public void WriteLine(TextFilePosition source)
+        public void WriteLine(TextFilePosition original)
         {
-            if (source.IsValid)
+            if (original.IsValid)
             {
                 var callerIndex = (this.CallerIndexStack.Count == 0) ? -1 : this.CallerIndexStack.Peek();
-                var entry = new MappingEntry(new TextPosition(this.Line, this.Column), source, callerIndex, EntryFeatures.None);
+                var entry = new MappingEntry(new TextPosition(this.Line, this.Column), original, callerIndex, EntryFeatures.None);
                 this.Mapping.Add(entry);
             }
             this.TextWriter.WriteLine();
@@ -205,39 +205,39 @@ namespace Twofold.TextRendering
             this.Column = 1;
         }
 
-        public void WriteLine(string text, TextFilePosition source)
+        public void WriteLine(string text, TextFilePosition original)
         {
-            this.Write(text, source);
-            this.WriteLine(source);
+            this.Write(text, original);
+            this.WriteLine(original);
         }
 
         /// <summary>
         /// Pushes an indentation level.
         /// </summary>
         /// <param name="indentation">The indentation text.</param>
-        public void PushIndentation(string indentation, TextFilePosition source, EntryFeatures features = EntryFeatures.None)
+        public void PushIndentation(string indentation, TextFilePosition original, EntryFeatures features = EntryFeatures.None)
         {
             if (indentation == null)
             {
                 throw new ArgumentNullException(nameof(indentation));
             }
 
-            if (source == null)
+            if (original == null)
             {
-                throw new ArgumentNullException(nameof(source));
+                throw new ArgumentNullException(nameof(original));
             }
 
             if (this.IsLineBlank)
             {
                 var callerIndex = (this.CallerIndexStack.Count == 0) ? -1 : this.CallerIndexStack.Peek();
-                this.IndentationStack.Push(new IndentationItem(indentation, source, callerIndex, features));
+                this.IndentationStack.Push(new IndentationItem(indentation, original, callerIndex, features));
                 this.PopIndendationStack.Push(true);
             }
             else
             {
                 // Compensation for InterpolationRule Indentation in case current line isn't blank anymore.
                 // Uses helper stack to track if the current indentation must be really popped.
-                this.Write(indentation, source, EntryFeatures.ColumnInterpolation);
+                this.Write(indentation, original, EntryFeatures.ColumnInterpolation);
                 this.PopIndendationStack.Push(false);
             }
         }
@@ -253,10 +253,10 @@ namespace Twofold.TextRendering
             }
         }
 
-        public void PushCaller(TextFilePosition source)
+        public void PushCaller(TextFilePosition original)
         {
             var parentIndex = (this.CallerIndexStack.Count == 0) ? -1 : this.CallerIndexStack.Peek();
-            int callerIndex = this.Mapping.AddCaller(source, parentIndex);
+            int callerIndex = this.Mapping.AddCaller(original, parentIndex);
             this.CallerIndexStack.Push(callerIndex);
         }
 

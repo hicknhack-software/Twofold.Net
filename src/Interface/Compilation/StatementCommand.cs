@@ -21,10 +21,10 @@ namespace Twofold.Interface.Compilation
 {
     public class StatementCommand : AsbtractRenderCommand
     {
-        public readonly SourceTextSpan Statement;
-        public readonly SourceTextSpan End;
+        public readonly OriginalTextSpan Statement;
+        public readonly OriginalTextSpan End;
 
-        public StatementCommand(SourceTextSpan statement, SourceTextSpan end)
+        public StatementCommand(OriginalTextSpan statement, OriginalTextSpan end)
             : base(RenderCommands.Statement)
         {
             this.Statement = statement;

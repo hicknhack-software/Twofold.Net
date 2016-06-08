@@ -22,7 +22,7 @@ namespace Twofold.Interface
     using SourceMapping;
     using System;
 
-    public class SourceTextSpan
+    public class OriginalTextSpan
     {
         /// <summary>
         /// Begin of the text span in the OriginalText.
@@ -46,7 +46,7 @@ namespace Twofold.Interface
 
         public readonly TextFilePosition Position;
 
-        public SourceTextSpan(string text, TextFilePosition position)
+        public OriginalTextSpan(string text, TextFilePosition position)
         {
             if (text == null)
             {
@@ -64,7 +64,7 @@ namespace Twofold.Interface
             this.Position = position;
         }
 
-        public SourceTextSpan(string text, int begin, int end, TextFilePosition position)
+        public OriginalTextSpan(string text, int begin, int end, TextFilePosition position)
         {
             if (text == null)
             {

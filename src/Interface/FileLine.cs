@@ -56,7 +56,7 @@ namespace Twofold.Interface
             this.Position = position;
         }
 
-        public SourceTextSpan CreateSourceTextSpan(int begin, int end)
+        public OriginalTextSpan CreateOriginalTextSpan(int begin, int end)
         {
             if (begin > end)
             {
@@ -74,8 +74,8 @@ namespace Twofold.Interface
             }
 
             var position = new TextPosition(this.Position.Line, begin - this.Begin + 1);
-            var filePosition = new TextFilePosition(this.Position.SourceName, position);
-            return new SourceTextSpan(this.Text, begin, end, filePosition);
+            var filePosition = new TextFilePosition(this.Position.Name, position);
+            return new OriginalTextSpan(this.Text, begin, end, filePosition);
         }
     }
 }

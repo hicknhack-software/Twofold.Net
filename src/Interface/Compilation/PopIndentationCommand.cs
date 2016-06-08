@@ -21,9 +21,9 @@ namespace Twofold.Interface.Compilation
 {
     public class PopIndentationCommand : AsbtractRenderCommand
     {
-        public readonly SourceTextSpan Pop;
+        public readonly OriginalTextSpan Pop;
 
-        public PopIndentationCommand(SourceTextSpan pop)
+        public PopIndentationCommand(OriginalTextSpan pop)
             : base(RenderCommands.PopIndentation)
         {
             this.Pop = pop;

@@ -35,12 +35,12 @@ namespace Twofold.Compilation.Rules
         {
             var commands = new List<AsbtractRenderCommand>();
 
-            var beginSpan = line.CreateSourceTextSpan(line.BeginNonSpace, line.BeginNonSpace + 1); //skip matched character
+            var beginSpan = line.CreateOriginalTextSpan(line.BeginNonSpace, line.BeginNonSpace + 1); //skip matched character
             var index = line.Text.IndexOfNot(beginSpan.End, line.End, CharExtensions.IsSpace);
-            var indentationSpan = line.CreateSourceTextSpan(beginSpan.End, index);
+            var indentationSpan = line.CreateOriginalTextSpan(beginSpan.End, index);
             if (indentationSpan.IsEmpty == false)
             {
-                var endSpan = line.CreateSourceTextSpan(indentationSpan.End, indentationSpan.End);
+                var endSpan = line.CreateOriginalTextSpan(indentationSpan.End, indentationSpan.End);
                 commands.Add(new PushIndentationCommand(beginSpan, indentationSpan, endSpan));
             }
 
@@ -63,8 +63,8 @@ namespace Twofold.Compilation.Rules
                     case '#':
                         {
                             var escapeBegin = (index + 1); //skip #
-                            var textSpan = line.CreateSourceTextSpan(escapeBegin, escapeBegin + 1);
-                            var textEndSpan = line.CreateSourceTextSpan(textSpan.End, textSpan.End);
+                            var textSpan = line.CreateOriginalTextSpan(escapeBegin, escapeBegin + 1);
+                            var textEndSpan = line.CreateOriginalTextSpan(textSpan.End, textSpan.End);
                             commands.Add(new TextCommand(textSpan, textEndSpan));
                             index = end = (escapeBegin + 1);
                             continue;
@@ -72,10 +72,10 @@ namespace Twofold.Compilation.Rules
 
                     case '{':
                         {
-                            var textSpan = line.CreateSourceTextSpan(end, index);
+                            var textSpan = line.CreateOriginalTextSpan(end, index);
                             if (textSpan.IsEmpty == false)
                             {
-                                var textEndSpan = line.CreateSourceTextSpan(index, index);
+                                var textEndSpan = line.CreateOriginalTextSpan(index, index);
                                 commands.Add(new TextCommand(textSpan, textEndSpan));
                             }
 
@@ -85,14 +85,14 @@ namespace Twofold.Compilation.Rules
                             {
                                 end = line.End;
                                 var errorPosition = new TextPosition(line.Position.Line, 1 + (line.End - line.Begin));
-                                messageHandler.Message(TraceLevel.Error, "Missing '}'.", line.Position.SourceName, errorPosition);
+                                messageHandler.Message(TraceLevel.Error, "Missing '}'.", line.Position.Name, errorPosition);
                                 break;
                             }
-                            var expressionBeginSpan = line.CreateSourceTextSpan(index, expressionBegin + 1);
-                            var expressionSpan = line.CreateSourceTextSpan(expressionBeginSpan.End, expressionEnd);
+                            var expressionBeginSpan = line.CreateOriginalTextSpan(index, expressionBegin + 1);
+                            var expressionSpan = line.CreateOriginalTextSpan(expressionBeginSpan.End, expressionEnd);
                             if (expressionSpan.IsEmpty == false)
                             {
-                                var expressionEndSpan = line.CreateSourceTextSpan(expressionSpan.End, expressionEnd + 1);
+                                var expressionEndSpan = line.CreateOriginalTextSpan(expressionSpan.End, expressionEnd + 1);
                                 commands.Add(new ExpressionCommand(expressionBeginSpan, expressionSpan, expressionEndSpan));
                             }
                             index = end = (expressionEnd + 1);
@@ -106,16 +106,16 @@ namespace Twofold.Compilation.Rules
                         }
                 }
             }
-            var lastTextSpan = line.CreateSourceTextSpan(end, line.End);
+            var lastTextSpan = line.CreateOriginalTextSpan(end, line.End);
             if (lastTextSpan.IsEmpty == false)
             {
-                var textEndSpan = line.CreateSourceTextSpan(line.End, line.End);
+                var textEndSpan = line.CreateOriginalTextSpan(line.End, line.End);
                 commands.Add(new TextCommand(lastTextSpan, textEndSpan));
             }
 
             if (indentationSpan.IsEmpty == false)
             {
-                var popIndentationSpan = line.CreateSourceTextSpan(line.End, line.End);
+                var popIndentationSpan = line.CreateOriginalTextSpan(line.End, line.End);
                 commands.Add(new PopIndentationCommand(popIndentationSpan));
             }
 

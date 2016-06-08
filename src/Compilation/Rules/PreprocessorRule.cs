@@ -77,10 +77,10 @@ namespace Twofold.Compilation.Rules
 
                 // Extract <Filename> from '"<Filename>"'
                 string pragmaArgument = line.Text.Substring(pragmaArgBegin + 1, (pragmaArgEnd - pragmaArgBegin - 1));
-                var pragmaSpan = line.CreateSourceTextSpan(line.Begin, line.End);
+                var pragmaSpan = line.CreateOriginalTextSpan(line.Begin, line.End);
                 if (pragmaSpan.IsEmpty == false)
                 {
-                    var endSpan = line.CreateSourceTextSpan(line.End, line.End);
+                    var endSpan = line.CreateOriginalTextSpan(line.End, line.End);
                     commands.Add(new PragmaCommand(pragmaSpan, endSpan, pragmaName, pragmaArgument));
                 }
 
@@ -92,10 +92,10 @@ namespace Twofold.Compilation.Rules
             // No pragma detected, pass line through
             if (commands.Count == 0)
             {
-                var scriptSpan = line.CreateSourceTextSpan(line.Begin, line.End);
+                var scriptSpan = line.CreateOriginalTextSpan(line.Begin, line.End);
                 if(scriptSpan.IsEmpty == false)
                 {
-                    var scriptEndSpan = line.CreateSourceTextSpan(line.End, line.End);
+                    var scriptEndSpan = line.CreateOriginalTextSpan(line.End, line.End);
                     commands.Add(new ScriptCommand(scriptSpan, scriptEndSpan));
                 }
             }

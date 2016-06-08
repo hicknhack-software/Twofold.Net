@@ -31,10 +31,10 @@ namespace Twofold.Compilation.Rules
         public List<AsbtractRenderCommand> Parse(FileLine line, IMessageHandler messageHandler)
         {
             var commands = new List<AsbtractRenderCommand>();
-            var script = line.CreateSourceTextSpan(line.Begin, line.End);
+            var script = line.CreateOriginalTextSpan(line.Begin, line.End);
             if (script.IsEmpty == false)
             {
-                var scriptEnd = line.CreateSourceTextSpan(line.End, line.End);
+                var scriptEnd = line.CreateOriginalTextSpan(line.End, line.End);
                 commands.Add(new ScriptCommand(script, scriptEnd));
             }
             return commands;

@@ -21,25 +21,28 @@ namespace Twofold.Interface.SourceMapping
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
+    using System.Runtime.Serialization;
+    using System.Runtime.Serialization.Json;
     using System.Text;
 
     public class Mapping
     {
         public class Caller
         {
-            public readonly TextFilePosition Source;
+            public readonly TextFilePosition Original;
             public readonly int ParentIndex;
 
-            public Caller(TextFilePosition source, int parentIndex)
+            public Caller(TextFilePosition original, int parentIndex)
             {
-                this.Source = source;
+                this.Original = original;
                 this.ParentIndex = parentIndex;
             }
 
             public override string ToString()
             {
-                return $"{this.ParentIndex} <- {this.Source.ToString()}";
+                return $"{this.ParentIndex} <- {this.Original.ToString()}";
             }
         }
 
@@ -65,18 +68,18 @@ namespace Twofold.Interface.SourceMapping
                 return callerStack;
             }
 
-            callerStack.Add(entry.Source);
+            callerStack.Add(entry.Original);
             int callerIndex = entry.CallerIndex;
             while (callerIndex != -1)
             {
                 Caller caller = this.Callers[callerIndex];
-                callerStack.Add(caller.Source);
+                callerStack.Add(caller.Original);
                 callerIndex = caller.ParentIndex;
             }
             return callerStack;
         }
 
-        public TextFilePosition FindSourceByGenerated(TextPosition generated)
+        public TextFilePosition FindOriginalByGenerated(TextPosition generated)
         {
             if (generated == null)
             {
@@ -96,12 +99,12 @@ namespace Twofold.Interface.SourceMapping
 
             if ((entry.Features & EntryFeatures.ColumnInterpolation) == 0)
             {
-                return entry.Source;
+                return entry.Original;
             }
 
-            int line = Math.Abs(entry.Generated.Line - generated.Line) + entry.Source.Line;
-            int column = Math.Abs(entry.Generated.Column - generated.Column) + entry.Source.Column;
-            return new TextFilePosition(entry.Source.SourceName, line, column);
+            int line = Math.Abs(entry.Generated.Line - generated.Line) + entry.Original.Line;
+            int column = Math.Abs(entry.Generated.Column - generated.Column) + entry.Original.Column;
+            return new TextFilePosition(entry.Original.Name, line, column);
         }
 
         public void Add(MappingEntry entry)
@@ -114,15 +117,90 @@ namespace Twofold.Interface.SourceMapping
             this.Mappings.Add(entry);
         }
 
-        public int AddCaller(TextFilePosition source, int parentIndex)
+        public int AddCaller(TextFilePosition original, int parentIndex)
         {
-            if (source == null)
+            if (original == null)
             {
-                throw new ArgumentNullException(nameof(source));
+                throw new ArgumentNullException(nameof(original));
             }
 
-            this.Callers.Add(new Caller(source, parentIndex));
+            this.Callers.Add(new Caller(original, parentIndex));
             return (this.Callers.Count - 1);
+        }
+
+        public void Write(Stream stream, string file, string sourceRoot)
+        {
+            // Gather sources
+            var sources = new List<string>();
+            var sourcesIndex = new Dictionary<string, int>();
+            foreach (var mappingEntry in Mappings)
+            {
+                if (sourcesIndex.ContainsKey(mappingEntry.Original.Name))
+                {
+                    continue;
+                }
+
+                sourcesIndex.Add(mappingEntry.Original.Name, sources.Count);
+                sources.Add(mappingEntry.Original.Name);
+            }
+
+            // Build mappings
+            bool newLine = true;
+            int prevOriginalLine = 1;
+            int prevOriginalColumn = 1;
+
+            int prevGeneratedLine = 1;
+            int prevGeneratedColumn = 1;
+
+            int prevSourcesIndex = 0;
+
+            var sb = new StringBuilder();
+            foreach (var mappingEntry in Mappings)
+            {
+                int lineDiff = (mappingEntry.Generated.Line - prevGeneratedLine);
+                for (int i = 0; i < lineDiff; ++i)
+                {
+                    sb.Append(";");
+                }
+                if (lineDiff > 0)
+                {
+                    prevGeneratedLine = mappingEntry.Generated.Line;
+                    prevGeneratedColumn = 1;
+                    newLine = true;
+                }
+
+                if (lineDiff == 0 && newLine == false)
+                {
+                    sb.Append(",");
+                }
+
+                // Field 1: "zero-based starting column of the line in the generated code"
+                int generatedColumn = mappingEntry.Generated.Column;
+                VLQ.Encode(sb, generatedColumn - prevGeneratedColumn);
+                prevGeneratedColumn = generatedColumn;
+
+                // Field 2: "zero-based index into the sources list"
+                int sourceIndex = sourcesIndex[mappingEntry.Original.Name];
+                VLQ.Encode(sb, sourceIndex - prevSourcesIndex);
+                prevSourcesIndex = sourceIndex;
+
+                // Field 3: "zero-based starting line in the original source"
+                int originalLine = mappingEntry.Original.Line;
+                VLQ.Encode(sb, originalLine - prevOriginalLine);
+                prevOriginalLine = originalLine;
+
+                // Field 4: "zero-based starting column of the line in the source"
+                int originalColumn = mappingEntry.Original.Column;
+                VLQ.Encode(sb, originalColumn - prevOriginalColumn);
+                prevOriginalColumn = originalColumn;
+
+                newLine = false;
+            }
+
+
+            var graph = new SourceMapGraph { File = file, Sources = sources, Mappings = sb.ToString() };
+            var serializer = new DataContractJsonSerializer(typeof(SourceMapGraph));
+            serializer.WriteObject(stream, graph);
         }
 
         public override string ToString()
@@ -148,5 +226,36 @@ namespace Twofold.Interface.SourceMapping
         }
 
         private MappingEntry FindEntryByGenerated(TextPosition generated) => this.Mappings.LastOrDefault(e => e.Generated.CompareTo(generated) <= 0);
+
+        [DataContract]
+        public class SourceMapGraph
+        {
+            [DataMember(Name = "version", Order = 0)]
+            public int Version = 3;
+
+            [DataMember(Name = "file", Order = 1)]
+            public string File = string.Empty;
+
+            [DataMember(Name = "sourceRoot", Order = 2)]
+            public string SourceRoot = string.Empty;
+
+            [DataMember(Name = "sources", Order = 3)]
+            public List<string> Sources = new List<string> { };
+
+            [DataMember(Name = "sourcesContent", Order = 4)]
+            public List<Object> SourcesContent = new List<Object> { };
+
+            [DataMember(Name = "names", Order = 5)]
+            public List<string> Names = new List<string> { };
+
+            [DataMember(Name = "mappings", Order = 6)]
+            public string Mappings = string.Empty;
+
+            [DataMember(Name = "x_de_hicknhack_software_interpolation", Order = 7)]
+            public string Interpolation = string.Empty;
+
+            [DataMember(Name = "x_de_hicknhack_software_callstack", Order = 8)]
+            public string Callstack = string.Empty;
+        }
     }
 }

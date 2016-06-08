@@ -34,24 +34,24 @@ namespace Twofold.Compilation.Rules
             var commands = new List<AsbtractRenderCommand>();
 
             //
-            var beginSpan = line.CreateSourceTextSpan(line.BeginNonSpace, line.BeginNonSpace + 1); //skip matched character
+            var beginSpan = line.CreateOriginalTextSpan(line.BeginNonSpace, line.BeginNonSpace + 1); //skip matched character
             var scriptBegin = line.Text.IndexOfNot(beginSpan.End, line.End, CharExtensions.IsSpace);
-            var indentationSpan = line.CreateSourceTextSpan(beginSpan.End, scriptBegin);
+            var indentationSpan = line.CreateOriginalTextSpan(beginSpan.End, scriptBegin);
             if (indentationSpan.IsEmpty == false)
             {
-                var endSpan = line.CreateSourceTextSpan(indentationSpan.End, indentationSpan.End);
+                var endSpan = line.CreateOriginalTextSpan(indentationSpan.End, indentationSpan.End);
                 commands.Add(new PushIndentationCommand(beginSpan, indentationSpan, endSpan));
             }
 
             //
-            var statementSpan = line.CreateSourceTextSpan(indentationSpan.End, line.End);
-            var statementEndSpan = line.CreateSourceTextSpan(statementSpan.End, statementSpan.End);
+            var statementSpan = line.CreateOriginalTextSpan(indentationSpan.End, line.End);
+            var statementEndSpan = line.CreateOriginalTextSpan(statementSpan.End, statementSpan.End);
             commands.Add(new StatementCommand(statementSpan, statementEndSpan));
 
             //
             if (indentationSpan.IsEmpty == false)
             {
-                var popIndentationSpan = line.CreateSourceTextSpan(line.End, line.End);
+                var popIndentationSpan = line.CreateOriginalTextSpan(line.End, line.End);
                 commands.Add(new PopIndentationCommand(popIndentationSpan));
             }
 

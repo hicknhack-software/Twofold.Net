@@ -27,7 +27,7 @@ namespace Twofold.Interface
     public class CompiledTemplate
     {
         public readonly Assembly @Assembly;
-        public readonly string SourceName;
+        public readonly string OriginalName;
         public readonly string MainTypeName;
         public readonly List<GeneratedCode> GeneratedCodes;
 
@@ -37,7 +37,7 @@ namespace Twofold.Interface
             {
                 throw new ArgumentNullException(nameof(sourceName));
             }
-            this.SourceName = sourceName;
+            this.OriginalName = sourceName;
 
             this.MainTypeName = string.Empty;
 
@@ -54,7 +54,7 @@ namespace Twofold.Interface
             {
                 throw new ArgumentNullException(nameof(sourceName));
             }
-            this.SourceName = sourceName;
+            this.OriginalName = sourceName;
 
             if (assembly == null)
             {

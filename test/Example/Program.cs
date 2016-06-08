@@ -84,9 +84,8 @@ namespace Example
                     }
 
                     using (var fileStream = new FileStream($"Generated\\{filename}.map", FileMode.CreateNew))
-                    using (var writer = new StreamWriter(fileStream))
                     {
-                        writer.Write(generatedCode.SourceMap);
+                        generatedCode.SourceMap.Write(fileStream, $"Generated\\{filename}", Assembly.GetExecutingAssembly().Location);
                     }
                 }
 
@@ -111,9 +110,8 @@ namespace Example
                     }
 
                     using (var fileStream = new FileStream("Generated\\Output.cs.map", FileMode.CreateNew))
-                    using (var writer = new StreamWriter(fileStream))
                     {
-                        writer.Write(target.SourceMap);
+                        target.SourceMap.Write(fileStream, "Generated\\Output.cs", Assembly.GetExecutingAssembly().Location);
                     }
                 }
 
@@ -121,7 +119,7 @@ namespace Example
                 Debug.WriteLine($"Callstack for {pos}:");
                 foreach (var e in target.SourceMap.CallerStack(pos))
                 {
-                    Debug.WriteLine($"{e.SourceName} ({e.Line}, {e.Column})");
+                    Debug.WriteLine($"{e.Name} ({e.Line}, {e.Column})");
                 }
             }
 

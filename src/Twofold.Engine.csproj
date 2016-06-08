@@ -33,6 +33,8 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Interface\GeneratedCode.cs" />
@@ -40,6 +42,7 @@
     <Compile Include="Interface\SourceMapping\Mapping.cs" />
     <Compile Include="Interface\SourceMapping\MappingEntry.cs" />
     <Compile Include="Interface\Compilation\StatementCommand.cs" />
+    <Compile Include="Interface\SourceMapping\VLQ.cs" />
     <Compile Include="TextRendering\TemplateRenderer.cs" />
     <Compile Include="TextRendering\TextRenderer.cs" />
     <Compile Include="Interface\Compilation\AbstractCodeGenerator.cs" />
@@ -56,7 +59,7 @@
     <Compile Include="Interface\Compilation\ITemplateParser.cs" />
     <Compile Include="Interface\SourceMapping\TextFilePosition.cs" />
     <Compile Include="Interface\SourceMapping\TextPosition.cs" />
-    <Compile Include="Interface\SourceTextSpan.cs" />
+    <Compile Include="Interface\OriginalTextSpan.cs" />
     <Compile Include="Compilation\Rules\PreprocessorRule.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Engine.cs" />

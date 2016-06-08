@@ -24,10 +24,10 @@ namespace Twofold.Interface.Compilation
     /// </summary>
     public class ScriptCommand : AsbtractRenderCommand
     {
-        public readonly SourceTextSpan Script;
-        public readonly SourceTextSpan End;
+        public readonly OriginalTextSpan Script;
+        public readonly OriginalTextSpan End;
 
-        public ScriptCommand(SourceTextSpan script, SourceTextSpan end)
+        public ScriptCommand(OriginalTextSpan script, OriginalTextSpan end)
             : base(RenderCommands.Script)
         {
             this.Script = script;
