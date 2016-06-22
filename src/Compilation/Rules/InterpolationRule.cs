@@ -83,7 +83,7 @@ namespace Twofold.Compilation.Rules
                             var expressionEnd = BraceCounter.MatchBraces(line.Text, expressionBegin, line.End);
                             if (expressionEnd == line.End)
                             {
-                                end = line.End;
+                                index = end = line.End;
                                 var errorPosition = new TextPosition(line.Position.Line, 1 + (line.End - line.Begin));
                                 messageHandler.Message(TraceLevel.Error, "Missing '}'.", line.Position.Name, errorPosition);
                                 break;
