@@ -110,69 +110,61 @@ namespace Twofold.Execution
 
         private void PrintException(Exception ex, List<GeneratedCode> generatedCodes)
         {
-            var sb = new StringBuilder();
-            sb.Append($"{ex.GetType().FullName}: ").AppendLine(ex.Message);
+            var frames = new List<Interface.StackFrame>();
 
             var stackTrace = new StackTrace(ex, true);
             for (int i = 0; i < stackTrace.FrameCount; ++i)
             {
-                //
-                sb.Append("   at");
+                System.Diagnostics.StackFrame diagnosticFrame = stackTrace.GetFrame(i);
 
-                //
-                StackFrame frame = stackTrace.GetFrame(i);
-                MethodBase method = frame.GetMethod();
+                // Extract method name
+                MethodBase method = diagnosticFrame.GetMethod();
+                // Note(Maik): Skip internal render methods in case of a stack trace.
+                if (Attribute.IsDefined(method, typeof(StackTraceHideAttribute)))
+                {
+                    continue;
+                }
                 Type declaringType = method.DeclaringType;
+                var methodSb = new StringBuilder();
                 if (declaringType != null)
                 {
-                    sb.Append(" ").Append(declaringType.FullName).Append(".");
+                    methodSb.Append(declaringType.FullName).Append(".");
                 }
-                sb.Append(method.Name);
+                methodSb.Append(method.Name);
 
-                //
-                int line = frame.GetFileLineNumber();
-                int column = frame.GetFileColumnNumber();
-                string filename = frame.GetFileName();
-                GeneratedCode generatedCode = generatedCodes.FirstOrDefault(gcode => string.Compare(gcode.TemplatePath, filename, StringComparison.OrdinalIgnoreCase) == 0);
-                var positionSB = new StringBuilder();
-                bool foundOriginal = false;
-                if ((generatedCode != null) && (line != 0))
+                // Extract original filename, line and column
+                int? line = null;
+                if (diagnosticFrame.GetFileLineNumber() != 0)
                 {
-                    bool changedColumn = false;
-                    if (column == 0)
-                    {
-                        column = 1;
-                        changedColumn = true;
-                    }
+                    line = diagnosticFrame.GetFileLineNumber();
+                }
 
-                    var position = new TextPosition(line, column);
+                int? column = null;
+                if (diagnosticFrame.GetFileColumnNumber() != 0)
+                {
+                    column = diagnosticFrame.GetFileColumnNumber();
+                }
+
+                string filename = diagnosticFrame.GetFileName();
+                GeneratedCode generatedCode = generatedCodes.FirstOrDefault(gcode => string.Compare(gcode.TemplatePath, filename, StringComparison.OrdinalIgnoreCase) == 0);
+                if ((generatedCode != null) && (line != null))
+                {
+                    var position = new TextPosition(line.Value, column ?? 1);
                     TextFilePosition original = generatedCode.SourceMap.FindOriginalByGenerated(position);
                     if (original.IsValid)
                     {
                         filename = original.Name;
-                        positionSB.Append(" (").Append(original.Line);
-                        if (changedColumn == false)
-                        {
-                            positionSB.Append(", ").Append(original.Column);
-                        }
-                        positionSB.Append(")");
-                        foundOriginal = true;
+                        line = original.Line;
+                        column = original.Column;
                     }
                 }
 
-                if(foundOriginal == false)
-                {
-                    positionSB.Append(" (").Append(line);
-                    if (column != 0)
-                    {
-                        positionSB.Append(", ").Append(column);
-                    }
-                    positionSB.Append(")");
-                }
+                var msgFrame = new Interface.StackFrame(methodSb.ToString(), filename, line, column);
+                frames.Add(msgFrame);
+            } // for
 
-                sb.Append(" in ").Append(filename).AppendLine(positionSB.ToString());
-            }
-            this.MessageHandler.Message(TraceLevel.Error, sb.ToString(), string.Empty, new TextPosition());
+            this.MessageHandler.Message(TraceLevel.Error, $"{ex.GetType().FullName}: {ex.Message}", string.Empty, new TextPosition());
+            this.MessageHandler.StackTrace(frames);
         }
 
     }

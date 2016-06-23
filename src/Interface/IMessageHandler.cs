@@ -21,6 +21,7 @@ namespace Twofold.Interface
 {
     using SourceMapping;
     using System.Diagnostics;
+    using System.Collections.Generic;
 
     public interface IMessageHandler
     {
@@ -32,5 +33,11 @@ namespace Twofold.Interface
         /// <param name="path">Source, e.g. filepath, the message belongs to. Can be empty.</param>
         /// <param name="position">Position the message belongs to.</param>
         void Message(TraceLevel level, string text, string path, TextPosition position);
+
+        /// <summary>
+        /// Invoke if a stack trace has occured while executing Twofold.
+        /// </summary>
+        /// <param name="frames">List of frames.</param>
+        void StackTrace(List<StackFrame> frames);
     };
 }

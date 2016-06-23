@@ -128,20 +128,32 @@ namespace Twofold.Interface.SourceMapping
             return (this.Callers.Count - 1);
         }
 
-        public void Write(Stream stream, string file, string sourceRoot)
+        public void Write(Stream stream, string generatedFilePath)
+        {
+            this.Write(stream, generatedFilePath, string.Empty);
+        }
+
+        public void Write(Stream stream, string generatedFilePath, string originalFilePathRoot)
         {
             // Gather sources
             var sources = new List<string>();
             var sourcesIndex = new Dictionary<string, int>();
             foreach (var mappingEntry in Mappings)
             {
-                if (sourcesIndex.ContainsKey(mappingEntry.Original.Name))
+                string filepath = AbsolutePath(mappingEntry.Original.Name);
+                if (sourcesIndex.ContainsKey(filepath))
                 {
                     continue;
                 }
 
-                sourcesIndex.Add(mappingEntry.Original.Name, sources.Count);
-                sources.Add(mappingEntry.Original.Name);
+                sourcesIndex.Add(filepath, sources.Count);
+                string relativeFilePath = mappingEntry.Original.Name;
+                if (string.IsNullOrEmpty(originalFilePathRoot) == false)
+                {
+                    var rootUri = new UriBuilder(originalFilePathRoot).Uri;
+                    relativeFilePath = rootUri.MakeRelativeUri(new UriBuilder(mappingEntry.Original.Name).Uri).ToString();
+                }
+                sources.Add(relativeFilePath);
             }
 
             // Build mappings
@@ -189,7 +201,7 @@ namespace Twofold.Interface.SourceMapping
                 prevGeneratedColumn = generatedColumn;
 
                 // Field 2: "zero-based index into the sources list"
-                int sourceIndex = sourcesIndex[mappingEntry.Original.Name];
+                int sourceIndex = sourcesIndex[AbsolutePath(mappingEntry.Original.Name)];
                 VLQ.Encode(mappings, sourceIndex - prevSourcesIndex);
                 prevSourcesIndex = sourceIndex;
 
@@ -215,7 +227,7 @@ namespace Twofold.Interface.SourceMapping
 
                 //
                 //
-                if((mappingEntry.Features & EntryFeatures.ColumnInterpolation) != 0)
+                if ((mappingEntry.Features & EntryFeatures.ColumnInterpolation) != 0)
                 {
                     VLQ.Encode(columnInterpolation, 1);
                 }
@@ -237,7 +249,7 @@ namespace Twofold.Interface.SourceMapping
                 }
 
                 // Field 1: "zero-based index into the sources list"
-                int sourceIndex = sourcesIndex[caller.Original.Name];
+                int sourceIndex = sourcesIndex[AbsolutePath(caller.Original.Name)];
                 VLQ.Encode(callers, sourceIndex - prevSourcesIndex);
                 prevSourcesIndex = sourceIndex;
 
@@ -260,9 +272,16 @@ namespace Twofold.Interface.SourceMapping
                 }
             }
 
-
             var callstack = new CallstackExtension { Callers = callers.ToString(), Indices = indices.ToString() };
-            var graph = new SourceMapGraph { File = file, Sources = sources, Mappings = mappings.ToString(), Callstack = callstack, ColumnInterpolation = columnInterpolation.ToString() };
+            var graph = new SourceMapGraph
+            {
+                File = new UriBuilder(generatedFilePath).Path,
+                SourceRoot = string.IsNullOrEmpty(originalFilePathRoot) ? string.Empty : new UriBuilder(originalFilePathRoot).Path,
+                Sources = sources,
+                Mappings = mappings.ToString(),
+                Callstack = callstack,
+                ColumnInterpolation = columnInterpolation.ToString()
+            };
             var serializer = new DataContractJsonSerializer(typeof(SourceMapGraph));
             serializer.WriteObject(stream, graph);
         }
@@ -331,5 +350,7 @@ namespace Twofold.Interface.SourceMapping
             [DataMember(Name = "indices", Order = 1)]
             public string Indices = string.Empty;
         }
+
+        private string AbsolutePath(string path) => new UriBuilder(path).Path;
     }
 }

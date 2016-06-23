@@ -1,15 +1,16 @@
-﻿using Example.Properties;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using Twofold;
-using Twofold.Interface;
-using Twofold.Interface.SourceMapping;
-
-namespace Example
+﻿namespace Example
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Reflection;
+    using System.Text;
+    using Properties;
+    using Twofold;
+    using Twofold.Interface;
+    using Twofold.Interface.SourceMapping;
+
     public class ArgumentDescriptor
     {
         public readonly string Type;
@@ -51,9 +52,9 @@ namespace Example
         }
     }
 
-    class Program : ITemplateLoader, IMessageHandler
+    internal class Program : ITemplateLoader, IMessageHandler
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             Program app = new Program();
             Engine engine = new Engine(app, app, Assembly.GetExecutingAssembly().Location);
@@ -65,6 +66,8 @@ namespace Example
                 Directory.Delete("Generated", true);
             }
             Directory.CreateDirectory("Generated");
+
+            string executablePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
             if (compiledTemplate.IsValid)
             {
@@ -85,7 +88,8 @@ namespace Example
 
                     using (var fileStream = new FileStream($"Generated\\{filename}.map", FileMode.CreateNew))
                     {
-                        generatedCode.SourceMap.Write(fileStream, $"Generated\\{filename}", Assembly.GetExecutingAssembly().Location);
+                        string combinedFilePath = Path.Combine(executablePath, "Generated", filename);
+                        generatedCode.SourceMap.Write(fileStream, combinedFilePath);
                     }
                 }
 
@@ -96,7 +100,6 @@ namespace Example
                         new ArgumentDescriptor("string", "greeted")
                     }, "Console.WriteLine(\"Hello \" + greeted);"),
                 });
-
 
                 Target target = engine.Run(compiledTemplate, classDescriptor);
                 File.Delete("Generated\\Output.cs");
@@ -111,7 +114,8 @@ namespace Example
 
                     using (var fileStream = new FileStream("Generated\\Output.cs.map", FileMode.CreateNew))
                     {
-                        target.SourceMap.Write(fileStream, "Generated\\Output.cs", Assembly.GetExecutingAssembly().Location);
+                        string combinedFilePath = Path.Combine(executablePath, "Generated", "Output.cs");
+                        target.SourceMap.Write(fileStream, combinedFilePath);
                     }
                 }
 
@@ -127,6 +131,7 @@ namespace Example
         }
 
         #region ITemplateLoader
+
         public Template Load(string name)
         {
             var text = Resources.ResourceManager.GetString(name);
@@ -138,14 +143,16 @@ namespace Example
             Template template = new Template($"C:\\Projects\\Sourcecode\\{name}.cs", text);
             return template;
         }
-        #endregion
+
+        #endregion ITemplateLoader
 
         #region IMessageHandler
+
         public void Message(TraceLevel level, string text, string source, TextPosition position)
         {
             if (string.IsNullOrEmpty(source))
             {
-                Console.WriteLine($"Twofold: {level.ToString()}: {text}");
+                Console.Error.WriteLine($"Twofold: {level.ToString()}: {text}");
                 Trace.WriteLine($"Twofold: {level.ToString()}: {text}");
                 return;
             }
@@ -155,9 +162,38 @@ namespace Example
             {
                 positionText = position.ToString();
             }
-            Console.WriteLine($"{source}{positionText}: {level.ToString()}: {text}");
+            Console.Error.WriteLine($"{source}{positionText}: {level.ToString()}: {text}");
             Trace.WriteLine($"{source}{positionText}: {level.ToString()}: {text}");
         }
-        #endregion
+
+        public void StackTrace(List<Twofold.Interface.StackFrame> frames)
+        {
+            var sb = new StringBuilder();
+            foreach (var frame in frames)
+            {
+                sb.Clear();
+                sb.Append(' ', 4).Append("at ").Append(frame.Method ?? string.Empty);
+                if (string.IsNullOrEmpty(frame.File) == false)
+                {
+                    sb.Append(" in ").Append(frame.File);
+                    if (frame.Line.HasValue)
+                    {
+                        sb.Append(" (").Append(frame.Line);
+                        if (frame.Column.HasValue)
+                        {
+                            sb.Append(",").Append(frame.Column);
+                        }
+
+                        sb.Append(")");
+                    }
+                }
+
+                var line = sb.ToString();
+                Console.Error.WriteLine(line);
+                Trace.WriteLine(line);
+            }
+        }
+
+        #endregion IMessageHandler
     }
 }

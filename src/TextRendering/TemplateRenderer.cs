@@ -22,6 +22,7 @@ namespace Twofold.TextRendering
     using Interface.SourceMapping;
     using System;
     using System.IO;
+    using Interface;
 
     /// <summary>
     /// This is the renderer which will be exposed to the generated
@@ -31,6 +32,7 @@ namespace Twofold.TextRendering
     {
         private static TextRenderer renderer;
 
+        [StackTraceHide]
         internal static void SetTextWriter(TextWriter textWriter, Mapping sourceMap)
         {
             TemplateRenderer.renderer = new TextRenderer(textWriter, sourceMap);
@@ -41,6 +43,7 @@ namespace Twofold.TextRendering
         /// the returned string to the text buffer.
         /// </summary>
         /// <param name="func">The function to execute.</param>
+        [StackTraceHide]
         public static void Write(Func<string> func, TextFilePosition source, EntryFeatures features)
         {
             if (TemplateRenderer.renderer == null)
@@ -58,6 +61,7 @@ namespace Twofold.TextRendering
         /// Executes the given function which must return void.
         /// </summary>
         /// <param name="action">The function to execute.</param>
+        [StackTraceHide]
         public static void Write(Action action, TextFilePosition source, EntryFeatures features)
         {
             if (TemplateRenderer.renderer == null)
@@ -73,6 +77,7 @@ namespace Twofold.TextRendering
 #pragma warning restore CS1717 // Assignment made to same variable
         }
 
+        [StackTraceHide]
         public static void WriteLine(TextFilePosition source)
         {
             if (TemplateRenderer.renderer == null)
@@ -82,6 +87,7 @@ namespace Twofold.TextRendering
             TemplateRenderer.renderer.WriteLine(source);
         }
 
+        [StackTraceHide]
         public static void PushIndentation(string indentation, TextFilePosition source, EntryFeatures features)
         {
             if (TemplateRenderer.renderer == null)
@@ -91,6 +97,7 @@ namespace Twofold.TextRendering
             TemplateRenderer.renderer.PushIndentation(indentation, source, features);
         }
 
+        [StackTraceHide]
         public static void PopIndentation()
         {
             if (TemplateRenderer.renderer == null)
@@ -100,6 +107,7 @@ namespace Twofold.TextRendering
             TemplateRenderer.renderer.PopIndentation();
         }
 
+        [StackTraceHide]
         public static void PushCaller(TextFilePosition source)
         {
             if (TemplateRenderer.renderer == null)
@@ -109,6 +117,7 @@ namespace Twofold.TextRendering
             TemplateRenderer.renderer.PushCaller(source);
         }
 
+        [StackTraceHide]
         public static void PopCaller()
         {
             if (TemplateRenderer.renderer == null)
