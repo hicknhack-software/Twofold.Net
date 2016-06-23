@@ -37,6 +37,7 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interface\ConsoleMessageHandler.cs" />
     <Compile Include="Interface\GeneratedCode.cs" />
     <Compile Include="Interface\SourceMapping\EntryFeatures.cs" />
     <Compile Include="Interface\SourceMapping\Mapping.cs" />

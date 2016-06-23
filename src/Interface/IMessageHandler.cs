@@ -30,9 +30,9 @@ namespace Twofold.Interface
         /// </summary>
         /// <param name="level">Severity of the message.</param>
         /// <param name="text">Message text.</param>
-        /// <param name="path">Source, e.g. filepath, the message belongs to. Can be empty.</param>
+        /// <param name="file">Source, e.g. filepath, the message belongs to. Can be empty.</param>
         /// <param name="position">Position the message belongs to.</param>
-        void Message(TraceLevel level, string text, string path, TextPosition position);
+        void Message(TraceLevel level, string text, string file, TextPosition position);
 
         /// <summary>
         /// Invoke if a stack trace has occured while executing Twofold.
