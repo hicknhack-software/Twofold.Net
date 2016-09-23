@@ -138,7 +138,7 @@ namespace Twofold.Interface.SourceMapping
             if(string.IsNullOrEmpty(originalFilePathRoot) == false && 
                 (originalFilePathRoot.EndsWith("\\") || originalFilePathRoot.EndsWith("/")) == false)
             {
-                originalFilePathRoot = originalFilePathRoot + Path.PathSeparator;
+                originalFilePathRoot = originalFilePathRoot + Path.DirectorySeparatorChar;
             }
 
             // Gather sources
