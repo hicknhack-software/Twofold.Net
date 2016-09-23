@@ -135,6 +135,12 @@ namespace Twofold.Interface.SourceMapping
 
         public void Write(Stream stream, string generatedFilePath, string originalFilePathRoot)
         {
+            if(string.IsNullOrEmpty(originalFilePathRoot) == false && 
+                (originalFilePathRoot.EndsWith("\\") || originalFilePathRoot.EndsWith("/")) == false)
+            {
+                originalFilePathRoot = originalFilePathRoot + Path.PathSeparator;
+            }
+
             // Gather sources
             var sources = new List<string>();
             var sourcesIndex = new Dictionary<string, int>();
@@ -151,6 +157,8 @@ namespace Twofold.Interface.SourceMapping
                 if (string.IsNullOrEmpty(originalFilePathRoot) == false)
                 {
                     var rootUri = new UriBuilder(originalFilePathRoot).Uri;
+                    //Note(Maik): Path.MakeRelativeUri() requires the presence of a trailing slash in the
+                    // 'this' URI.
                     relativeFilePath = rootUri.MakeRelativeUri(new UriBuilder(mappingEntry.Original.Name).Uri).ToString();
                 }
                 sources.Add(relativeFilePath);
