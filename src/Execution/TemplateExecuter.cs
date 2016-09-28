@@ -150,7 +150,7 @@ namespace Twofold.Execution
                 if ((generatedCode != null) && (line != null))
                 {
                     var position = new TextPosition(line.Value, column ?? 1);
-                    TextFilePosition original = generatedCode.SourceMap.FindOriginalByGenerated(position);
+                    TextFilePosition original = generatedCode.SourceMap.FindSourceByGenerated(position);
                     if (original.IsValid)
                     {
                         filename = original.Name;

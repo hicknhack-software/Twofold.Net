@@ -31,18 +31,18 @@ namespace Twofold.Interface.SourceMapping
     {
         public class Caller
         {
-            public readonly TextFilePosition Original;
+            public readonly TextFilePosition Source;
             public readonly int ParentIndex;
 
-            public Caller(TextFilePosition original, int parentIndex)
+            public Caller(TextFilePosition source, int parentIndex)
             {
-                this.Original = original;
+                this.Source = source;
                 this.ParentIndex = parentIndex;
             }
 
             public override string ToString()
             {
-                return $"{this.ParentIndex} <- {this.Original.ToString()}";
+                return $"{this.ParentIndex} <- {this.Source.ToString()}";
             }
         }
 
@@ -68,18 +68,18 @@ namespace Twofold.Interface.SourceMapping
                 return callerStack;
             }
 
-            callerStack.Add(entry.Original);
+            callerStack.Add(entry.Source);
             int callerIndex = entry.CallerIndex;
             while (callerIndex != -1)
             {
                 Caller caller = this.Callers[callerIndex];
-                callerStack.Add(caller.Original);
+                callerStack.Add(caller.Source);
                 callerIndex = caller.ParentIndex;
             }
             return callerStack;
         }
 
-        public TextFilePosition FindOriginalByGenerated(TextPosition generated)
+        public TextFilePosition FindSourceByGenerated(TextPosition generated)
         {
             if (generated == null)
             {
@@ -99,12 +99,12 @@ namespace Twofold.Interface.SourceMapping
 
             if ((entry.Features & EntryFeatures.ColumnInterpolation) == 0)
             {
-                return entry.Original;
+                return entry.Source;
             }
 
-            int line = Math.Abs(entry.Generated.Line - generated.Line) + entry.Original.Line;
-            int column = Math.Abs(entry.Generated.Column - generated.Column) + entry.Original.Column;
-            return new TextFilePosition(entry.Original.Name, line, column);
+            int line = Math.Abs(entry.Generated.Line - generated.Line) + entry.Source.Line;
+            int column = Math.Abs(entry.Generated.Column - generated.Column) + entry.Source.Column;
+            return new TextFilePosition(entry.Source.Name, line, column);
         }
 
         public void Add(MappingEntry entry)
@@ -117,14 +117,14 @@ namespace Twofold.Interface.SourceMapping
             this.Mappings.Add(entry);
         }
 
-        public int AddCaller(TextFilePosition original, int parentIndex)
+        public int AddCaller(TextFilePosition source, int parentIndex)
         {
-            if (original == null)
+            if (source == null)
             {
-                throw new ArgumentNullException(nameof(original));
+                throw new ArgumentNullException(nameof(source));
             }
 
-            this.Callers.Add(new Caller(original, parentIndex));
+            this.Callers.Add(new Caller(source, parentIndex));
             return (this.Callers.Count - 1);
         }
 
@@ -133,12 +133,12 @@ namespace Twofold.Interface.SourceMapping
             this.Write(stream, generatedFilePath, string.Empty);
         }
 
-        public void Write(Stream stream, string generatedFilePath, string originalFilePathRoot)
+        public void Write(Stream stream, string generatedFilePath, string sourceFilePathRoot)
         {
-            if(string.IsNullOrEmpty(originalFilePathRoot) == false && 
-                (originalFilePathRoot.EndsWith("\\") || originalFilePathRoot.EndsWith("/")) == false)
+            if(string.IsNullOrEmpty(sourceFilePathRoot) == false && 
+                (sourceFilePathRoot.EndsWith("\\") || sourceFilePathRoot.EndsWith("/")) == false)
             {
-                originalFilePathRoot = originalFilePathRoot + Path.DirectorySeparatorChar;
+                sourceFilePathRoot = sourceFilePathRoot + Path.DirectorySeparatorChar;
             }
 
             // Gather sources
@@ -146,20 +146,20 @@ namespace Twofold.Interface.SourceMapping
             var sourcesIndex = new Dictionary<string, int>();
             foreach (var mappingEntry in Mappings)
             {
-                string filepath = AbsolutePath(mappingEntry.Original.Name);
+                string filepath = AbsolutePath(mappingEntry.Source.Name);
                 if (sourcesIndex.ContainsKey(filepath))
                 {
                     continue;
                 }
 
                 sourcesIndex.Add(filepath, sources.Count);
-                string relativeFilePath = mappingEntry.Original.Name;
-                if (string.IsNullOrEmpty(originalFilePathRoot) == false)
+                string relativeFilePath = mappingEntry.Source.Name;
+                if (string.IsNullOrEmpty(sourceFilePathRoot) == false)
                 {
-                    var rootUri = new UriBuilder(originalFilePathRoot).Uri;
+                    var rootUri = new UriBuilder(sourceFilePathRoot).Uri;
                     //Note(Maik): Path.MakeRelativeUri() requires the presence of a trailing slash in the
                     // 'this' URI.
-                    relativeFilePath = rootUri.MakeRelativeUri(new UriBuilder(mappingEntry.Original.Name).Uri).ToString();
+                    relativeFilePath = rootUri.MakeRelativeUri(new UriBuilder(mappingEntry.Source.Name).Uri).ToString();
                 }
                 sources.Add(relativeFilePath);
             }
@@ -170,8 +170,8 @@ namespace Twofold.Interface.SourceMapping
             var columnInterpolation = new StringBuilder();
 
             bool newLine = true;
-            int prevOriginalLine = 1;
-            int prevOriginalColumn = 1;
+            int prevSourceLine = 1;
+            int prevSourceColumn = 1;
 
             int prevGeneratedLine = 1;
             int prevGeneratedColumn = 1;
@@ -209,23 +209,22 @@ namespace Twofold.Interface.SourceMapping
                 prevGeneratedColumn = generatedColumn;
 
                 // Field 2: "zero-based index into the sources list"
-                int sourceIndex = sourcesIndex[AbsolutePath(mappingEntry.Original.Name)];
+                int sourceIndex = sourcesIndex[AbsolutePath(mappingEntry.Source.Name)];
                 VLQ.Encode(mappings, sourceIndex - prevSourcesIndex);
                 prevSourcesIndex = sourceIndex;
 
-                // Field 3: "zero-based starting line in the original source"
-                int originalLine = mappingEntry.Original.Line;
-                VLQ.Encode(mappings, originalLine - prevOriginalLine);
-                prevOriginalLine = originalLine;
+                // Field 3: "zero-based starting line in the source"
+                int sourceLine = mappingEntry.Source.Line;
+                VLQ.Encode(mappings, sourceLine - prevSourceLine);
+                prevSourceLine = sourceLine;
 
                 // Field 4: "zero-based starting column of the line in the source"
-                int originalColumn = mappingEntry.Original.Column;
-                VLQ.Encode(mappings, originalColumn - prevOriginalColumn);
-                prevOriginalColumn = originalColumn;
+                int sourceColumn = mappingEntry.Source.Column;
+                VLQ.Encode(mappings, sourceColumn - prevSourceColumn);
+                prevSourceColumn = sourceColumn;
 
                 //
                 //
-
                 int callerIndex = mappingEntry.CallerIndex;
                 if (callerIndex != -1)
                 {
@@ -246,8 +245,8 @@ namespace Twofold.Interface.SourceMapping
             // Build Callstack
             var callers = new StringBuilder();
             prevSourcesIndex = 0;
-            prevOriginalLine = 1;
-            prevOriginalColumn = 1;
+            prevSourceLine = 1;
+            prevSourceColumn = 1;
             int prevParentIndex = 0;
             foreach (var caller in Callers)
             {
@@ -257,19 +256,19 @@ namespace Twofold.Interface.SourceMapping
                 }
 
                 // Field 1: "zero-based index into the sources list"
-                int sourceIndex = sourcesIndex[AbsolutePath(caller.Original.Name)];
+                int sourceIndex = sourcesIndex[AbsolutePath(caller.Source.Name)];
                 VLQ.Encode(callers, sourceIndex - prevSourcesIndex);
                 prevSourcesIndex = sourceIndex;
 
-                // Field 2: "zero-based starting line in the original source"
-                int originalLine = caller.Original.Line;
-                VLQ.Encode(callers, originalLine - prevOriginalLine);
-                prevOriginalLine = originalLine;
+                // Field 2: "zero-based starting line in the source"
+                int sourceLine = caller.Source.Line;
+                VLQ.Encode(callers, sourceLine - prevSourceLine);
+                prevSourceLine = sourceLine;
 
                 // Field 3: "zero-based starting column of the line in the source"
-                int originalColumn = caller.Original.Column;
-                VLQ.Encode(callers, originalColumn - prevOriginalColumn);
-                prevOriginalColumn = originalColumn;
+                int sourceColumn = caller.Source.Column;
+                VLQ.Encode(callers, sourceColumn - prevSourceColumn);
+                prevSourceColumn = sourceColumn;
 
                 // Field 4: "zero-based index of parent caller"
                 int parentIndex = caller.ParentIndex;
@@ -284,7 +283,7 @@ namespace Twofold.Interface.SourceMapping
             var graph = new SourceMapGraph
             {
                 File = new UriBuilder(generatedFilePath).Path,
-                SourceRoot = string.IsNullOrEmpty(originalFilePathRoot) ? string.Empty : new UriBuilder(originalFilePathRoot).Path,
+                SourceRoot = string.IsNullOrEmpty(sourceFilePathRoot) ? string.Empty : new UriBuilder(sourceFilePathRoot).Path,
                 Sources = sources,
                 Mappings = mappings.ToString(),
                 Callstack = callstack,

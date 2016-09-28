@@ -217,7 +217,7 @@ namespace Twofold.Compilation
                     if (generatedCode != null)
                     {
                         var errorPosition = new TextPosition(compilerError.Line, compilerError.Column);
-                        TextFilePosition original = generatedCode.SourceMap.FindOriginalByGenerated(errorPosition);
+                        TextFilePosition original = generatedCode.SourceMap.FindSourceByGenerated(errorPosition);
                         if (original.IsValid)
                         {
                             textPosition = new TextPosition(original.Line, original.Column);
