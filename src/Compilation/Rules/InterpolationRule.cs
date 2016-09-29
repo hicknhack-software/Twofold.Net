@@ -62,10 +62,17 @@ namespace Twofold.Compilation.Rules
                 {
                     case '#':
                         {
+                            var textSpan = line.CreateOriginalTextSpan(end, index);
+                            if (textSpan.IsEmpty == false)
+                            {
+                                var textEndSpan = line.CreateOriginalTextSpan(index, index);
+                                commands.Add(new TextCommand(textSpan, textEndSpan));
+                            }
+
                             var escapeBegin = (index + 1); //skip #
-                            var textSpan = line.CreateOriginalTextSpan(escapeBegin, escapeBegin + 1);
-                            var textEndSpan = line.CreateOriginalTextSpan(textSpan.End, textSpan.End);
-                            commands.Add(new TextCommand(textSpan, textEndSpan));
+                            var escapeSpan = line.CreateOriginalTextSpan(escapeBegin, escapeBegin + 1);
+                            var escapeEndSpan = line.CreateOriginalTextSpan(escapeSpan.End, escapeSpan.End);
+                            commands.Add(new TextCommand(escapeSpan, escapeEndSpan));
                             index = end = (escapeBegin + 1);
                             continue;
                         }
