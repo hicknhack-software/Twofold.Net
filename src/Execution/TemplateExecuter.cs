@@ -40,7 +40,7 @@ namespace Twofold.Execution
             this.MessageHandler = messageHandler;
         }
 
-        public Target Execute<T>(CompiledTemplate compiledTemplate, T input)
+        public Target Execute(CompiledTemplate compiledTemplate, params object[] arguments)
         {
             if (compiledTemplate == null)
             {
@@ -68,24 +68,39 @@ namespace Twofold.Execution
             }
 
             // Validate parameters of main method
-            ParameterInfo[] parameters = mainMethod.GetParameters();
-            bool parameterCountInvalid = (parameters.Length != 1);
-            bool parameterInvalid = false;
-            if (parameterCountInvalid == false)
+            ParameterInfo[] paramInfos = mainMethod.GetParameters();
+            bool argumentCountInvalid = (paramInfos.Length != arguments.Length);
+            bool argumentsInvalid = false;
+            if (argumentCountInvalid == false)
             {
-                ParameterInfo param = parameters[0];
-                parameterInvalid |= param.HasDefaultValue;
-                parameterInvalid |= param.IsIn;
-                parameterInvalid |= param.IsLcid;
-                parameterInvalid |= param.IsOptional;
-                parameterInvalid |= param.IsOut;
-                parameterInvalid |= param.IsRetval;
-                parameterInvalid |= (param.ParameterType.IsAssignableFrom(typeof(T)) == false);
+                int argumentIndex = 0;
+                foreach (ParameterInfo paramInfo in paramInfos)
+                {
+                    argumentsInvalid |= paramInfo.HasDefaultValue;
+                    argumentsInvalid |= paramInfo.IsIn;
+                    argumentsInvalid |= paramInfo.IsLcid;
+                    argumentsInvalid |= paramInfo.IsOptional;
+                    argumentsInvalid |= paramInfo.IsOut;
+                    argumentsInvalid |= paramInfo.IsRetval;
+
+                    object argument = arguments[argumentIndex];
+                    argumentsInvalid |= (paramInfo.ParameterType.IsAssignableFrom(argument.GetType()) == false);
+                    if (argumentsInvalid)
+                    {
+                        break;
+                    }
+                }
             }
 
-            if (parameterCountInvalid || parameterInvalid)
+            if (argumentCountInvalid || argumentsInvalid)
             {
-                this.MessageHandler.Message(TraceLevel.Error, $"Template main method has invalid signature. Expected 'public static {Constants.EntryMethodName}({typeof(T)})'.", compiledTemplate.OriginalName, new TextPosition());
+                var paramTypes = new List<string>();
+                foreach (ParameterInfo param in paramInfos)
+                {
+                    paramTypes.Add(param.ParameterType.ToString());
+                }
+                string paramSignature = string.Join(", ", paramTypes);
+                this.MessageHandler.Message(TraceLevel.Error, $"Template main method has invalid signature. Expected 'public static void {Constants.EntryMethodName}({paramSignature})'.", compiledTemplate.OriginalName, new TextPosition());
                 return null;
             }
 
@@ -95,7 +110,7 @@ namespace Twofold.Execution
             try
             {
                 TemplateRenderer.SetTextWriter(textWriter, mapping);
-                mainMethod.Invoke(null, new object[] { input });
+                mainMethod.Invoke(null, arguments);
             }
             catch (Exception ex)
             {

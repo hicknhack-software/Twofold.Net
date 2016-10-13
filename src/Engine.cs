@@ -54,13 +54,13 @@ namespace Twofold
         /// </summary>
         /// <typeparam name="T">The argument type of the template main method.</typeparam>
         /// <param name="compiledTemplate">The compiled Twofold template.</param>
-        /// <param name="input">The parameter which is given to the template main method.</param>
+        /// <param name="arguments">The arguments which is given to the template main method.</param>
         /// <returns>The generated target text or null if an error occured.</returns>
         /// <exception cref="ArgumentNullException">If compiledTemplate is null.</exception>
-        public Target Run<T>(CompiledTemplate compiledTemplate, T input)
+        public Target Run(CompiledTemplate compiledTemplate, params object[] arguments)
         {
             var templateExecuter = new TemplateExecuter(this.MessageHandler);
-            Target target = templateExecuter.Execute(compiledTemplate, input);
+            Target target = templateExecuter.Execute(compiledTemplate, arguments);
             return target;
         }
     }

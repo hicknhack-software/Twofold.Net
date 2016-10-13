@@ -117,13 +117,13 @@
                         string combinedFilePath = Path.Combine(executablePath, "Generated", "Output.cs");
                         target.SourceMap.Write(fileStream, combinedFilePath);
                     }
-                }
 
-                var pos = new TextPosition(7, 34);
-                Debug.WriteLine($"Callstack for {pos}:");
-                foreach (var e in target.SourceMap.CallerStack(pos))
-                {
-                    Debug.WriteLine($"{e.Name} ({e.Line}, {e.Column})");
+                    var pos = new TextPosition(7, 34);
+                    Debug.WriteLine($"Callstack for {pos}:");
+                    foreach (var e in target.SourceMap.CallerStack(pos))
+                    {
+                        Debug.WriteLine($"{e.Name} ({e.Line}, {e.Column})");
+                    }
                 }
             }
 
