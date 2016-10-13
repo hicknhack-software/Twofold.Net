@@ -83,7 +83,7 @@ namespace Twofold.Execution
                     argumentsInvalid |= paramInfo.IsOut;
                     argumentsInvalid |= paramInfo.IsRetval;
 
-                    object argument = arguments[argumentIndex];
+                    object argument = arguments[argumentIndex++];
                     argumentsInvalid |= (paramInfo.ParameterType.IsAssignableFrom(argument.GetType()) == false);
                     if (argumentsInvalid)
                     {
