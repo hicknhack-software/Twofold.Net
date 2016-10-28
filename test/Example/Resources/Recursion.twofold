@@ -1,0 +1,31 @@
+using System;
+using System.Diagnostics;
+
+namespace Example
+{
+    public partial class ExampleRenderer
+    {
+		public static void Helper(string text, int level)
+		{			
+			=  Helper2(text, level);
+		}
+
+		public static void Helper2(string text, int level)
+		{
+			\#{text}
+			PrintRecursive(text, level - 1);
+		}
+
+		public static void PrintRecursive(string text, int level)
+		{
+			if(level > 0) {
+				=    Helper(text, level);
+			}
+		}
+
+        public static void TwofoldMain(string text, int level)
+        {
+			PrintRecursive(text, level);
+        }
+    }
+}

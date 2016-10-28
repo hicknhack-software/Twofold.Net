@@ -11,6 +11,19 @@
     using Twofold.Interface;
     using Twofold.Interface.SourceMapping;
 
+    public interface ILogger
+    {
+        void Log(string text);
+    }
+
+    public class Logger : ILogger
+    {
+        public void Log(string text)
+        {
+            Console.WriteLine(text);
+        }
+    }
+
     public class ArgumentDescriptor
     {
         public readonly string Type;
@@ -54,12 +67,44 @@
 
     internal class Program : ITemplateLoader, IMessageHandler
     {
+        private Engine engine;
+
+        private Program()
+        {
+            engine = new Engine(this, this, Assembly.GetExecutingAssembly().Location);
+        }
+
         private static void Main(string[] args)
         {
-            Program app = new Program();
-            Engine engine = new Engine(app, app, Assembly.GetExecutingAssembly().Location);
+            var app = new Program();
 
-            CompiledTemplate compiledTemplate = engine.Compile("Main");
+            // Example 1
+            if(false)
+            {
+                var classDescriptor = new ClassDescriptor("TwofoldGenerated", new List<MethodDescriptor>
+                {
+                    new MethodDescriptor("void", "hello", new List<ArgumentDescriptor>
+                    {
+                        new ArgumentDescriptor("string", "greeted")
+                    }, "Console.WriteLine(\"Hello \" + greeted);"),
+                });
+                var logger = new Logger();
+                app.CompileAndRun("Main", classDescriptor);
+            }
+
+            // Example 2
+            if(true)
+            {
+                app.CompileAndRun("Recursion", "Hello, world!", 5);
+            }
+
+            Console.WriteLine("Ready");
+            Console.ReadKey();
+        }
+
+        private void CompileAndRun(string template, params object[] arguments)
+        {
+            CompiledTemplate compiledTemplate = engine.Compile(template);
 
             if (Directory.Exists("Generated"))
             {
@@ -93,15 +138,7 @@
                     }
                 }
 
-                var classDescriptor = new ClassDescriptor("TwofoldGenerated", new List<MethodDescriptor>
-                {
-                    new MethodDescriptor("void", "hello", new List<ArgumentDescriptor>
-                    {
-                        new ArgumentDescriptor("string", "greeted")
-                    }, "Console.WriteLine(\"Hello \" + greeted);"),
-                });
-
-                Target target = engine.Run(compiledTemplate, classDescriptor);
+                Target target = engine.Run(compiledTemplate, arguments);
                 File.Delete("Generated\\Output.cs");
                 File.Delete("Generated\\Output.cs.map");
                 if (target != null)
@@ -126,8 +163,6 @@
                     }
                 }
             }
-
-            Console.ReadKey();
         }
 
         #region ITemplateLoader

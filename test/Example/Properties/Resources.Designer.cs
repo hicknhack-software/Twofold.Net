@@ -62,18 +62,28 @@ namespace Example.Properties {
         
         /// <summary>
         ///   Looks up a localized string similar to using System;
+        ///using System.Collections.Generic;
         ///
         ///namespace Example
         ///{
-        ///	public static class Helper
-        ///	{
-        ///		public static int Answer()
+        ///    public partial class ExampleRenderer
+        ///    {
+        ///
+        ///		public static void ShowMethod(MethodDescriptor method)
         ///		{
-        ///			int i = 42;
-        ///			return i;
+        ///													|#{method.ReturnType} #{method.Name}(#{ShowArguments(method.Arguments)}) {
+        ///													|    #{method.Body}
+        ///													|}
         ///		}
-        ///	}
-        ///}.
+        ///
+        ///		public static void ShowArguments(List&lt;ArgumentDescriptor&gt; arguments)
+        ///		{
+        ///			bool first = true;
+        ///			foreach(var argument in arguments) {
+        ///				if(first == false) {
+        ///													\#{&quot;, &quot;}
+        ///				}
+        ///		 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Include {
             get {
@@ -82,27 +92,60 @@ namespace Example.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to #pragma include &quot;ExampleInclude&quot;
+        ///   Looks up a localized string similar to #pragma include &quot;Include&quot;
         ///
         ///using System;
         ///
         ///namespace Example
         ///{
-        ///    public class ExampleRenderer
+        ///    public partial class ExampleRenderer
         ///    {
-        ///        public static void TwofoldMain(string text)
+        ///        public static void TwofoldMain(ClassDescriptor classDescriptor, ILogger logger)
         ///        {
-        ///            System.Console.WriteLine(&quot;The answer is: {0} {1}&quot;, Helper.Answer(), text);
-        ///            for (int i = 0; i &lt; 10; ++i) {
-        ///																							| Item #{i.ToString()} in the list.
+        ///													|using System;
+        ///													|
+        ///													|namespace Generated
+        ///													|{
+        ///													|    class #{classDescriptor.Name}
+        ///													|    {
+        ///			foreach(var method in classDescriptor.Methods) {
+        ///													=        ShowMethod(method);
         ///			}
-        ///        }
-        ///    }
-        ///}.
+        ///													|    }
+        ///													|}
+        ///        } [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string Main {
             get {
                 return ResourceManager.GetString("Main", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to using System;
+        ///
+        ///namespace Example
+        ///{
+        ///    public partial class ExampleRenderer
+        ///    {
+        ///		public static void PrintRecursive(string text, int level)
+        ///		{
+        ///			if(level &gt; 0) {
+        ///				|    #{text}
+        ///				PrintRecursive(text, level - 1);
+        ///			}
+        ///		}
+        ///
+        ///        public static void TwofoldMain(string text, int level)
+        ///        {
+        ///			PrintRecursive(text, level);
+        ///        }
+        ///    }
+        ///}.
+        /// </summary>
+        internal static string Recursion {
+            get {
+                return ResourceManager.GetString("Recursion", resourceCulture);
             }
         }
     }
