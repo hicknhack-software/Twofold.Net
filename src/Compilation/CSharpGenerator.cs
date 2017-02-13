@@ -59,20 +59,20 @@ namespace Twofold.Compilation
         protected override void Generate(StatementCommand cmd)
         {
             this.TextRenderer.Write($"_Template.PushCaller({this.SourceExpression(cmd.Statement.Position)});", cmd.Statement.Position);
-            this.TextRenderer.Write(cmd.Statement.Text, cmd.Statement.Position, EntryFeatures.ColumnInterpolation);
+            this.TextRenderer.Write(cmd.Statement.Text, cmd.Statement.Position);
             this.TextRenderer.WriteLine($"_Template.PopCaller();", cmd.End.Position);
         }
 
         protected override void Generate(ScriptCommand cmd)
         {
-            this.TextRenderer.Write(cmd.Script.Text, cmd.Script.Position, EntryFeatures.ColumnInterpolation);
+            this.TextRenderer.Write(cmd.Script.Text, cmd.Script.Position);
             this.TextRenderer.WriteLine(cmd.End.Position);
         }
 
         protected override void Generate(ExpressionCommand cmd)
         {
             this.TextRenderer.Write("_Template.Write(() => ", cmd.Begin.Position);
-            this.TextRenderer.Write(cmd.Expression.Text, cmd.Expression.Position, EntryFeatures.ColumnInterpolation);
+            this.TextRenderer.Write(cmd.Expression.Text, cmd.Expression.Position);
             this.TextRenderer.WriteLine($", {this.SourceExpression(cmd.Expression.Position)}, {this.FeatureExpression(EntryFeatures.ColumnInterpolation)});", cmd.End.Position);
         }
 
