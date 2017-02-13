@@ -23,6 +23,7 @@ namespace Twofold.TextRendering
     using System;
     using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
 
     /// <summary>
     /// This class is used by the TargetRenderer to produce the rendererd
@@ -37,7 +38,7 @@ namespace Twofold.TextRendering
             public readonly int CallerIndex;
             public readonly EntryFeatures Features;
 
-            public IndentationItem(string indentation, TextFilePosition position, int callerIndex, EntryFeatures features)
+            public IndentationItem(string indentation, TextFilePosition original, int callerIndex, EntryFeatures features)
             {
                 if (indentation == null)
                 {
@@ -45,11 +46,11 @@ namespace Twofold.TextRendering
                 }
                 this.Indentation = indentation;
 
-                if (position == null)
+                if (original == null)
                 {
-                    throw new ArgumentNullException(nameof(position));
+                    throw new ArgumentNullException(nameof(original));
                 }
-                this.Original = position;
+                this.Original = original;
 
                 this.CallerIndex = callerIndex;
                 this.Features = features;
@@ -141,7 +142,7 @@ namespace Twofold.TextRendering
             {
                 if (this.IsLineBlank)
                 {
-                    foreach (var indentationItem in this.IndentationStack)
+                    foreach (var indentationItem in this.IndentationStack.Reverse())
                     {
                         if (indentationItem.Indentation.Length > 0)
                         {
