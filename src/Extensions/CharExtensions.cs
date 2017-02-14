@@ -23,7 +23,7 @@ namespace Twofold.Extensions
 
     internal static class CharExtensions
     {
-        public static bool IsSpace(char ch) => ((char.GetUnicodeCategory(ch) == UnicodeCategory.SpaceSeparator) || (ch == '\t'));
+        public static bool IsSpace(char ch) => ((char.GetUnicodeCategory(ch) == UnicodeCategory.SpaceSeparator) || (ch == ' ') || (ch == '\t'));
 
         public static bool IsNewline(char ch) => ((ch == '\n') || (ch == '\r'));
     }
