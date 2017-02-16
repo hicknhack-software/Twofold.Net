@@ -315,7 +315,11 @@ namespace Twofold.Interface.SourceMapping
             return sb.ToString();
         }
 
-        private MappingEntry FindEntryByGenerated(TextPosition generated) => this.Mappings.LastOrDefault(e => e.Generated.CompareTo(generated) <= 0);
+        private MappingEntry FindEntryByGenerated(TextPosition generated)
+        {
+            MappingEntry entry = this.Mappings.LastOrDefault(e => e.Generated.CompareTo(generated) <= 0);
+            return entry != null ? entry : new MappingEntry();
+        }
 
         [DataContract]
         public class SourceMapGraph
