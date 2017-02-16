@@ -46,7 +46,10 @@ namespace Twofold.Compilation.Rules
             //
             var statementSpan = line.CreateOriginalTextSpan(indentationSpan.End, line.End);
             var statementEndSpan = line.CreateOriginalTextSpan(statementSpan.End, statementSpan.End);
-            commands.Add(new StatementCommand(statementSpan, statementEndSpan));
+            if (statementSpan.IsEmpty == false) 
+            {
+                commands.Add(new StatementCommand(statementSpan, statementEndSpan));
+            }
 
             //
             if (indentationSpan.IsEmpty == false)

@@ -201,8 +201,8 @@ namespace Twofold.TextRendering
                 this.Mapping.Add(entry);
             }
             this.TextWriter.WriteLine();
-            ++Line;
             this.IsLineBlank = true;
+            ++Line;            
             this.Column = 1;
         }
 
@@ -257,9 +257,6 @@ namespace Twofold.TextRendering
         public void PushCaller(TextFilePosition original)
         {
             var parentIndex = (this.CallerIndexStack.Count == 0) ? -1 : this.CallerIndexStack.Peek();
-            var entry = new MappingEntry(this.Position(), original, parentIndex, EntryFeatures.None);
-            this.Mapping.Add(entry);
-
             int callerIndex = this.Mapping.AddCaller(original, parentIndex);
             this.CallerIndexStack.Push(callerIndex);
         }
