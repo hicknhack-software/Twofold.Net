@@ -17,14 +17,26 @@
  * limitations under the License.
  */
 
-namespace Twofold.Extensions
+namespace Twofold
 {
-    using System.Globalization;
-
-    internal static class CharExtensions
+    internal static class Constants
     {
-        public static bool IsSpace(char ch) => ((char.GetUnicodeCategory(ch) == UnicodeCategory.SpaceSeparator) || (ch == ' ') || (ch == '\t'));
+        public static readonly string[] CompilerOptions = {
+            "/langversion:5",
+            "/nowarn:1633",     //Supress: Unknown pragma, used for #pragma include
+        };
 
-        public static bool IsNewline(char ch) => ((ch == '\n') || (ch == '\r'));
+        public static readonly string[] CompilerAssemblies = {
+            "System.dll",
+            "System.Core.dll",
+        };
+
+        public const string EntryMethodName = "TwofoldMain";
+
+        public static readonly string[] TargetCodeUsings = {
+            "using _Template = Twofold.TextRendering.TemplateRenderer;",
+            "using _Source = Twofold.Interface.SourceMapping.TextFilePosition;",
+            "using _Features = Twofold.Interface.SourceMapping.EntryFeatures;",
+        };
     }
 }

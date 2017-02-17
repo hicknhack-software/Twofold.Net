@@ -17,14 +17,17 @@
  * limitations under the License.
  */
 
-namespace Twofold.Extensions
+namespace Twofold.Interface
 {
-    using System.Globalization;
-
-    internal static class CharExtensions
+    public class Template
     {
-        public static bool IsSpace(char ch) => ((char.GetUnicodeCategory(ch) == UnicodeCategory.SpaceSeparator) || (ch == ' ') || (ch == '\t'));
+        public readonly string Path;
+        public readonly string Text;
 
-        public static bool IsNewline(char ch) => ((ch == '\n') || (ch == '\r'));
+        public Template(string path, string text)
+        {
+            this.Path = path;
+            this.Text = text;
+        }
     }
 }

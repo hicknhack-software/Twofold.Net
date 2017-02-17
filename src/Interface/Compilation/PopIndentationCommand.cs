@@ -17,14 +17,16 @@
  * limitations under the License.
  */
 
-namespace Twofold.Extensions
+namespace Twofold.Interface.Compilation
 {
-    using System.Globalization;
-
-    internal static class CharExtensions
+    public class PopIndentationCommand : AsbtractRenderCommand
     {
-        public static bool IsSpace(char ch) => ((char.GetUnicodeCategory(ch) == UnicodeCategory.SpaceSeparator) || (ch == ' ') || (ch == '\t'));
+        public readonly OriginalTextSpan Pop;
 
-        public static bool IsNewline(char ch) => ((ch == '\n') || (ch == '\r'));
+        public PopIndentationCommand(OriginalTextSpan pop)
+            : base(RenderCommands.PopIndentation)
+        {
+            this.Pop = pop;
+        }
     }
 }

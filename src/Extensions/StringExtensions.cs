@@ -16,52 +16,114 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
 
 namespace Twofold.Extensions
 {
-    public static class StringExtensions
+    using System;
+    using System.Globalization;
+    using System.Text;
+
+    internal static class StringExtensions
     {
-        /// <exception cref="ArgumentOutOfRangeException">beginIndex is greater than endIndex.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">endIndex is greater than string length.</exception>
-        public static int IndexOf(this string value, int beginIndex, int endIndex, Func<char, bool> predicate)
+        /// <exception cref="ArgumentOutOfRangeException">begin is greater than end.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">end is greater than string length.</exception>
+        public static int IndexOf(this string value, int begin, int end, Func<char, bool> predicate)
         {
-            if (beginIndex > endIndex) {
-                throw new ArgumentOutOfRangeException("beginIndex", "Must be less equal than endIndex.");
+            if (begin > end)
+            {
+                throw new ArgumentOutOfRangeException(nameof(begin), "Must be less equal than end.");
             }
-            if (endIndex > value.Length) {
-                throw new ArgumentOutOfRangeException("endIndex", "endIndex must be less equal string length.");
+            if (end > value.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(end), "end must be less equal string length.");
             }
-            var index = beginIndex;
-            while (index < endIndex) {
+            var index = begin;
+            while (index < end)
+            {
                 char ch = value[index];
-                if (predicate(ch)) {
+                if (predicate(ch))
+                {
                     return index;
                 }
                 ++index;
             }
-            return -1;
+            return end;
         }
 
-        /// <exception cref="ArgumentOutOfRangeException">beginIndex is greater than endIndex.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">endIndex is greater than string length.</exception>
-        public static int IndexOfNot(this string value, int beginIndex, int endIndex, Func<char, bool> predicate)
+        /// <exception cref="ArgumentOutOfRangeException">begin is greater than endIndex.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">end is greater than string length.</exception>
+        public static int IndexOfNot(this string value, int begin, int end, Func<char, bool> predicate)
         {
-            if (beginIndex > endIndex) {
-                throw new ArgumentOutOfRangeException("beginIndex", "Must be less equal than endIndex.");
+            if (begin > end)
+            {
+                throw new ArgumentOutOfRangeException(nameof(begin), "Must be less equal than end.");
             }
-            if (endIndex > value.Length) {
-                throw new ArgumentOutOfRangeException("endIndex", "endIndex must be less equal string length.");
+            if (end > value.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(end), "end must be less equal string length.");
             }
-            var index = beginIndex;
-            while (index < endIndex) {
+            var index = begin;
+            while (index < end)
+            {
                 char ch = value[index];
-                if (!predicate(ch)) {
+                if (!predicate(ch))
+                {
                     return index;
                 }
                 ++index;
             }
-            return -1;
+            return end;
+        }
+
+        public static string Escape(this string text)
+        {
+            char[] HexDigit = "0123456789abcdef".ToCharArray();
+            var sb = new StringBuilder(text.Length);
+            var len = text.Length;
+            for (int c = 0; c < len; ++c)
+            {
+                char ch = text[c];
+                switch (ch)
+                {
+                    case '\'': sb.Append(@"\'"); break;
+                    case '\"': sb.Append("\\\""); break;
+                    case '\\': sb.Append(@"\\"); break;
+                    case '\0': sb.Append(@"\0"); break;
+                    case '\a': sb.Append(@"\a"); break;
+                    case '\b': sb.Append(@"\b"); break;
+                    case '\f': sb.Append(@"\f"); break;
+                    case '\n': sb.Append(@"\n"); break;
+                    case '\r': sb.Append(@"\r"); break;
+                    case '\t': sb.Append(@"\t"); break;
+                    case '\v': sb.Append(@"\v"); break;
+                    default:
+                        {
+                            switch (char.GetUnicodeCategory(ch))
+                            {
+                                case UnicodeCategory.Control:
+                                    {
+                                        var c1 = HexDigit[(ch >> 12) & 0x0F];
+                                        var c2 = HexDigit[(ch >> 8) & 0x0F];
+                                        var c3 = HexDigit[(ch >> 4) & 0x0F];
+                                        var c4 = HexDigit[ch & 0x0F];
+                                        sb
+                                            .Append(@"\x")
+                                            .Append(c1)
+                                            .Append(c2)
+                                            .Append(c3)
+                                            .Append(c4);
+                                    }
+                                    break;
+
+                                default:
+                                    sb.Append(ch);
+                                    break;
+                            }
+                        }
+                        break;
+                }
+            }
+            return sb.ToString();
         }
     }
 }

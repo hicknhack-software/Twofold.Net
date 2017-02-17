@@ -16,52 +16,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using System;
-using System.Collections.Specialized;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using Twofold.Api;
-using Twofold.Compilation;
 
 namespace Twofold
 {
+    using Compilation;
+    using Execution;
+    using Interface;
+    using System.Collections.Generic;
+
     public class Engine
     {
-        readonly ITextLoader templateLoader;
-        readonly IMessageHandler messageHandler;
-        readonly StringCollection referencedAssemblies = new StringCollection();
+        private readonly ITemplateLoader TemplateLoader;
+        private readonly IMessageHandler MessageHandler;
+        private readonly List<string> ReferencedAssemblies;
 
-        public Engine(ITextLoader templateLoader, IMessageHandler messageHandler, params string[] referencedAssemblies)
+        public Engine(ITemplateLoader templateLoader, IMessageHandler messageHandler, params string[] referencedAssemblies)
         {
-            this.templateLoader = templateLoader;
-            this.messageHandler = messageHandler;
-            this.referencedAssemblies.AddRange(referencedAssemblies);
+            this.TemplateLoader = templateLoader;
+            this.MessageHandler = messageHandler;
+            this.ReferencedAssemblies = new List<string>();
+            this.ReferencedAssemblies.AddRange(referencedAssemblies);
         }
 
-        public Template Compile(string templateName)
+        /// <summary>
+        /// Compiles a Twofold template into internal representation.
+        /// </summary>
+        /// <param name="templateName">Name of Twofold template.</param>
+        /// <returns>The compiled template or null if an error occured.</returns>
+        public CompiledTemplate Compile(string templateName)
         {
-            Template template = null;
-            try {
-                var templateCompiler = new TemplateCompiler(templateLoader, messageHandler, referencedAssemblies);
-                template = templateCompiler.Compile(templateName);
-            }
-            catch (FileNotFoundException) {
-                messageHandler.Message(TraceLevel.Error, $"Template '{templateName}' not found");
-            }
-            catch (IOException) {
-                messageHandler.Message(TraceLevel.Error, $"IO error while reading template '{templateName}'");
-            }
-            catch (Exception ex) {
-                messageHandler.Message(TraceLevel.Error, ex.ToString());
-            }
-            return template;
+            var templateCompiler = new TemplateCompiler(this.TemplateLoader, this.MessageHandler, this.ReferencedAssemblies);
+            return templateCompiler.Compile(templateName);
         }
 
-        public Target Run<T>(Template template, T input) where T : class
+        /// <summary>
+        /// Executed a compiled Twofold template.
+        /// </summary>
+        /// <typeparam name="T">The argument type of the template main method.</typeparam>
+        /// <param name="compiledTemplate">The compiled Twofold template.</param>
+        /// <param name="arguments">The arguments which is given to the template main method.</param>
+        /// <returns>The generated target text or null if an error occured.</returns>
+        /// <exception cref="ArgumentNullException">If compiledTemplate is null.</exception>
+        public Target Run(CompiledTemplate compiledTemplate, params object[] arguments)
         {
-            Assembly assembly = template.Assembly;
-            return null;
+            var templateExecuter = new TemplateExecuter(this.MessageHandler);
+            Target target = templateExecuter.Execute(compiledTemplate, arguments);
+            return target;
         }
     }
 }

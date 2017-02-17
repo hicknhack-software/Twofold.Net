@@ -17,14 +17,25 @@
  * limitations under the License.
  */
 
-namespace Twofold.Extensions
+namespace Twofold.Interface.Compilation
 {
-    using System.Globalization;
-
-    internal static class CharExtensions
+    /// <summary>
+    /// A pargma directive in the template.
+    /// </summary>
+    public class PragmaCommand : AsbtractRenderCommand
     {
-        public static bool IsSpace(char ch) => ((char.GetUnicodeCategory(ch) == UnicodeCategory.SpaceSeparator) || (ch == ' ') || (ch == '\t'));
+        public readonly OriginalTextSpan Pragma;
+        public readonly OriginalTextSpan End;
+        public readonly string Name;
+        public readonly string Argument;
 
-        public static bool IsNewline(char ch) => ((ch == '\n') || (ch == '\r'));
+        public PragmaCommand(OriginalTextSpan pragma, OriginalTextSpan end, string name, string argument)
+            : base(RenderCommands.Pragma)
+        {
+            this.Pragma = pragma;
+            this.End = end;
+            this.Name = name;
+            this.Argument = argument;
+        }
     }
 }

@@ -17,14 +17,20 @@
  * limitations under the License.
  */
 
-namespace Twofold.Extensions
+namespace Twofold.Interface.Compilation
 {
-    using System.Globalization;
-
-    internal static class CharExtensions
+    public class ExpressionCommand : AsbtractRenderCommand
     {
-        public static bool IsSpace(char ch) => ((char.GetUnicodeCategory(ch) == UnicodeCategory.SpaceSeparator) || (ch == ' ') || (ch == '\t'));
+        public readonly OriginalTextSpan Begin;
+        public readonly OriginalTextSpan Expression;
+        public readonly OriginalTextSpan End;
 
-        public static bool IsNewline(char ch) => ((ch == '\n') || (ch == '\r'));
+        public ExpressionCommand(OriginalTextSpan begin, OriginalTextSpan expression, OriginalTextSpan end)
+            : base(RenderCommands.Expression)
+        {
+            this.Begin = begin;
+            this.Expression = expression;
+            this.End = end;
+        }
     }
 }

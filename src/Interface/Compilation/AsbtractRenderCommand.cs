@@ -17,14 +17,15 @@
  * limitations under the License.
  */
 
-namespace Twofold.Extensions
+namespace Twofold.Interface.Compilation
 {
-    using System.Globalization;
-
-    internal static class CharExtensions
+    public abstract class AsbtractRenderCommand
     {
-        public static bool IsSpace(char ch) => ((char.GetUnicodeCategory(ch) == UnicodeCategory.SpaceSeparator) || (ch == ' ') || (ch == '\t'));
+        public readonly RenderCommands Type;
 
-        public static bool IsNewline(char ch) => ((ch == '\n') || (ch == '\r'));
+        public AsbtractRenderCommand(RenderCommands type)
+        {
+            this.Type = type;
+        }
     }
 }

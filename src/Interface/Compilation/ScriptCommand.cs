@@ -17,14 +17,21 @@
  * limitations under the License.
  */
 
-namespace Twofold.Extensions
+namespace Twofold.Interface.Compilation
 {
-    using System.Globalization;
-
-    internal static class CharExtensions
+    /// <summary>
+    /// Adds template text 1:1 to the output.
+    /// </summary>
+    public class ScriptCommand : AsbtractRenderCommand
     {
-        public static bool IsSpace(char ch) => ((char.GetUnicodeCategory(ch) == UnicodeCategory.SpaceSeparator) || (ch == ' ') || (ch == '\t'));
+        public readonly OriginalTextSpan Script;
+        public readonly OriginalTextSpan End;
 
-        public static bool IsNewline(char ch) => ((ch == '\n') || (ch == '\r'));
+        public ScriptCommand(OriginalTextSpan script, OriginalTextSpan end)
+            : base(RenderCommands.Script)
+        {
+            this.Script = script;
+            this.End = end;
+        }
     }
 }

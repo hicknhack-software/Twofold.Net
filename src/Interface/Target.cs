@@ -17,14 +17,21 @@
  * limitations under the License.
  */
 
-namespace Twofold.Extensions
+namespace Twofold.Interface
 {
-    using System.Globalization;
+    using SourceMapping;
 
-    internal static class CharExtensions
+    public class Target
     {
-        public static bool IsSpace(char ch) => ((char.GetUnicodeCategory(ch) == UnicodeCategory.SpaceSeparator) || (ch == ' ') || (ch == '\t'));
+        public readonly string SourceName;
+        public readonly string GeneratedText;
+        public readonly Mapping SourceMap;
 
-        public static bool IsNewline(char ch) => ((ch == '\n') || (ch == '\r'));
+        public Target(string sourceName, string generatedText, Mapping sourceMap)
+        {
+            this.SourceName = sourceName;
+            this.GeneratedText = generatedText;
+            this.SourceMap = sourceMap;
+        }
     }
 }

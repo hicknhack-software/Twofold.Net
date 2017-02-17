@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twofold", "src\Twofold.csproj", "{CAC873F4-D95D-46D3-A176-9AFA87406ACD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twofold.Engine", "src\Twofold.Engine.csproj", "{CAC873F4-D95D-46D3-A176-9AFA87406ACD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "test\Example\Example.csproj", "{DEDFE4B4-0B4A-4E59-8E32-F8DA8F712DC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "test\UnitTests\UnitTests.csproj", "{AC355E5E-8D40-4E6E-A603-ACB96B3FE50B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{CAC873F4-D95D-46D3-A176-9AFA87406ACD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CAC873F4-D95D-46D3-A176-9AFA87406ACD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CAC873F4-D95D-46D3-A176-9AFA87406ACD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEDFE4B4-0B4A-4E59-8E32-F8DA8F712DC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEDFE4B4-0B4A-4E59-8E32-F8DA8F712DC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEDFE4B4-0B4A-4E59-8E32-F8DA8F712DC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEDFE4B4-0B4A-4E59-8E32-F8DA8F712DC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC355E5E-8D40-4E6E-A603-ACB96B3FE50B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC355E5E-8D40-4E6E-A603-ACB96B3FE50B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC355E5E-8D40-4E6E-A603-ACB96B3FE50B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC355E5E-8D40-4E6E-A603-ACB96B3FE50B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

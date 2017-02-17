@@ -17,14 +17,20 @@
  * limitations under the License.
  */
 
-namespace Twofold.Extensions
+namespace Twofold.Interface.Compilation
 {
-    using System.Globalization;
-
-    internal static class CharExtensions
+    public class PushIndentationCommand : AsbtractRenderCommand
     {
-        public static bool IsSpace(char ch) => ((char.GetUnicodeCategory(ch) == UnicodeCategory.SpaceSeparator) || (ch == ' ') || (ch == '\t'));
+        public readonly OriginalTextSpan Begin;
+        public readonly OriginalTextSpan Indentation;
+        public readonly OriginalTextSpan End;
 
-        public static bool IsNewline(char ch) => ((ch == '\n') || (ch == '\r'));
+        public PushIndentationCommand(OriginalTextSpan begin, OriginalTextSpan indentation, OriginalTextSpan end)
+            : base(RenderCommands.PushIndentation)
+        {
+            this.Begin = begin;
+            this.Indentation = indentation;
+            this.End = end;
+        }
     }
 }

@@ -16,133 +16,254 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-using Microsoft.CSharp;
-using System.CodeDom.Compiler;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics;
-using System.IO;
-using System.Reflection;
-using Twofold.Api;
-using Twofold.Api.Compilation.Parsing;
-using Twofold.Api.SourceMapping;
-using Twofold.Compilation.Generation;
-using Twofold.Compilation.Parsing;
 
 namespace Twofold.Compilation
 {
-    public class TemplateCompiler
-    {
-        readonly ITextLoader textLoader;
-        readonly IMessageHandler messageHandler;
-        readonly StringCollection referencedAssemblies;
-        readonly TemplateParser templateParser;
+    using Interface;
+    using Interface.Compilation;
+    using Interface.SourceMapping;
+    using Microsoft.CSharp;
+    using Rules;
+    using System;
+    using System.CodeDom.Compiler;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.IO;
+    using System.Linq;
+    using System.Reflection;
 
-        public TemplateCompiler(ITextLoader textLoader, IMessageHandler messageHandler, StringCollection referencedAssemblies)
+    internal sealed class TemplateCompiler
+    {
+        private readonly ITemplateLoader TemplateLoader;
+        private readonly IMessageHandler MessageHandler;
+        private readonly List<string> ReferencedAssemblies;
+        private readonly TemplateParser TemplateParser;
+
+        /// <summary>
+        /// Constructs a TemplateCompiler.
+        /// </summary>
+        /// <param name="templateLoader">ITemplateLoader to load templates by name.</param>
+        /// <param name="messageHandler">IMessageHandler to report messges to the user.</param>
+        /// <param name="referencedAssemblies">Additional assemblied to include in template compilation.</param>
+        public TemplateCompiler(ITemplateLoader templateLoader, IMessageHandler messageHandler, List<string> referencedAssemblies)
         {
-            this.textLoader = textLoader;
-            this.messageHandler = messageHandler;
-            this.referencedAssemblies = referencedAssemblies;
+            if (templateLoader == null)
+            {
+                throw new ArgumentNullException(nameof(templateLoader));
+            }
+            if (messageHandler == null)
+            {
+                throw new ArgumentNullException(nameof(messageHandler));
+            }
+
+            this.TemplateLoader = templateLoader;
+            this.MessageHandler = messageHandler;
+            this.ReferencedAssemblies = referencedAssemblies;
 
             var parserRules = new Dictionary<char, IParserRule>
             {
                 {'\\', new InterpolationRule() },
-                {'|', new InterpolateLineRule() },
+                {'|', new InterpolationLineRule() },
                 {'=', new CallRule() },
                 {'#', new PreprocessorRule() },
             };
-            this.templateParser = new TemplateParser(parserRules, new PassThroughRule(), this.messageHandler);
+            this.TemplateParser = new TemplateParser(parserRules, new PassThroughRule(), this.MessageHandler);
         }
 
-        public Template Compile(string templateName)
+        /// <summary>
+        /// Loads the given template and compiles it.
+        /// </summary>
+        /// <param name="templateName">Name of template which will be resolved by ITemplateLoader.</param>
+        /// <returns>Compiled template or null in case of an error.</returns>
+        /// <exception cref="ArgumentException">If templateName is null or empty.</exception>
+        public CompiledTemplate Compile(string templateName)
         {
+            if (string.IsNullOrEmpty(templateName))
+            {
+                throw new ArgumentException("Can't be null or empty.", nameof(templateName));
+            }
+
             var templateNames = new Queue<string>();
             templateNames.Enqueue(templateName);
 
-            var generatedTwofoldSources = new List<string>();
+            var generatedTargetCodes = new List<GeneratedCode>();
 
-            string mainTemplateFilename = null;
+            string mainTemplatePath = null;
             bool mainTemplateFilenameSet = false;
+            var generatedFiles = new HashSet<string>();
 
-            while (templateNames.Count > 0) {
+            while (templateNames.Count > 0)
+            {
                 // Load template
-                TextLoaderResult textLoaderResult = textLoader.Load(templateName);
-                if (mainTemplateFilenameSet == false) {
-                    mainTemplateFilename = textLoaderResult.Name;
-                    mainTemplateFilenameSet = true;
+                string loadTemplateName = templateNames.Dequeue();
+                Template template = null;
+                try
+                {
+                    template = this.TemplateLoader.Load(loadTemplateName);
+                    if (mainTemplateFilenameSet == false)
+                    {
+                        mainTemplatePath = template.Path;
+                        mainTemplateFilenameSet = true;
+                    }
+                }
+                catch (FileNotFoundException)
+                {
+                    this.MessageHandler.Message(TraceLevel.Error, $"Can't find template '{templateName}'.", string.Empty, new TextPosition());
+                    throw;
+                }
+                catch (IOException)
+                {
+                    this.MessageHandler.Message(TraceLevel.Error, $"IO error while reading template '{templateName}'.", string.Empty, new TextPosition());
+                    throw;
+                }
+                catch (Exception)
+                {
+                    continue;
                 }
 
                 // Generate Twofold enhanced CSharp code from template
                 List<string> includedFiles;
-                string twofoldCSharpCode = this.GenerateCode(textLoaderResult.Name, textLoaderResult.Text, out includedFiles);
-                generatedTwofoldSources.Add(twofoldCSharpCode);
+                GeneratedCode generatedCode = this.GenerateCode(template.Path, template.Text, out includedFiles);
+                if (generatedCode != null)
+                {
+                    generatedFiles.Add(loadTemplateName);
+                    generatedTargetCodes.Add(generatedCode);
+                    foreach (var includedFile in includedFiles)
+                    {
+                        if (generatedFiles.Contains(includedFile))
+                        {
+                            continue;
+                        }
+                        templateNames.Enqueue(includedFile);
+                    }
+                }
             }
 
             // Compile CSharp code
-            Assembly twofoldAssembly = this.CompileCode(generatedTwofoldSources);
-
-            // Check Twofold CSharp assembly for entry points/types
-            bool testResult = this.CheckAssembly(mainTemplateFilename, twofoldAssembly);
-            if (testResult == false) {
-                return null;
+            Assembly assembly = this.CompileCode(generatedTargetCodes);
+            if (assembly == null)
+            {
+                return new CompiledTemplate(mainTemplatePath, generatedTargetCodes);
             }
 
-            return new Template(mainTemplateFilename, twofoldAssembly);
+            // Check Twofold CSharp assembly for entry points/types
+            string mainTypeName = this.DetectMainType(mainTemplatePath, assembly);
+            if (string.IsNullOrEmpty(mainTypeName))
+            {
+                return new CompiledTemplate(mainTemplatePath, generatedTargetCodes);
+            }
+
+            return new CompiledTemplate(mainTemplatePath, assembly, mainTypeName, generatedTargetCodes);
         }
 
-        string GenerateCode(string sourceName, string text, out List<string> includedFiles)
+        private GeneratedCode GenerateCode(string templatePath, string originalText, out List<string> includedFiles)
         {
+            if (templatePath == null)
+            {
+                throw new ArgumentNullException(nameof(templatePath));
+            }
+            if (originalText == null)
+            {
+                throw new ArgumentNullException(nameof(originalText), "text");
+            }
+
             TextWriter codeWriter = new StringWriter();
             includedFiles = new List<string>();
+            string generatedCode = string.Empty;
+            var mapping = new Mapping();
 
-            var csharpGenerator = new CSharpGenerator(templateParser, codeWriter, includedFiles);
-            csharpGenerator.Generate(sourceName, text);
+            try
+            {
+                var csharpGenerator = new CSharpGenerator(this.TemplateParser, codeWriter, mapping, includedFiles);
+                csharpGenerator.Generate(templatePath, originalText);
+                generatedCode = codeWriter.ToString();
+            }
+            finally
+            {
+                codeWriter.Dispose();
+            }
 
-            return codeWriter.ToString();
+            return new GeneratedCode(templatePath, generatedCode, mapping);
         }
 
-        Assembly CompileCode(List<string> sources)
+        private Assembly CompileCode(List<GeneratedCode> generatedCodes)
         {
             // Prepare compiler
             var parameters = new CompilerParameters();
             parameters.GenerateInMemory = true;
-            parameters.MainClass = "Twofold.Entry";
-            parameters.ReferencedAssemblies.Add("System.dll");
-            parameters.ReferencedAssemblies.Add("System.Core.dll");
-            foreach (string referencedAssembly in referencedAssemblies) {
-                parameters.ReferencedAssemblies.Add(referencedAssembly);
-            }
+            parameters.TreatWarningsAsErrors = true;
+            parameters.IncludeDebugInformation = true;
+            parameters.CompilerOptions = string.Join(" ", Constants.CompilerOptions);
+            parameters.ReferencedAssemblies.AddRange(Constants.CompilerAssemblies);
+            parameters.ReferencedAssemblies.AddRange(this.ReferencedAssemblies.ToArray());
+            parameters.ReferencedAssemblies.Add(typeof(TemplateCompiler).Assembly.Location);
 
             // Compile
-            var codeProvider = new CSharpCodeProvider();
-            CompilerResults compilerResults = codeProvider.CompileAssemblyFromSource(parameters, sources.ToArray());
-            if (compilerResults.Errors.Count > 0) {
-                foreach (CompilerError compilerError in compilerResults.Errors) {
-                    TraceLevel traceLevel = compilerError.IsWarning ? TraceLevel.Warning : TraceLevel.Error;
-                    var errorPosition = new TextFilePosition(compilerError.FileName, new TextPosition(compilerError.Line, compilerError.Column));
-                    messageHandler.CSharpMessage(traceLevel, errorPosition, compilerError.ToString());
-                }
+            CompilerResults compilerResults;
+            using (var codeProvider = new CSharpCodeProvider())
+            {
+                var codes = generatedCodes.Select(generatedCode => generatedCode.Code).ToArray();
+                compilerResults = codeProvider.CompileAssemblyFromSource(parameters, codes);
             }
 
+            // Report errors
+            foreach (CompilerError compilerError in compilerResults.Errors)
+            {
+                string filename = compilerError.FileName;
+                var textPosition = new TextPosition();
+                if (compilerError.Line != 0 && compilerError.Column != 0)
+                {
+                    GeneratedCode generatedCode = generatedCodes.FirstOrDefault(gcode => string.Compare(gcode.TemplatePath, compilerError.FileName, StringComparison.OrdinalIgnoreCase) == 0);
+                    if (generatedCode != null)
+                    {
+                        var errorPosition = new TextPosition(compilerError.Line, compilerError.Column);
+                        TextFilePosition original = generatedCode.SourceMap.FindSourceByGenerated(errorPosition);
+                        if (original.IsValid)
+                        {
+                            textPosition = new TextPosition(original.Line, original.Column);
+                        }
+                    }
+                    else
+                    {
+                        textPosition = new TextPosition(compilerError.Line, compilerError.Column);
+                    }
+
+                }
+
+                TraceLevel traceLevel = compilerError.IsWarning ? TraceLevel.Warning : TraceLevel.Error;
+                this.MessageHandler.Message(traceLevel, $"{compilerError.ErrorNumber}: {compilerError.ErrorText}", filename, textPosition);
+            }
+
+            if (compilerResults.Errors.Count > 0)
+            {
+                return null;
+            }
             return compilerResults.CompiledAssembly;
         }
 
-        bool CheckAssembly(string name, Assembly assembly)
+        private string DetectMainType(string templatePath, Assembly assembly)
         {
-            // Check for entry type and main method
-            var entryType = assembly.GetType("Twofold.Entry");
-            if (entryType == null) {
-                messageHandler.Message(TraceLevel.Error, $"Can't find Twofold entry class 'Twofold.Entry' in template '{name}'.");
-                return false;
+            Type mainType = null;
+            MethodInfo mainMethod = null;
+
+            Type[] exportedTypes = assembly.GetExportedTypes();
+            foreach (var exportedType in exportedTypes)
+            {
+                mainMethod = exportedType.GetMethod(Constants.EntryMethodName, BindingFlags.Public | BindingFlags.Static);
+                if (mainMethod != null)
+                {
+                    mainType = exportedType;
+                    break;
+                }
             }
 
-            var mainMethod = entryType.GetMethod("Main", BindingFlags.Public | BindingFlags.Static);
-            if (mainMethod == null) {
-                messageHandler.Message(TraceLevel.Error, $"Can't find Twofold entry method 'Main' in template '{name}'.");
-                return false;
+            if (mainMethod == null)
+            {
+                this.MessageHandler.Message(TraceLevel.Error, $"Can't find static template entry method '{Constants.EntryMethodName}'.", templatePath, new TextPosition());
+                return null;
             }
 
-            return true;
+            return mainType.FullName;
         }
     }
 }

@@ -17,14 +17,23 @@
  * limitations under the License.
  */
 
-namespace Twofold.Extensions
+namespace Twofold.Compilation.Rules
 {
-    using System.Globalization;
+    using Interface;
+    using Interface.Compilation;
+    using System.Collections.Generic;
 
-    internal static class CharExtensions
+    /// <summary>
+    /// Rule which handles template interpolation and appends a new line to output: "| #{...} ... #{...}"
+    /// </summary>
+    internal class InterpolationLineRule : InterpolationRule
     {
-        public static bool IsSpace(char ch) => ((char.GetUnicodeCategory(ch) == UnicodeCategory.SpaceSeparator) || (ch == ' ') || (ch == '\t'));
-
-        public static bool IsNewline(char ch) => ((ch == '\n') || (ch == '\r'));
+        public override List<AsbtractRenderCommand> Parse(FileLine line, IMessageHandler messageHandler)
+        {
+            List<AsbtractRenderCommand> commands = base.Parse(line, messageHandler);
+            var newLineSpan = line.CreateOriginalTextSpan(line.End, line.End);
+            commands.Add(new NewLineCommand(newLineSpan));
+            return commands;
+        }
     }
 }

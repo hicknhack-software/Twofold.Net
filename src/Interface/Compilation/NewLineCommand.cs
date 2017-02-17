@@ -17,14 +17,19 @@
  * limitations under the License.
  */
 
-namespace Twofold.Extensions
+namespace Twofold.Interface.Compilation
 {
-    using System.Globalization;
-
-    internal static class CharExtensions
+    /// <summary>
+    /// Adds a new line to the output.
+    /// </summary>
+    public class NewLineCommand : AsbtractRenderCommand
     {
-        public static bool IsSpace(char ch) => ((char.GetUnicodeCategory(ch) == UnicodeCategory.SpaceSeparator) || (ch == ' ') || (ch == '\t'));
+        public readonly OriginalTextSpan NewLine;
 
-        public static bool IsNewline(char ch) => ((ch == '\n') || (ch == '\r'));
+        public NewLineCommand(OriginalTextSpan newLine)
+            : base(RenderCommands.NewLine)
+        {
+            this.NewLine = newLine;
+        }
     }
 }
