@@ -107,14 +107,44 @@ namespace Twofold.Interface.SourceMapping
             return new TextFilePosition(entry.Source.Name, line, column);
         }
 
-        public void Add(MappingEntry entry)
+        /// <summary>
+        /// Adds a MappingEntry into the mapping list.
+        /// </summary>
+        /// <param name="entry">The mapping to add.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown if the mapping is less than the last added mapping.</exception>
+        /// <returns>True if the last mapping entry was overwritten, false otherwise.</returns>
+        public bool Add(MappingEntry entry)
         {
             if (entry == null)
             {
                 throw new ArgumentNullException(nameof(entry));
             }
 
-            this.Mappings.Add(entry);
+            int compare = 1;
+            if (this.Mappings.Count > 0) 
+            {
+                TextPosition lastGeneratedPosition = this.Mappings.Last().Generated;
+                TextPosition generatedPosition = entry.Generated;
+                compare = generatedPosition.CompareTo(lastGeneratedPosition);
+            }
+
+            bool overwritten = false;
+            if (compare > 0)
+            {
+                this.Mappings.Add(entry);
+            }
+            else if (compare == 0)
+            {
+                this.Mappings.RemoveAt(this.Mappings.Count - 1);
+                this.Mappings.Add(entry);
+                overwritten = true;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(entry), "The new mapping entry is less than the last added mapping entry!");
+            }
+
+            return overwritten;
         }
 
         public int AddCaller(TextFilePosition source, int parentIndex)

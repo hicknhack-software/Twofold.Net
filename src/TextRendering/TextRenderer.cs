@@ -187,29 +187,18 @@ namespace Twofold.TextRendering
             }
         }
 
-        public void WriteLine(string text)
-        {
-            this.WriteLine(text, new TextFilePosition());
-        }
-
         public void WriteLine(TextFilePosition original)
         {
+            this.TextWriter.WriteLine();
+            this.IsLineBlank = true;
+            ++Line;
+            this.Column = 1;
             if (original.IsValid)
             {
                 var callerIndex = (this.CallerIndexStack.Count == 0) ? -1 : this.CallerIndexStack.Peek();
                 var entry = new MappingEntry(this.Position(), original, callerIndex, EntryFeatures.None);
                 this.Mapping.Add(entry);
             }
-            this.TextWriter.WriteLine();
-            this.IsLineBlank = true;
-            ++Line;            
-            this.Column = 1;
-        }
-
-        public void WriteLine(string text, TextFilePosition original)
-        {
-            this.Write(text, original);
-            this.WriteLine(original);
         }
 
         /// <summary>
@@ -257,6 +246,7 @@ namespace Twofold.TextRendering
         public void PushCaller(TextFilePosition original)
         {
             var parentIndex = (this.CallerIndexStack.Count == 0) ? -1 : this.CallerIndexStack.Peek();
+
             int callerIndex = this.Mapping.AddCaller(original, parentIndex);
             this.CallerIndexStack.Push(callerIndex);
         }

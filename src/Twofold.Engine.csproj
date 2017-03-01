@@ -45,7 +45,7 @@
     <Compile Include="Interface\Compilation\StatementCommand.cs" />
     <Compile Include="Interface\SourceMapping\VLQ.cs" />
     <Compile Include="Interface\StackFrame.cs" />
-    <Compile Include="Interface\StackTraceHideAttribute.cs" />
+    <Compile Include="Interface\HideStackTraceAttribute.cs" />
     <Compile Include="TextRendering\TemplateRenderer.cs" />
     <Compile Include="TextRendering\TextRenderer.cs" />
     <Compile Include="Interface\Compilation\AbstractCodeGenerator.cs" />
