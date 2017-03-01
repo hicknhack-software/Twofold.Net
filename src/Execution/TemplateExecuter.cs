@@ -135,7 +135,7 @@ namespace Twofold.Execution
                 // Extract method name
                 MethodBase method = diagnosticFrame.GetMethod();
                 // Note(Maik): Skip internal render methods in case of a stack trace.
-                if (Attribute.IsDefined(method, typeof(StackTraceHideAttribute)))
+                if (Attribute.IsDefined(method, typeof(HideStackTraceAttribute)))
                 {
                     continue;
                 }

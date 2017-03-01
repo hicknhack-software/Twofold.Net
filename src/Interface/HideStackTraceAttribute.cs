@@ -22,7 +22,7 @@ namespace Twofold.Interface
     using System;
 
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
-    public class StackTraceHideAttribute : Attribute
+    public class HideStackTraceAttribute : Attribute
     {
     }
 }

@@ -43,24 +43,28 @@ namespace Twofold.Compilation
             var escapedText = cmd.Indentation.Text.Escape();
             this.TextRenderer.Write("_Template.PushIndentation(\"", cmd.Begin.Position);
             this.TextRenderer.Write(escapedText, cmd.Indentation.Position, EntryFeatures.ColumnInterpolation);
-            this.TextRenderer.WriteLine($"\", {this.SourceExpression(cmd.Indentation.Position)}, {this.FeatureExpression(EntryFeatures.ColumnInterpolation)});", cmd.End.Position);
+            this.TextRenderer.Write($"\", {this.SourceExpression(cmd.Indentation.Position)}, {this.FeatureExpression(EntryFeatures.ColumnInterpolation)});", cmd.End.Position);
+            this.TextRenderer.WriteLine(cmd.End.Position);
         }
 
         protected override void Generate(PopIndentationCommand cmd)
         {
-            this.TextRenderer.WriteLine("_Template.PopIndentation();", cmd.Pop.Position);
+            this.TextRenderer.Write("_Template.PopIndentation();", cmd.Pop.Position);
+            this.TextRenderer.WriteLine(cmd.Pop.Position);
         }
 
         protected override void Generate(NewLineCommand cmd)
         {
-            this.TextRenderer.WriteLine($"_Template.WriteLine({this.SourceExpression(cmd.NewLine.Position)});", cmd.NewLine.Position);
+            this.TextRenderer.Write($"_Template.WriteLine({this.SourceExpression(cmd.NewLine.Position)});", cmd.NewLine.Position);
+            this.TextRenderer.WriteLine(cmd.NewLine.Position);
         }
 
         protected override void Generate(StatementCommand cmd)
         {
             this.TextRenderer.Write($"_Template.PushCaller({this.SourceExpression(cmd.Statement.Position)});", cmd.Statement.Position);
             this.TextRenderer.Write(cmd.Statement.Text, cmd.Statement.Position, EntryFeatures.ColumnInterpolation);
-            this.TextRenderer.WriteLine($"_Template.PopCaller();", cmd.End.Position);
+            this.TextRenderer.Write($"_Template.PopCaller();", cmd.End.Position);
+            this.TextRenderer.WriteLine(cmd.End.Position);
         }
 
         protected override void Generate(ScriptCommand cmd)
@@ -73,7 +77,8 @@ namespace Twofold.Compilation
         {
             this.TextRenderer.Write("_Template.Write(() => ", cmd.Begin.Position);
             this.TextRenderer.Write(cmd.Expression.Text, cmd.Expression.Position, EntryFeatures.ColumnInterpolation);
-            this.TextRenderer.WriteLine($", {this.SourceExpression(cmd.Expression.Position)}, {this.FeatureExpression(EntryFeatures.None)});", cmd.End.Position);
+            this.TextRenderer.Write($", {this.SourceExpression(cmd.Expression.Position)}, {this.FeatureExpression(EntryFeatures.None)});", cmd.End.Position);
+            this.TextRenderer.WriteLine(cmd.End.Position);
         }
 
         protected override void Generate(TextCommand cmd)
@@ -81,7 +86,8 @@ namespace Twofold.Compilation
             var escapedText = cmd.Text.Text.Escape();
             this.TextRenderer.Write("_Template.Write(() => \"", cmd.Text.Position);
             this.TextRenderer.Write(escapedText, cmd.Text.Position, EntryFeatures.ColumnInterpolation);
-            this.TextRenderer.WriteLine($"\", {this.SourceExpression(cmd.Text.Position)}, {this.FeatureExpression(EntryFeatures.ColumnInterpolation)});", cmd.End.Position);
+            this.TextRenderer.Write($"\", {this.SourceExpression(cmd.Text.Position)}, {this.FeatureExpression(EntryFeatures.ColumnInterpolation)});", cmd.End.Position);
+            this.TextRenderer.WriteLine(cmd.End.Position);
         }
 
         protected override void Generate(PragmaCommand cmd)
@@ -107,14 +113,17 @@ namespace Twofold.Compilation
 
         protected override void PreGeneration(string templatePath, string text)
         {
-            this.TextRenderer.WriteLine($"// {templatePath}");
+            this.TextRenderer.Write($"// {templatePath}", new TextFilePosition());
+            this.TextRenderer.WriteLine(new TextFilePosition());
 
             foreach (string targetCodeUsing in Constants.TargetCodeUsings)
             {
-                this.TextRenderer.WriteLine(targetCodeUsing);
+                this.TextRenderer.Write(targetCodeUsing, new TextFilePosition());
+                this.TextRenderer.WriteLine(new TextFilePosition());
             }
             var escapedTemplatePath = templatePath.Escape();
-            this.TextRenderer.WriteLine($"#line 1 \"{escapedTemplatePath}\"");
+            this.TextRenderer.Write($"#line 1 \"{escapedTemplatePath}\"", new TextFilePosition());
+            this.TextRenderer.WriteLine(new TextFilePosition());
 
             this.TextRenderer.ResetPosition();
         }

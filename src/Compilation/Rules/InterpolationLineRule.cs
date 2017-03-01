@@ -31,7 +31,7 @@ namespace Twofold.Compilation.Rules
         public override List<AsbtractRenderCommand> Parse(FileLine line, IMessageHandler messageHandler)
         {
             List<AsbtractRenderCommand> commands = base.Parse(line, messageHandler);
-            var newLineSpan = line.CreateOriginalTextSpan(line.End, line.End);
+            var newLineSpan = line.CreateOriginalTextSpan(line.BeginNonSpace, line.BeginNonSpace + 1);
             commands.Add(new NewLineCommand(newLineSpan));
             return commands;
         }
