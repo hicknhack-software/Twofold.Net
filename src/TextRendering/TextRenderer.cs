@@ -165,8 +165,8 @@ namespace Twofold.TextRendering
                         var entry = new MappingEntry(this.Position(), original, callerIndex, features);
                         this.Mapping.Add(entry);
                     }
-                    this.TextWriter.Write(text.Substring(index, text.Length - index));
-                    Column += len;
+                    this.TextWriter.Write(text.Substring(index, len));
+                    this.Column += len;
                     index += len;
                 }
                 else
@@ -178,9 +178,9 @@ namespace Twofold.TextRendering
                         var entry = new MappingEntry(this.Position(), original, callerIndex, features);
                         this.Mapping.Add(entry);
                     }
-                    this.TextWriter.Write(text.Substring(index, text.Length - lineBreakIndex));
+                    this.TextWriter.Write(text.Substring(index, len));
                     index += len;
-                    ++Line;
+                    ++this.Line;
                     this.IsLineBlank = true;
                     this.Column = 1;
                 }
@@ -191,7 +191,7 @@ namespace Twofold.TextRendering
         {
             this.TextWriter.WriteLine();
             this.IsLineBlank = true;
-            ++Line;
+            ++this.Line;
             this.Column = 1;
             if (original.IsValid)
             {
