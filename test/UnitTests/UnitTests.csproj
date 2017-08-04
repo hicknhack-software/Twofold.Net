@@ -60,6 +60,7 @@
     <Compile Include="CallRuleTest.cs" />
     <Compile Include="PassThroughRuleTest.cs" />
     <Compile Include="PreprocessorRuleTest.cs" />
+    <Compile Include="TextRendererTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Twofold.Engine.csproj">
