@@ -17,16 +17,7 @@ namespace UnitTests
             var rule = new CallRule();
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
-            Assert.AreEqual(3, fragments.Count);
-
-            Assert.AreEqual(RenderCommandTypes.TargetPushIndentation, fragments[0].Type);
-            Assert.AreEqual("", fragments[0].Span.Text);
-
-            Assert.AreEqual(RenderCommandTypes.OriginScript, fragments[1].Type);
-            Assert.AreEqual("", fragments[1].Span.Text);
-
-            Assert.AreEqual(RenderCommandTypes.TargetPopIndentation, fragments[2].Type);
-            Assert.AreEqual("", fragments[2].Span.Text);
+            Assert.AreEqual(0, fragments.Count);
         }
 
         [TestMethod]
@@ -36,16 +27,10 @@ namespace UnitTests
             var rule = new CallRule();
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
-            Assert.AreEqual(3, fragments.Count);
+            Assert.AreEqual(1, fragments.Count);
 
-            Assert.AreEqual(RenderCommandTypes.TargetPushIndentation, fragments[0].Type);
-            Assert.AreEqual("", fragments[0].Span.Text);
-
-            Assert.AreEqual(RenderCommandTypes.OriginScript, fragments[1].Type);
-            Assert.AreEqual("A;", fragments[1].Span.Text);
-
-            Assert.AreEqual(RenderCommandTypes.TargetPopIndentation, fragments[2].Type);
-            Assert.AreEqual("", fragments[2].Span.Text);
+            Assert.IsInstanceOfType(fragments[0], typeof(StatementCommand));
+            Assert.AreEqual("A;", (fragments[0] as StatementCommand).Statement.Text);
         }
 
         [TestMethod]
@@ -57,14 +42,14 @@ namespace UnitTests
 
             Assert.AreEqual(3, fragments.Count);
 
-            Assert.AreEqual(RenderCommandTypes.TargetPushIndentation, fragments[0].Type);
-            Assert.AreEqual("   ", fragments[0].Span.Text);
+            Assert.IsInstanceOfType(fragments[0], typeof(PushIndentationCommand));
+            Assert.AreEqual("   ", (fragments[0] as PushIndentationCommand).Indentation.Text);
 
-            Assert.AreEqual(RenderCommandTypes.OriginScript, fragments[1].Type);
-            Assert.AreEqual("A;", fragments[1].Span.Text);
+            Assert.IsInstanceOfType(fragments[1], typeof(StatementCommand));
+            Assert.AreEqual("A;", (fragments[1] as StatementCommand).Statement.Text);
 
-            Assert.AreEqual(RenderCommandTypes.TargetPopIndentation, fragments[2].Type);
-            Assert.AreEqual("", fragments[2].Span.Text);
+            Assert.IsInstanceOfType(fragments[2], typeof(PopIndentationCommand));
+            Assert.AreEqual("", (fragments[2] as PopIndentationCommand).Pop.Text);
         }
     }
 }

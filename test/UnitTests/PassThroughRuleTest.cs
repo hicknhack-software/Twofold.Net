@@ -17,10 +17,7 @@ namespace UnitTests
             var rule = new PassThroughRule();
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
-            Assert.AreEqual(1, fragments.Count);
-
-            Assert.AreEqual(RenderCommandTypes.OriginScript, fragments[0].Type);
-            Assert.AreEqual("", fragments[0].Span.Text);
+            Assert.AreEqual(0, fragments.Count);
         }
 
         [TestMethod]
@@ -31,9 +28,8 @@ namespace UnitTests
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
             Assert.AreEqual(1, fragments.Count);
-
-            Assert.AreEqual(RenderCommandTypes.OriginScript, fragments[0].Type);
-            Assert.AreEqual("A B", fragments[0].Span.Text);
+            Assert.IsInstanceOfType(fragments[0], typeof(ScriptCommand));
+            Assert.AreEqual("A B", (fragments[0] as ScriptCommand).Script.Text);
         }
     }
 }
