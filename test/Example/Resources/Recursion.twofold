@@ -12,7 +12,7 @@ namespace Example
 
 		public static void Helper2(string text, int level)
 		{
-			\#{text}
+			|#{text}
 			PrintRecursive(text, level - 1);
 		}
 
