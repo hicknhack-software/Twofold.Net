@@ -17,12 +17,7 @@ namespace UnitTests
             var rule = new InterpolationRule();
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
-            Assert.AreEqual(2, fragments.Count);
-            Assert.AreEqual(RenderCommandTypes.TargetIndentation, fragments[0].Type);
-            Assert.AreEqual("", fragments[0].Span.Text);
-
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[1].Type);
-            Assert.AreEqual("", fragments[1].Span.Text);
+            Assert.AreEqual(0, fragments.Count);
         }
 
         [TestMethod]
@@ -33,11 +28,12 @@ namespace UnitTests
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
             Assert.AreEqual(2, fragments.Count);
-            Assert.AreEqual(RenderCommandTypes.TargetIndentation, fragments[0].Type);
-            Assert.AreEqual("   ", fragments[0].Span.Text);
 
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[1].Type);
-            Assert.AreEqual("", fragments[1].Span.Text);
+            Assert.IsInstanceOfType(fragments[0], typeof(PushIndentationCommand));
+            Assert.AreEqual("   ", (fragments[0] as PushIndentationCommand).Indentation.Text);
+
+            Assert.IsInstanceOfType(fragments[1], typeof(PopIndentationCommand));
+            Assert.AreEqual("", (fragments[1] as PopIndentationCommand).Pop.Text);
         }
 
         [TestMethod]
@@ -47,12 +43,10 @@ namespace UnitTests
             var rule = new InterpolationRule();
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
-            Assert.AreEqual(2, fragments.Count);
-            Assert.AreEqual(RenderCommandTypes.TargetIndentation, fragments[0].Type);
-            Assert.AreEqual("", fragments[0].Span.Text);
+            Assert.AreEqual(1, fragments.Count);
 
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[1].Type);
-            Assert.AreEqual("A", fragments[1].Span.Text);
+            Assert.IsInstanceOfType(fragments[0], typeof(TextCommand));
+            Assert.AreEqual("A", (fragments[0] as TextCommand).Text.Text);
         }
 
         [TestMethod]
@@ -62,12 +56,16 @@ namespace UnitTests
             var rule = new InterpolationRule();
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
-            Assert.AreEqual(2, fragments.Count);
-            Assert.AreEqual(RenderCommandTypes.TargetIndentation, fragments[0].Type);
-            Assert.AreEqual("   ", fragments[0].Span.Text);
+            Assert.AreEqual(3, fragments.Count);
 
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[1].Type);
-            Assert.AreEqual("A", fragments[1].Span.Text);
+            Assert.IsInstanceOfType(fragments[0], typeof(PushIndentationCommand));
+            Assert.AreEqual("   ", (fragments[0] as PushIndentationCommand).Indentation.Text);
+
+            Assert.IsInstanceOfType(fragments[1], typeof(TextCommand));
+            Assert.AreEqual("A", (fragments[1] as TextCommand).Text.Text);
+
+            Assert.IsInstanceOfType(fragments[2], typeof(PopIndentationCommand));
+            Assert.AreEqual("", (fragments[2] as PopIndentationCommand).Pop.Text);
         }
 
         [TestMethod]
@@ -77,18 +75,10 @@ namespace UnitTests
             var rule = new InterpolationRule();
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
-            Assert.AreEqual(4, fragments.Count);
-            Assert.AreEqual(RenderCommandTypes.TargetIndentation, fragments[0].Type);
-            Assert.AreEqual("", fragments[0].Span.Text);
+            Assert.AreEqual(1, fragments.Count);
 
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[1].Type);
-            Assert.AreEqual("", fragments[1].Span.Text);
-
-            Assert.AreEqual(RenderCommandTypes.OriginExpression, fragments[2].Type);
-            Assert.AreEqual("A", fragments[2].Span.Text);
-
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[3].Type);
-            Assert.AreEqual("", fragments[3].Span.Text);
+            Assert.IsInstanceOfType(fragments[0], typeof(ExpressionCommand));
+            Assert.AreEqual("A", (fragments[0] as ExpressionCommand).Expression.Text);
         }
 
         [TestMethod]
@@ -98,18 +88,13 @@ namespace UnitTests
             var rule = new InterpolationRule();
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
-            Assert.AreEqual(4, fragments.Count);
-            Assert.AreEqual(RenderCommandTypes.TargetIndentation, fragments[0].Type);
-            Assert.AreEqual("", fragments[0].Span.Text);
+            Assert.AreEqual(2, fragments.Count);
 
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[1].Type);
-            Assert.AreEqual("A", fragments[1].Span.Text);
+            Assert.IsInstanceOfType(fragments[0], typeof(TextCommand));
+            Assert.AreEqual("A", (fragments[0] as TextCommand).Text.Text);
 
-            Assert.AreEqual(RenderCommandTypes.OriginExpression, fragments[2].Type);
-            Assert.AreEqual("B", fragments[2].Span.Text);
-
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[3].Type);
-            Assert.AreEqual("", fragments[3].Span.Text);
+            Assert.IsInstanceOfType(fragments[1], typeof(ExpressionCommand));
+            Assert.AreEqual("B", (fragments[1] as ExpressionCommand).Expression.Text);
         }
 
         [TestMethod]
@@ -119,18 +104,16 @@ namespace UnitTests
             var rule = new InterpolationRule();
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
-            Assert.AreEqual(4, fragments.Count);
-            Assert.AreEqual(RenderCommandTypes.TargetIndentation, fragments[0].Type);
-            Assert.AreEqual("", fragments[0].Span.Text);
+            Assert.AreEqual(3, fragments.Count);
 
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[1].Type);
-            Assert.AreEqual("A", fragments[1].Span.Text);
+            Assert.IsInstanceOfType(fragments[0], typeof(TextCommand));
+            Assert.AreEqual("A", (fragments[0] as TextCommand).Text.Text);
 
-            Assert.AreEqual(RenderCommandTypes.OriginExpression, fragments[2].Type);
-            Assert.AreEqual("B", fragments[2].Span.Text);
+            Assert.IsInstanceOfType(fragments[1], typeof(ExpressionCommand));
+            Assert.AreEqual("B", (fragments[1] as ExpressionCommand).Expression.Text);
 
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[3].Type);
-            Assert.AreEqual("C", fragments[3].Span.Text);
+            Assert.IsInstanceOfType(fragments[2], typeof(TextCommand));
+            Assert.AreEqual("C", (fragments[2] as TextCommand).Text.Text);
         }
 
         [TestMethod]
@@ -140,24 +123,22 @@ namespace UnitTests
             var rule = new InterpolationRule();
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
-            Assert.AreEqual(6, fragments.Count);
-            Assert.AreEqual(RenderCommandTypes.TargetIndentation, fragments[0].Type);
-            Assert.AreEqual("", fragments[0].Span.Text);
+            Assert.AreEqual(5, fragments.Count);
 
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[1].Type);
-            Assert.AreEqual("A", fragments[1].Span.Text);
+            Assert.IsInstanceOfType(fragments[0], typeof(TextCommand));
+            Assert.AreEqual("A", (fragments[0] as TextCommand).Text.Text);
 
-            Assert.AreEqual(RenderCommandTypes.OriginExpression, fragments[2].Type);
-            Assert.AreEqual("B", fragments[2].Span.Text);
+            Assert.IsInstanceOfType(fragments[1], typeof(ExpressionCommand));
+            Assert.AreEqual("B", (fragments[1] as ExpressionCommand).Expression.Text);
 
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[3].Type);
-            Assert.AreEqual("C", fragments[3].Span.Text);
+            Assert.IsInstanceOfType(fragments[2], typeof(TextCommand));
+            Assert.AreEqual("C", (fragments[2] as TextCommand).Text.Text);
 
-            Assert.AreEqual(RenderCommandTypes.OriginExpression, fragments[4].Type);
-            Assert.AreEqual("D", fragments[4].Span.Text);
+            Assert.IsInstanceOfType(fragments[3], typeof(ExpressionCommand));
+            Assert.AreEqual("D", (fragments[3] as ExpressionCommand).Expression.Text);
 
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[5].Type);
-            Assert.AreEqual("E", fragments[5].Span.Text);
+            Assert.IsInstanceOfType(fragments[4], typeof(TextCommand));
+            Assert.AreEqual("E", (fragments[4] as TextCommand).Text.Text);
         }
 
         [TestMethod]
@@ -167,21 +148,16 @@ namespace UnitTests
             var rule = new InterpolationRule();
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
-            Assert.AreEqual(5, fragments.Count);
-            Assert.AreEqual(RenderCommandTypes.TargetIndentation, fragments[0].Type);
-            Assert.AreEqual("", fragments[0].Span.Text);
+            Assert.AreEqual(3, fragments.Count);
 
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[1].Type);
-            Assert.AreEqual("#", fragments[1].Span.Text);
+            Assert.IsInstanceOfType(fragments[0], typeof(TextCommand));
+            Assert.AreEqual("#", (fragments[0] as TextCommand).Text.Text);
 
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[2].Type);
-            Assert.AreEqual("include ", fragments[2].Span.Text);
+            Assert.IsInstanceOfType(fragments[1], typeof(TextCommand));
+            Assert.AreEqual("include ", (fragments[1] as TextCommand).Text.Text);
 
-            Assert.AreEqual(RenderCommandTypes.OriginExpression, fragments[3].Type);
-            Assert.AreEqual("A", fragments[3].Span.Text);
-
-            Assert.AreEqual(RenderCommandTypes.OriginText, fragments[4].Type);
-            Assert.AreEqual("", fragments[4].Span.Text);
+            Assert.IsInstanceOfType(fragments[2], typeof(ExpressionCommand));
+            Assert.AreEqual("A", (fragments[2] as ExpressionCommand).Expression.Text);
         }
     }
 }

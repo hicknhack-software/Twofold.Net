@@ -20,8 +20,8 @@ namespace UnitTests
 
             Assert.AreEqual(1, fragments.Count);
 
-            Assert.AreEqual(RenderCommandTypes.OriginScript, fragments[0].Type);
-            Assert.AreEqual("#", fragments[0].Span.Text);
+            Assert.IsInstanceOfType(fragments[0], typeof(ScriptCommand));
+            Assert.AreEqual("#", (fragments[0] as ScriptCommand).Script.Text);
         }
 
         [TestMethod]
@@ -32,9 +32,8 @@ namespace UnitTests
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
             Assert.AreEqual(1, fragments.Count);
-
-            Assert.AreEqual(RenderCommandTypes.OriginScript, fragments[0].Type);
-            Assert.AreEqual("#debug", fragments[0].Span.Text);
+            Assert.IsInstanceOfType(fragments[0], typeof(ScriptCommand));
+            Assert.AreEqual("#debug", (fragments[0] as ScriptCommand).Script.Text);
         }
 
         [TestMethod]
@@ -45,9 +44,8 @@ namespace UnitTests
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
             Assert.AreEqual(1, fragments.Count);
-
-            Assert.AreEqual(RenderCommandTypes.OriginScript, fragments[0].Type);
-            Assert.AreEqual("#pragma warning 120, off", fragments[0].Span.Text);
+            Assert.IsInstanceOfType(fragments[0], typeof(ScriptCommand));
+            Assert.AreEqual("#pragma warning 120, off", (fragments[0] as ScriptCommand).Script.Text);
         }
 
         [TestMethod]
@@ -58,11 +56,10 @@ namespace UnitTests
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
             Assert.AreEqual(1, fragments.Count);
-
-            Assert.AreEqual(RenderCommandTypes.OriginPragma, fragments[0].Type);
-            Assert.AreEqual("#pragma include \"File.cs\"", fragments[0].Span.Text);
-            Assert.AreEqual("include", ((OriginPragma)fragments[0]).Name);
-            Assert.AreEqual("File.cs", ((OriginPragma)fragments[0]).Argument);
+            Assert.IsInstanceOfType(fragments[0], typeof(PragmaCommand));
+            Assert.AreEqual("#pragma include \"File.cs\"", (fragments[0] as PragmaCommand).Pragma.Text);
+            Assert.AreEqual("include", (fragments[0] as PragmaCommand).Name);
+            Assert.AreEqual("File.cs", (fragments[0] as PragmaCommand).Argument);
         }
 
         [TestMethod]
@@ -73,11 +70,10 @@ namespace UnitTests
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
             Assert.AreEqual(1, fragments.Count);
-
-            Assert.AreEqual(RenderCommandTypes.OriginPragma, fragments[0].Type);
-            Assert.AreEqual("#pragma include \"\"", fragments[0].Span.Text);
-            Assert.AreEqual("include", ((OriginPragma)fragments[0]).Name);
-            Assert.AreEqual("", ((OriginPragma)fragments[0]).Argument);
+            Assert.IsInstanceOfType(fragments[0], typeof(PragmaCommand));
+            Assert.AreEqual("#pragma include \"\"", (fragments[0] as PragmaCommand).Pragma.Text);
+            Assert.AreEqual("include", (fragments[0] as PragmaCommand).Name);
+            Assert.AreEqual("", (fragments[0] as PragmaCommand).Argument);
         }
 
         [TestMethod]
@@ -88,9 +84,8 @@ namespace UnitTests
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
             Assert.AreEqual(1, fragments.Count);
-
-            Assert.AreEqual(RenderCommandTypes.OriginScript, fragments[0].Type);
-            Assert.AreEqual("#pragma include", fragments[0].Span.Text);
+            Assert.IsInstanceOfType(fragments[0], typeof(ScriptCommand));
+            Assert.AreEqual("#pragma include", (fragments[0] as ScriptCommand).Script.Text);
         }
     }
 }

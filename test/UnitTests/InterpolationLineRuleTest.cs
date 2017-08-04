@@ -19,12 +19,9 @@ namespace UnitTests
             var rule = new InterpolationLineRule();
             List<AsbtractRenderCommand> fragments = rule.Parse(line, new NullMessageHandler());
 
-            Assert.AreEqual(3, fragments.Count);
-            // ...
-            // First elements are tested by InterpolationLine
-            // ...
-            Assert.AreEqual(RenderCommandTypes.TargetNewLine, fragments[2].Type);
-            Assert.AreEqual("", fragments[2].Span.Text);
+            Assert.AreEqual(1, fragments.Count);
+            Assert.AreEqual(RenderCommands.NewLine, fragments[0].Type);
+            Assert.AreEqual("|", (fragments[0] as NewLineCommand).NewLine.Text);
         }
     }
 }
