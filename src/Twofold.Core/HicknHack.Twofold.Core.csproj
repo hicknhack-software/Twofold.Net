@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{CAC873F4-D95D-46D3-A176-9AFA87406ACD}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HicknHack.Twofold</RootNamespace>
+    <AssemblyName>HicknHack.Twofold.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Abstractions\Compilation\AbstractCodeGenerator.cs" />
+    <Compile Include="Abstractions\Compilation\AsbtractRenderCommand.cs" />
+    <Compile Include="Abstractions\Compilation\ExpressionCommand.cs" />
+    <Compile Include="Abstractions\Compilation\IParserRule.cs" />
+    <Compile Include="Abstractions\Compilation\ITemplateParser.cs" />
+    <Compile Include="Abstractions\Compilation\NewLineCommand.cs" />
+    <Compile Include="Abstractions\Compilation\PopIndentationCommand.cs" />
+    <Compile Include="Abstractions\Compilation\PragmaCommand.cs" />
+    <Compile Include="Abstractions\Compilation\PushIndentationCommand.cs" />
+    <Compile Include="Abstractions\Compilation\RenderCommands.cs" />
+    <Compile Include="Abstractions\Compilation\ScriptCommand.cs" />
+    <Compile Include="Abstractions\Compilation\StatementCommand.cs" />
+    <Compile Include="Abstractions\Compilation\TextCommand.cs" />
+    <Compile Include="Abstractions\CompiledTemplate.cs" />
+    <Compile Include="Abstractions\ConsoleMessageHandler.cs" />
+    <Compile Include="Abstractions\FileLine.cs" />
+    <Compile Include="Abstractions\GeneratedCode.cs" />
+    <Compile Include="Abstractions\HideStackTraceAttribute.cs" />
+    <Compile Include="Abstractions\IMessageHandler.cs" />
+    <Compile Include="Abstractions\ITemplateLoader.cs" />
+    <Compile Include="Abstractions\OriginalTextSpan.cs" />
+    <Compile Include="Abstractions\SourceMapping\EntryFeatures.cs" />
+    <Compile Include="Abstractions\SourceMapping\Mapping.cs" />
+    <Compile Include="Abstractions\SourceMapping\MappingEntry.cs" />
+    <Compile Include="Abstractions\SourceMapping\TextFilePosition.cs" />
+    <Compile Include="Abstractions\SourceMapping\TextPosition.cs" />
+    <Compile Include="Abstractions\SourceMapping\VLQ.cs" />
+    <Compile Include="Abstractions\StackFrame.cs" />
+    <Compile Include="Abstractions\Target.cs" />
+    <Compile Include="Abstractions\Template.cs" />
+    <Compile Include="Compilation\BraceCounter.cs" />
+    <Compile Include="Compilation\CSharpGenerator.cs" />
+    <Compile Include="Compilation\Rules\CallRule.cs" />
+    <Compile Include="Compilation\Rules\InterpolationLineRule.cs" />
+    <Compile Include="Compilation\Rules\InterpolationRule.cs" />
+    <Compile Include="Compilation\Rules\PassThroughRule.cs" />
+    <Compile Include="Compilation\Rules\PreprocessorRule.cs" />
+    <Compile Include="Compilation\TemplateCompiler.cs" />
+    <Compile Include="Compilation\TemplateParser.cs" />
+    <Compile Include="Constants.cs" />
+    <Compile Include="Engine.cs" />
+    <Compile Include="Execution\TemplateExecuter.cs" />
+    <Compile Include="Extensions\CharExtensions.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TextRendering\TemplateRenderer.cs" />
+    <Compile Include="TextRendering\TextRenderer.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

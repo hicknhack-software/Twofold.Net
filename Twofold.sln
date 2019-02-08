@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twofold.Engine", "src\Twofold.Engine.csproj", "{CAC873F4-D95D-46D3-A176-9AFA87406ACD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HicknHack.Twofold.Core", "src\Twofold.Core\HicknHack.Twofold.Core.csproj", "{CAC873F4-D95D-46D3-A176-9AFA87406ACD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Example", "test\Example\Example.csproj", "{DEDFE4B4-0B4A-4E59-8E32-F8DA8F712DC3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HicknHack.Twofold.Samples", "src\Twofold.Samples\HicknHack.Twofold.Samples.csproj", "{DEDFE4B4-0B4A-4E59-8E32-F8DA8F712DC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "test\UnitTests\UnitTests.csproj", "{AC355E5E-8D40-4E6E-A603-ACB96B3FE50B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HicknHack.Twofold.Tests", "tests\Twofold.Tests\HicknHack.Twofold.Tests.csproj", "{AC355E5E-8D40-4E6E-A603-ACB96B3FE50B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +30,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {82C78419-F03B-4B17-9F29-277AB64737E5}
 	EndGlobalSection
 EndGlobal
