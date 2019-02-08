@@ -98,7 +98,7 @@ namespace HicknHack.Twofold.Compilation
                     {
                         if (string.IsNullOrEmpty(cmd.Argument) == false)
                         {
-                            IncludedFiles.Add(cmd.Argument);
+                            this.IncludedFiles.Add(cmd.Argument);
                         }
                     }
                     break;

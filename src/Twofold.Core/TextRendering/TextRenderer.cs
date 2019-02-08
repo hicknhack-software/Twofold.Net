@@ -166,7 +166,7 @@ namespace HicknHack.Twofold.TextRendering
                         this.Mapping.Add(entry);
                     }
                     this.TextWriter.Write(text.Substring(index, text.Length - index));
-                    Column += len;
+                    this.Column += len;
                     index += len;
                 }
                 else
@@ -180,7 +180,7 @@ namespace HicknHack.Twofold.TextRendering
                     }
                     this.TextWriter.Write(text.Substring(index, text.Length - lineBreakIndex));
                     index += len;
-                    ++Line;
+                    ++this.Line;
                     this.IsLineBlank = true;
                     this.Column = 1;
                 }
@@ -191,7 +191,7 @@ namespace HicknHack.Twofold.TextRendering
         {
             this.TextWriter.WriteLine();
             this.IsLineBlank = true;
-            ++Line;
+            ++this.Line;
             this.Column = 1;
             if (original.IsValid)
             {

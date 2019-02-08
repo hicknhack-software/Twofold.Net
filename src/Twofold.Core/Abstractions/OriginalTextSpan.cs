@@ -81,7 +81,7 @@ namespace HicknHack.Twofold.Abstractions
             this.Begin = begin;
             this.End = end;
             this.OriginalText = text;
-            this.Text = OriginalText.Substring(Begin, End - Begin);
+            this.Text = this.OriginalText.Substring(this.Begin, this.End - this.Begin);
 
             if (position == null)
             {
@@ -92,7 +92,7 @@ namespace HicknHack.Twofold.Abstractions
 
         public bool IsEmpty
         {
-            get { return (Begin == End); }
+            get { return (this.Begin == this.End); }
         }
 
         public int Length

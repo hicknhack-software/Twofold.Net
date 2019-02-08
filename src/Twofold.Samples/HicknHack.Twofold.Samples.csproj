@@ -7,7 +7,7 @@
     <ProjectGuid>{DEDFE4B4-0B4A-4E59-8E32-F8DA8F712DC3}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HicknHack.Twofold</RootNamespace>
+    <RootNamespace>HicknHack.Twofold.Samples</RootNamespace>
     <AssemblyName>HicknHack.Twofold.Samples</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

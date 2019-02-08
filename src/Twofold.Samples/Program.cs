@@ -31,8 +31,8 @@
 
         public ArgumentDescriptor(string type, string name)
         {
-            Type = type;
-            Name = name;
+            this.Type = type;
+            this.Name = name;
         }
     }
 
@@ -45,10 +45,10 @@
 
         public MethodDescriptor(string returnType, string name, List<ArgumentDescriptor> arguments, string body)
         {
-            ReturnType = returnType;
-            Name = name;
-            Arguments = arguments;
-            Body = body;
+            this.ReturnType = returnType;
+            this.Name = name;
+            this.Arguments = arguments;
+            this.Body = body;
         }
     }
 
@@ -60,8 +60,8 @@
 
         public ClassDescriptor(string name, List<MethodDescriptor> methods)
         {
-            Name = name;
-            Methods = methods;
+            this.Name = name;
+            this.Methods = methods;
         }
     }
 
@@ -71,7 +71,7 @@
 
         private Program()
         {
-            engine = new Engine(this, this, Assembly.GetExecutingAssembly().Location);
+            this.engine = new Engine(this, this, Assembly.GetExecutingAssembly().Location);
         }
 
         private static void Main(string[] args)
@@ -104,7 +104,7 @@
 
         private void CompileAndRun(string template, params object[] arguments)
         {
-            CompiledTemplate compiledTemplate = engine.Compile(template);
+            CompiledTemplate compiledTemplate = this.engine.Compile(template);
 
             if (Directory.Exists("Generated"))
             {
@@ -138,7 +138,7 @@
                     }
                 }
 
-                Target target = engine.Run(compiledTemplate, arguments);
+                Target target = this.engine.Run(compiledTemplate, arguments);
                 File.Delete("Generated\\Output.cs");
                 File.Delete("Generated\\Output.cs.map");
                 if (target != null)

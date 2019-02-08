@@ -33,10 +33,12 @@ namespace HicknHack.Twofold
 
         public const string EntryMethodName = "TwofoldMain";
 
+        public const string DefaultNamespace = "HicknHack.Twofold";
+
         public static readonly string[] TargetCodeUsings = {
-            "using _Template = Twofold.TextRendering.TemplateRenderer;",
-            "using _Source = Twofold.Interface.SourceMapping.TextFilePosition;",
-            "using _Features = Twofold.Interface.SourceMapping.EntryFeatures;",
+            $"using _Template = {DefaultNamespace}.TextRendering.TemplateRenderer;",
+            $"using _Source = {DefaultNamespace}.Abstractions.SourceMapping.TextFilePosition;",
+            $"using _Features = {DefaultNamespace}.Abstractions.SourceMapping.EntryFeatures;",
         };
     }
 }

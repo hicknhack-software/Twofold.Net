@@ -6,7 +6,7 @@
     <ProjectGuid>{AC355E5E-8D40-4E6E-A603-ACB96B3FE50B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HicknHack.Twofold</RootNamespace>
+    <RootNamespace>HicknHack.Twofold.Tests</RootNamespace>
     <AssemblyName>HicknHack.Twofold.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>

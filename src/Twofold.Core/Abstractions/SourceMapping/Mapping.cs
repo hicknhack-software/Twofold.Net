@@ -174,9 +174,9 @@ namespace HicknHack.Twofold.Abstractions.SourceMapping
             // Gather sources
             var sources = new List<string>();
             var sourcesIndex = new Dictionary<string, int>();
-            foreach (var mappingEntry in Mappings)
+            foreach (var mappingEntry in this.Mappings)
             {
-                string filepath = AbsolutePath(mappingEntry.Source.Name);
+                string filepath = this.AbsolutePath(mappingEntry.Source.Name);
                 if (sourcesIndex.ContainsKey(filepath))
                 {
                     continue;
@@ -210,7 +210,7 @@ namespace HicknHack.Twofold.Abstractions.SourceMapping
 
             int prevCallerIndex = 0;
 
-            foreach (var mappingEntry in Mappings)
+            foreach (var mappingEntry in this.Mappings)
             {
                 int lineDiff = (mappingEntry.Generated.Line - prevGeneratedLine);
                 for (int i = 0; i < lineDiff; ++i)
@@ -239,7 +239,7 @@ namespace HicknHack.Twofold.Abstractions.SourceMapping
                 prevGeneratedColumn = generatedColumn;
 
                 // Field 2: "zero-based index into the sources list"
-                int sourceIndex = sourcesIndex[AbsolutePath(mappingEntry.Source.Name)];
+                int sourceIndex = sourcesIndex[this.AbsolutePath(mappingEntry.Source.Name)];
                 VLQ.Encode(mappings, sourceIndex - prevSourcesIndex);
                 prevSourcesIndex = sourceIndex;
 
@@ -278,7 +278,7 @@ namespace HicknHack.Twofold.Abstractions.SourceMapping
             prevSourceLine = 1;
             prevSourceColumn = 1;
             int prevParentIndex = 0;
-            foreach (var caller in Callers)
+            foreach (var caller in this.Callers)
             {
                 if (callers.Length > 0)
                 {
@@ -286,7 +286,7 @@ namespace HicknHack.Twofold.Abstractions.SourceMapping
                 }
 
                 // Field 1: "zero-based index into the sources list"
-                int sourceIndex = sourcesIndex[AbsolutePath(caller.Source.Name)];
+                int sourceIndex = sourcesIndex[this.AbsolutePath(caller.Source.Name)];
                 VLQ.Encode(callers, sourceIndex - prevSourcesIndex);
                 prevSourcesIndex = sourceIndex;
 
