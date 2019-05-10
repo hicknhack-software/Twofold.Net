@@ -1,0 +1,25 @@
+#pragma include "Include"
+
+namespace Example
+{
+	using System;
+	using HicknHack.Twofold.Samples;
+
+    public par tial class ExampleRenderer
+    {
+        public static void TwofoldMain(ClassDescriptor classDescriptor)
+        {
+													|using System;
+													|
+													|namespace Generated
+													|{
+													|    class #{classDescriptor.Name}
+													|    {
+			foreach(var method in classDescriptor.Methods) {
+													=        ShowMethod(method);
+			}
+													|    }
+													|}
+        }
+    }
+}

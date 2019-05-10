@@ -1,0 +1,30 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Product>Twofold</Product>
+    <Company>HicknHack Software GmbH</Company>
+    <Authors>Maik Lathan</Authors>
+    <LangVersion>default</LangVersion>
+    <RootNamespace>HicknHack.Twofold</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>..\..\bin\$(Configuration)</OutputPath>
+    <RepositoryUrl>https://github.com/hicknhack-software/Twofold.Net</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <Copyright>Copyright (c) 2017-2019 HicknHack Software GmbH</Copyright>
+    <Description>Template framework for well formatted source code generation.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.10.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+</Project>

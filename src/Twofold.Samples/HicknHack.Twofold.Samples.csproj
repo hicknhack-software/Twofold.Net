@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <Authors>Maik Lathan</Authors>
+    <Company>HicknHack Software GmbH</Company>
+    <Product>Twofold</Product>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>..\..\bin\$(Configuration)</OutputPath>
+    <Copyright>Copyright (c) 2017-2019 HicknHack Software GmbH</Copyright>
+    <RepositoryUrl>https://github.com/hicknhack-software/Twofold.Net</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <Description>Example usage of Twofold.Core</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Twofold.Core\HicknHack.Twofold.Core.csproj" />
+  </ItemGroup>
+
+</Project>
