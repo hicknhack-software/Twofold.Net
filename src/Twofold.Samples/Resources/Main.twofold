@@ -1,10 +1,11 @@
 #pragma include "Include"
 
-using System;
-
 namespace Example
 {
-    public partial class ExampleRenderer
+	using System;
+	using HicknHack.Twofold.Samples;
+
+    public par tial class ExampleRenderer
     {
         public static void TwofoldMain(ClassDescriptor classDescriptor)
         {

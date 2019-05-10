@@ -6,10 +6,9 @@
     using System.IO;
     using System.Reflection;
     using System.Text;
-    using Properties;
-    using HicknHack.Twofold;
     using HicknHack.Twofold.Abstractions;
     using HicknHack.Twofold.Abstractions.SourceMapping;
+    using Properties;
 
     public interface ILogger
     {
@@ -67,11 +66,11 @@
 
     internal class Program : ITemplateLoader, IMessageHandler
     {
-        private Engine engine;
+        private readonly Engine engine;
 
         private Program()
         {
-            this.engine = new Engine(this, this, Assembly.GetExecutingAssembly().Location);
+            this.engine = new Engine(this, this, Assembly.GetExecutingAssembly());
         }
 
         private static void Main(string[] args)
@@ -79,7 +78,7 @@
             var app = new Program();
 
             // Example 1
-            if(false)
+            if (true)
             {
                 var classDescriptor = new ClassDescriptor("TwofoldGenerated", new List<MethodDescriptor>
                 {
@@ -93,7 +92,7 @@
             }
 
             // Example 2
-            if(true)
+            if (false)
             {
                 app.CompileAndRun("Recursion", "Hello, world!", 5);
             }

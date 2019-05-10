@@ -22,10 +22,11 @@ namespace HicknHack.Twofold.Compilation
     using Abstractions;
     using Abstractions.Compilation;
     using Abstractions.SourceMapping;
-    using Microsoft.CSharp;
+    using Microsoft.CodeAnalysis;
+    using Microsoft.CodeAnalysis.CSharp;
+    using Microsoft.CodeAnalysis.Emit;
     using Rules;
     using System;
-    using System.CodeDom.Compiler;
     using System.Collections.Generic;
     using System.Diagnostics;
     using System.IO;
@@ -36,7 +37,7 @@ namespace HicknHack.Twofold.Compilation
     {
         private readonly ITemplateLoader TemplateLoader;
         private readonly IMessageHandler MessageHandler;
-        private readonly List<string> ReferencedAssemblies;
+        private readonly IEnumerable<Assembly> UserAssemblies;
         private readonly TemplateParser TemplateParser;
 
         /// <summary>
@@ -44,21 +45,12 @@ namespace HicknHack.Twofold.Compilation
         /// </summary>
         /// <param name="templateLoader">ITemplateLoader to load templates by name.</param>
         /// <param name="messageHandler">IMessageHandler to report messges to the user.</param>
-        /// <param name="referencedAssemblies">Additional assemblied to include in template compilation.</param>
-        public TemplateCompiler(ITemplateLoader templateLoader, IMessageHandler messageHandler, List<string> referencedAssemblies)
+        /// <param name="userAssemblies">Additional assemblied to include in template compilation.</param>
+        public TemplateCompiler(ITemplateLoader templateLoader, IMessageHandler messageHandler, IEnumerable<Assembly> userAssemblies)
         {
-            if (templateLoader == null)
-            {
-                throw new ArgumentNullException(nameof(templateLoader));
-            }
-            if (messageHandler == null)
-            {
-                throw new ArgumentNullException(nameof(messageHandler));
-            }
-
-            this.TemplateLoader = templateLoader;
-            this.MessageHandler = messageHandler;
-            this.ReferencedAssemblies = referencedAssemblies;
+            this.TemplateLoader = templateLoader ?? throw new ArgumentNullException(nameof(templateLoader));
+            this.MessageHandler = messageHandler ?? throw new ArgumentNullException(nameof(messageHandler));
+            this.UserAssemblies = userAssemblies;
 
             var parserRules = new Dictionary<char, IParserRule>
             {
@@ -122,8 +114,7 @@ namespace HicknHack.Twofold.Compilation
                 }
 
                 // Generate Twofold enhanced CSharp code from template
-                List<string> includedFiles;
-                GeneratedCode generatedCode = this.GenerateCode(template.Path, template.Text, out includedFiles);
+                GeneratedCode generatedCode = this.GenerateCode(template.Path, template.Text, out List<string> includedFiles);
                 if (generatedCode != null)
                 {
                     generatedFiles.Add(loadTemplateName);
@@ -140,7 +131,7 @@ namespace HicknHack.Twofold.Compilation
             }
 
             // Compile CSharp code
-            Assembly assembly = this.CompileCode(generatedTargetCodes);
+            Assembly assembly = this.CompileCode(templateName, generatedTargetCodes);
             if (assembly == null)
             {
                 return new CompiledTemplate(mainTemplatePath, generatedTargetCodes);
@@ -186,59 +177,80 @@ namespace HicknHack.Twofold.Compilation
             return new GeneratedCode(templatePath, generatedCode, mapping);
         }
 
-        private Assembly CompileCode(List<GeneratedCode> generatedCodes)
+        private Assembly CompileCode(string templateName, List<GeneratedCode> generatedCodes)
         {
-            // Prepare compiler
-            var parameters = new CompilerParameters();
-            parameters.GenerateInMemory = true;
-            parameters.TreatWarningsAsErrors = true;
-            parameters.IncludeDebugInformation = true;
-            parameters.CompilerOptions = string.Join(" ", Constants.CompilerOptions);
-            parameters.ReferencedAssemblies.AddRange(Constants.CompilerAssemblies);
-            parameters.ReferencedAssemblies.AddRange(this.ReferencedAssemblies.ToArray());
-            parameters.ReferencedAssemblies.Add(typeof(TemplateCompiler).Assembly.Location);
+            var parseOptions = new CSharpParseOptions(LanguageVersion.CSharp7);
 
-            // Compile
-            CompilerResults compilerResults;
-            using (var codeProvider = new CSharpCodeProvider())
-            {
-                var codes = generatedCodes.Select(generatedCode => generatedCode.Code).ToArray();
-                compilerResults = codeProvider.CompileAssemblyFromSource(parameters, codes);
-            }
+            var syntraxTrees = generatedCodes
+                .Select(generatedCode => SyntaxFactory.ParseSyntaxTree(generatedCode.Code, parseOptions, generatedCode.TemplatePath))
+                .ToList();
 
-            // Report errors
-            foreach (CompilerError compilerError in compilerResults.Errors)
+            var referencedTypes = new Type[] { typeof(object), typeof(TemplateCompiler) };
+            var systemAssemblies = referencedTypes.Select(type => type.GetTypeInfo().Assembly).ToList();
+            var allAssemblies = systemAssemblies.Union(this.UserAssemblies).ToList();
+            var references = allAssemblies.Select(assembly => MetadataReference.CreateFromFile(assembly.Location)).ToList();
+
+            // NOTE(Lathan): Suppress diagnostic warning for unknown #pragma include
+            var hiddenDiagnostics = new Dictionary<string, ReportDiagnostic> { { "CS1633", ReportDiagnostic.Hidden } };
+
+            var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary)
+                .WithGeneralDiagnosticOption(ReportDiagnostic.Error)
+                .WithSpecificDiagnosticOptions(hiddenDiagnostics);
+            var compilation = CSharpCompilation.Create(templateName)
+                .WithOptions(compilationOptions)
+                .AddReferences(references)
+                .AddSyntaxTrees(syntraxTrees);
+
+            using (var memoryStream = new MemoryStream())
             {
-                string filename = compilerError.FileName;
-                var textPosition = new TextPosition();
-                if (compilerError.Line != 0 && compilerError.Column != 0)
+                EmitResult result = compilation.Emit(memoryStream);
+
+                if (result.Success)
                 {
-                    GeneratedCode generatedCode = generatedCodes.FirstOrDefault(gcode => string.Compare(gcode.TemplatePath, compilerError.FileName, StringComparison.OrdinalIgnoreCase) == 0);
-                    if (generatedCode != null)
-                    {
-                        var errorPosition = new TextPosition(compilerError.Line, compilerError.Column);
-                        TextFilePosition original = generatedCode.SourceMap.FindSourceByGenerated(errorPosition);
-                        if (original.IsValid)
-                        {
-                            textPosition = new TextPosition(original.Line, original.Column);
-                        }
-                    }
-                    else
-                    {
-                        textPosition = new TextPosition(compilerError.Line, compilerError.Column);
-                    }
-
+                    memoryStream.Seek(0, SeekOrigin.Begin);
+                    return Assembly.Load(memoryStream.ToArray());
                 }
+                else
+                {
+                    IEnumerable<Diagnostic> issues = result.Diagnostics
+                        .Where(diagnostic => diagnostic.Severity == DiagnosticSeverity.Warning ||
+                        diagnostic.Severity == DiagnosticSeverity.Error);
 
-                TraceLevel traceLevel = compilerError.IsWarning ? TraceLevel.Warning : TraceLevel.Error;
-                this.MessageHandler.Message(traceLevel, $"{compilerError.ErrorNumber}: {compilerError.ErrorText}", filename, textPosition);
-            }
+                    foreach (Diagnostic issue in issues)
+                    {
+                        FileLinePositionSpan lineSpan = issue.Location.GetMappedLineSpan();
+                        int line = lineSpan.StartLinePosition.Line + 1;
+                        int column = lineSpan.StartLinePosition.Character + 1;
 
-            if (compilerResults.Errors.Count > 0)
-            {
-                return null;
+                        string filepath = lineSpan.Path;
+                        var textPosition = new TextPosition();
+                        if (lineSpan.IsValid)
+                        {
+                            GeneratedCode generatedCode = generatedCodes.FirstOrDefault(gcode => string.Compare(gcode.TemplatePath, filepath, StringComparison.OrdinalIgnoreCase) == 0);
+                            var errorPosition = new TextPosition(line, column);
+                            if (generatedCode != null)
+                            {
+                                TextFilePosition original = generatedCode.SourceMap.FindSourceByGenerated(errorPosition);
+                                if (original.IsValid)
+                                {
+                                    textPosition = new TextPosition(original.Line, original.Column);
+                                }
+                            }
+                            else
+                            {
+                                this.MessageHandler.Message(TraceLevel.Error, $"Couldn't lookup source position for {filepath} {errorPosition} in source map. Using compiler reported position.", null, new TextPosition());
+                                textPosition = new TextPosition(line, column);
+                            }
+
+                        }
+
+                        TraceLevel traceLevel = issue.Severity == DiagnosticSeverity.Warning ? TraceLevel.Warning : TraceLevel.Error;
+                        this.MessageHandler.Message(traceLevel, $"{issue.Id}: {issue.GetMessage()}", filepath, textPosition);
+                    }
+
+                    return null;
+                }
             }
-            return compilerResults.CompiledAssembly;
         }
 
         private string DetectMainType(string templatePath, Assembly assembly)

@@ -21,16 +21,6 @@ namespace HicknHack.Twofold
 {
     internal static class Constants
     {
-        public static readonly string[] CompilerOptions = {
-            "/langversion:5",
-            "/nowarn:1633",     //Supress: Unknown pragma, used for #pragma include
-        };
-
-        public static readonly string[] CompilerAssemblies = {
-            "System.dll",
-            "System.Core.dll",
-        };
-
         public const string EntryMethodName = "TwofoldMain";
 
         public const string DefaultNamespace = "HicknHack.Twofold";

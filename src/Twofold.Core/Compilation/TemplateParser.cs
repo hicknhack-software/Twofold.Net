@@ -51,11 +51,10 @@ namespace HicknHack.Twofold.Compilation
                 nonSpaceIndex = text.IndexOfNot(index, text.Length, CharExtensions.IsSpace);
                 end = text.IndexOf(nonSpaceIndex, text.Length, CharExtensions.IsNewline);
 
-                IParserRule parserRule;
                 List<AsbtractRenderCommand> ruleCommands;
                 var textFilePostion = new TextFilePosition(originalName, new TextPosition(line, 1));
                 var fileLine = new FileLine(text, index, nonSpaceIndex, end, textFilePostion);
-                if (this.ParseRules.TryGetValue(text[nonSpaceIndex], out parserRule))
+                if (this.ParseRules.TryGetValue(text[nonSpaceIndex], out IParserRule parserRule))
                 {
                     ruleCommands = parserRule.Parse(fileLine, this.MessageHandler);
                 }

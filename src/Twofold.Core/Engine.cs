@@ -23,19 +23,20 @@ namespace HicknHack.Twofold
     using Execution;
     using Abstractions;
     using System.Collections.Generic;
+    using System.Reflection;
 
     public class Engine
     {
         private readonly ITemplateLoader TemplateLoader;
         private readonly IMessageHandler MessageHandler;
-        private readonly List<string> ReferencedAssemblies;
+        private readonly List<Assembly> UserAssemblies;
 
-        public Engine(ITemplateLoader templateLoader, IMessageHandler messageHandler, params string[] referencedAssemblies)
+        public Engine(ITemplateLoader templateLoader, IMessageHandler messageHandler, params Assembly[] userAssemblies)
         {
             this.TemplateLoader = templateLoader;
             this.MessageHandler = messageHandler;
-            this.ReferencedAssemblies = new List<string>();
-            this.ReferencedAssemblies.AddRange(referencedAssemblies);
+            this.UserAssemblies = new List<Assembly>();
+            this.UserAssemblies.AddRange(userAssemblies);
         }
 
         /// <summary>
@@ -45,7 +46,7 @@ namespace HicknHack.Twofold
         /// <returns>The compiled template or null if an error occured.</returns>
         public CompiledTemplate Compile(string templateName)
         {
-            var templateCompiler = new TemplateCompiler(this.TemplateLoader, this.MessageHandler, this.ReferencedAssemblies);
+            var templateCompiler = new TemplateCompiler(this.TemplateLoader, this.MessageHandler, this.UserAssemblies);
             return templateCompiler.Compile(templateName);
         }
 

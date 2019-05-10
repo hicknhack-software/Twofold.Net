@@ -121,8 +121,8 @@ namespace HicknHack.Twofold.Compilation
                 this.TextRenderer.Write(targetCodeUsing, new TextFilePosition());
                 this.TextRenderer.WriteLine(new TextFilePosition());
             }
-            var escapedTemplatePath = templatePath.Escape();
-            this.TextRenderer.Write($"#line 1 \"{escapedTemplatePath}\"", new TextFilePosition());
+
+            this.TextRenderer.Write($"#line 1", new TextFilePosition());
             this.TextRenderer.WriteLine(new TextFilePosition());
 
             this.TextRenderer.ResetPosition();

@@ -25,7 +25,7 @@ namespace HicknHack.Twofold.Compilation.Rules
     using System.Collections.Generic;
 
     /// <summary>
-    /// Rule which handles a template method call: "= <method>"
+    /// Rule which handles a template method call: "= <statement>"
     /// </summary>
     internal class CallRule : IParserRule
     {

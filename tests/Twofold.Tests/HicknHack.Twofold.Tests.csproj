@@ -59,8 +59,8 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Twofold.Core\HicknHack.Twofold.Core.csproj">
-      <Project>{cac873f4-d95d-46d3-a176-9afa87406acd}</Project>
-      <Name>HicknHack.Twofold.Core</Name>
+      <Project>{e7d27f52-c5af-4314-b270-75560cc7e820}</Project>
+      <Name>HicknHack.Twofold.Core2</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
