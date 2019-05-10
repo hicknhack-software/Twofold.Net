@@ -40,17 +40,8 @@ namespace HicknHack.Twofold.TextRendering
 
             public IndentationItem(string indentation, TextFilePosition original, int callerIndex, EntryFeatures features)
             {
-                if (indentation == null)
-                {
-                    throw new ArgumentNullException(nameof(indentation));
-                }
-                this.Indentation = indentation;
-
-                if (original == null)
-                {
-                    throw new ArgumentNullException(nameof(original));
-                }
-                this.Original = original;
+                this.Indentation = indentation ?? throw new ArgumentNullException(nameof(indentation));
+                this.Original = original ?? throw new ArgumentNullException(nameof(original));
 
                 this.CallerIndex = callerIndex;
                 this.Features = features;
@@ -76,17 +67,8 @@ namespace HicknHack.Twofold.TextRendering
         /// <exception cref="ArgumentException">newLine is not \r or \r\n.</exception>
         public TextRenderer(TextWriter textWriter, Mapping mapping, string newLine)
         {
-            if (textWriter == null)
-            {
-                throw new ArgumentNullException(nameof(textWriter));
-            }
-            this.TextWriter = textWriter;
-
-            if (mapping == null)
-            {
-                throw new ArgumentNullException(nameof(mapping));
-            }
-            this.Mapping = mapping;
+            this.TextWriter = textWriter ?? throw new ArgumentNullException(nameof(textWriter));
+            this.Mapping = mapping ?? throw new ArgumentNullException(nameof(mapping));
 
             if (newLine == null)
             {

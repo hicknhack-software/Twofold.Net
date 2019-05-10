@@ -30,23 +30,9 @@ namespace HicknHack.Twofold.Compilation
 
         public GeneratedCode(string templatePath, string code, Mapping sourceMap)
         {
-            if (templatePath == null)
-            {
-                throw new ArgumentNullException(nameof(templatePath));
-            }
-            this.TemplatePath = templatePath;
-
-            if (code == null)
-            {
-                throw new ArgumentNullException(nameof(code));
-            }
-            this.Code = code;
-
-            if (sourceMap == null)
-            {
-                throw new ArgumentNullException(nameof(sourceMap));
-            }
-            this.SourceMap = sourceMap;
+            this.TemplatePath = templatePath ?? throw new ArgumentNullException(nameof(templatePath));
+            this.Code = code ?? throw new ArgumentNullException(nameof(code));
+            this.SourceMap = sourceMap ?? throw new ArgumentNullException(nameof(sourceMap));
         }
     }
 }

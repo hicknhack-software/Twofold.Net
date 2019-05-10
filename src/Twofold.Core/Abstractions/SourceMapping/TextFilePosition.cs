@@ -35,11 +35,7 @@ namespace HicknHack.Twofold.Abstractions.SourceMapping
         public TextFilePosition(string name, TextPosition textPosition)
             : base(textPosition)
         {
-            if (name == null)
-            {
-                throw new ArgumentNullException(nameof(name));
-            }
-            this.Name = name;
+            this.Name = name ?? throw new ArgumentNullException(nameof(name));
         }
 
         public new bool IsValid

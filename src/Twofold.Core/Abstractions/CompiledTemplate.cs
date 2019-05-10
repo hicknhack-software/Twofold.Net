@@ -33,46 +33,18 @@ namespace HicknHack.Twofold.Abstractions
 
         public CompiledTemplate(string sourceName, List<GeneratedCode> generatedCodes)
         {
-            if (sourceName == null)
-            {
-                throw new ArgumentNullException(nameof(sourceName));
-            }
-            this.OriginalName = sourceName;
+            this.OriginalName = sourceName ?? throw new ArgumentNullException(nameof(sourceName));
 
             this.MainTypeName = string.Empty;
-
-            if (generatedCodes == null)
-            {
-                throw new ArgumentNullException(nameof(generatedCodes));
-            }
-            this.GeneratedCodes = generatedCodes;
+            this.GeneratedCodes = generatedCodes ?? throw new ArgumentNullException(nameof(generatedCodes));
         }
 
         public CompiledTemplate(string sourceName, Assembly assembly, string mainTypeName, List<GeneratedCode> generatedCodes)
         {
-            if (sourceName == null)
-            {
-                throw new ArgumentNullException(nameof(sourceName));
-            }
-            this.OriginalName = sourceName;
-
-            if (assembly == null)
-            {
-                throw new ArgumentNullException(nameof(assembly));
-            }
-            this.Assembly = assembly;
-
-            if (mainTypeName == null)
-            {
-                throw new ArgumentNullException(nameof(mainTypeName));
-            }
-            this.MainTypeName = mainTypeName;
-
-            if (generatedCodes == null)
-            {
-                throw new ArgumentNullException(nameof(generatedCodes));
-            }
-            this.GeneratedCodes = generatedCodes;
+            this.OriginalName = sourceName ?? throw new ArgumentNullException(nameof(sourceName));
+            this.Assembly = assembly ?? throw new ArgumentNullException(nameof(assembly));
+            this.MainTypeName = mainTypeName ?? throw new ArgumentNullException(nameof(mainTypeName));
+            this.GeneratedCodes = generatedCodes ?? throw new ArgumentNullException(nameof(generatedCodes));
         }
 
         public bool IsValid

@@ -34,17 +34,8 @@ namespace HicknHack.Twofold.Abstractions.SourceMapping
 
         public MappingEntry(TextPosition generated, TextFilePosition original, int callerIndex, EntryFeatures features)
         {
-            if (generated == null)
-            {
-                throw new ArgumentNullException(nameof(generated));
-            }
-            this.Generated = generated;
-
-            if (original == null)
-            {
-                throw new ArgumentNullException(nameof(original));
-            }
-            this.Source = original;
+            this.Generated = generated ?? throw new ArgumentNullException(nameof(generated));
+            this.Source = original ?? throw new ArgumentNullException(nameof(original));
 
             this.CallerIndex = callerIndex;
             this.Features = features;

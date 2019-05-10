@@ -56,12 +56,7 @@ namespace HicknHack.Twofold.Abstractions
             this.End = text.Length;
             this.OriginalText = text;
             this.Text = text;
-
-            if (position == null)
-            {
-                throw new ArgumentNullException(nameof(position));
-            }
-            this.Position = position;
+            this.Position = position ?? throw new ArgumentNullException(nameof(position));
         }
 
         public OriginalTextSpan(string text, int begin, int end, TextFilePosition position)
@@ -82,12 +77,7 @@ namespace HicknHack.Twofold.Abstractions
             this.End = end;
             this.OriginalText = text;
             this.Text = this.OriginalText.Substring(this.Begin, this.End - this.Begin);
-
-            if (position == null)
-            {
-                throw new ArgumentNullException(nameof(position));
-            }
-            this.Position = position;
+            this.Position = position ?? throw new ArgumentNullException(nameof(position));
         }
 
         public bool IsEmpty
