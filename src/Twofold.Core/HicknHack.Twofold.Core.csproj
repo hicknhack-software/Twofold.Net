@@ -12,6 +12,10 @@
 
   <PropertyGroup>
     <OutputPath>..\..\bin\$(Configuration)</OutputPath>
+    <RepositoryUrl>https://github.com/hicknhack-software/Twofold.Net</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <Copyright>Copyright (c) 2017-2019 HicknHack Software GmbH</Copyright>
+    <Description>Template framework for well formatted source code generation.</Description>
   </PropertyGroup>
 
   <ItemGroup>

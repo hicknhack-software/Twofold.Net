@@ -11,6 +11,10 @@
 
   <PropertyGroup>
     <OutputPath>..\..\bin\$(Configuration)</OutputPath>
+    <Copyright>Copyright (c) 2017-2019 HicknHack Software GmbH</Copyright>
+    <RepositoryUrl>https://github.com/hicknhack-software/Twofold.Net</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <Description>Example usage of Twofold.Core</Description>
   </PropertyGroup>
 
   <ItemGroup>
